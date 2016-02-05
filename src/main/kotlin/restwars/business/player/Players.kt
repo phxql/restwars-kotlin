@@ -11,13 +11,26 @@ data class Player(
 
 interface PlayerService {
     fun create(username: String, password: String): Player
+
+    fun login(username: String, password: String): Player?
 }
 
 interface PlayerRepository {
     fun insert(player: Player)
+
+    fun findByUsername(username: String): Player?
 }
 
-class PlayerServiceImpl(val uuidFactory: UUIDFactory, val playerRepository: PlayerRepository) : PlayerService {
+class PlayerServiceImpl(
+        private val uuidFactory: UUIDFactory,
+        private val playerRepository: PlayerRepository
+) : PlayerService {
+    override fun login(username: String, password: String): Player? {
+        val player = playerRepository.findByUsername(username) ?: return null
+
+        return if (player.password == password) player else null // TODO: Verify hash & timing attack mitigation
+    }
+
     override fun create(username: String, password: String): Player {
         val id = uuidFactory.create()
 

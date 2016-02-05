@@ -12,10 +12,14 @@ data class Planet(val id: UUID, val owner: UUID?, val location: Location)
 
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
+
+    fun findByOwner(owner: Player?): List<Planet>
 }
 
 interface PlanetRepository {
     fun findAtLocation(location: Location): Planet?
+
+    fun findByOwnerId(ownerId: UUID?): List<Planet>
 
     fun insert(planet: Planet)
 }
@@ -26,6 +30,8 @@ class PlanetServiceImpl(
         private val planetRepository: PlanetRepository,
         private val config: Config
 ) : PlanetService {
+    override fun findByOwner(owner: Player?): List<Planet> = planetRepository.findByOwnerId(owner?.id)
+
     override fun createStarterPlanet(player: Player): Planet {
         // Find location which isn't already occupied
         var location: Location

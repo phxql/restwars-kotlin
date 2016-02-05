@@ -13,4 +13,8 @@ object InMemoryPlayerRepository : PlayerRepository {
         logger.info("Inserting player {}", player)
         players.add(player)
     }
+
+    override fun findByUsername(username: String): Player? {
+        return players.firstOrNull { it.username == username }
+    }
 }

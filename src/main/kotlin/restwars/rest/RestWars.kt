@@ -8,9 +8,8 @@ import restwars.business.config.UniverseSize
 import restwars.business.planet.PlanetServiceImpl
 import restwars.business.player.PlayerServiceImpl
 import restwars.rest.api.ErrorResponse
-import restwars.rest.controller.Json
-import restwars.rest.controller.PlayerController
-import restwars.rest.controller.ValidationException
+import restwars.rest.controller.*
+import restwars.rest.http.StatusCode
 import restwars.storage.InMemoryPlanetRepository
 import restwars.storage.InMemoryPlayerRepository
 import spark.Spark
@@ -34,10 +33,11 @@ fun main(args: Array<String>) {
     val validatorFactory = Validation.buildDefaultValidatorFactory()
 
     val playerController = PlayerController(validatorFactory, playerService, planetService)
+    val planetController = PlanetController(playerService, planetService)
 
     configureSpark()
     addExceptionHandler()
-    registerRoutes(playerController)
+    registerRoutes(playerController, planetController)
 
     Spark.awaitInitialization()
     logger.info("RESTwars started on port {}", port)
@@ -51,13 +51,19 @@ private fun configureSpark() {
     Spark.port(port)
 }
 
-private fun registerRoutes(playerController: PlayerController) {
+private fun registerRoutes(playerController: PlayerController, planetController: PlanetController) {
     Spark.post("/v1/player", Json.contentType, playerController.create())
+    Spark.get("/v1/planet", Json.contentType, planetController.list())
 }
 
 private fun addExceptionHandler() {
     Spark.exception(ValidationException::class.java, fun(e, req, res) {
-        res.status(400)
+        res.status(StatusCode.badRequest)
         res.body(Json.toJson(res, ErrorResponse("Request validation failed")))
+    })
+
+    Spark.exception(AuthenticationException::class.java, fun(e, req, res) {
+        res.status(StatusCode.unauthorized)
+        res.body(Json.toJson(res, ErrorResponse("Invalid credentials")))
     })
 }
