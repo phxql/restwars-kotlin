@@ -2,12 +2,12 @@ package restwars.rest
 
 import org.slf4j.LoggerFactory
 import restwars.business.UUIDFactoryImpl
-import restwars.business.user.UserServiceImpl
+import restwars.business.player.PlayerServiceImpl
 import restwars.rest.api.ErrorResponse
 import restwars.rest.controller.Json
-import restwars.rest.controller.UserController
+import restwars.rest.controller.PlayerController
 import restwars.rest.controller.ValidationException
-import restwars.storage.InMemoryUserRepository
+import restwars.storage.InMemoryPlayerRepository
 import spark.Spark
 import javax.validation.Validation
 
@@ -17,15 +17,15 @@ val logger = LoggerFactory.getLogger("restwars.rest.RestWars")
 
 fun main(args: Array<String>) {
     val uuidFactory = UUIDFactoryImpl
-    val userRepository = InMemoryUserRepository
-    val userService = UserServiceImpl(uuidFactory, userRepository)
+    val playerRepository = InMemoryPlayerRepository
+    val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
     val validatorFactory = Validation.buildDefaultValidatorFactory()
 
-    val userController = UserController(validatorFactory, userService)
+    val playerController = PlayerController(validatorFactory, playerService)
 
     configureSpark()
     addExceptionHandler()
-    registerRoutes(userController)
+    registerRoutes(playerController)
 
     Spark.awaitInitialization()
     logger.info("RESTwars started on port {}", port)
@@ -35,8 +35,8 @@ private fun configureSpark() {
     Spark.port(port)
 }
 
-private fun registerRoutes(userController: UserController) {
-    Spark.post("/v1/user", Json.contentType, userController.create())
+private fun registerRoutes(playerController: PlayerController) {
+    Spark.post("/v1/player", Json.contentType, playerController.create())
 }
 
 private fun addExceptionHandler() {
