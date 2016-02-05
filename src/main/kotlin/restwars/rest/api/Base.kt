@@ -1,5 +1,5 @@
 package restwars.rest.api
 
-data class Error(val reason: String)
+data class ErrorResponse(val reason: String)
 
-data class Success(val message: String)
+data class SuccessResponse(val message: String)

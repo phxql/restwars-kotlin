@@ -14,7 +14,7 @@ object Json {
         return gson.toJson(model)
     }
 
-    fun <T> fromJson(request: Request, clazz: Class<T>): T {
+    fun <T> fromJson(request: Request, clazz: Class<T>): T? {
         return gson.fromJson(request.body(), clazz)
     }
 }

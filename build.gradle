@@ -22,6 +22,11 @@ dependencies {
     compile 'com.sparkjava:spark-core:2.3'
     compile 'org.slf4j:slf4j-api:1.7.14'
     compile 'com.google.code.gson:gson:2.5'
+    compile 'org.hibernate:hibernate-validator:5.2.3.Final'
+
+    // Needed for validation
+    runtime 'javax.el:javax.el-api:2.2.5'
+    runtime 'org.glassfish.web:javax.el:2.2.6'
 }
 repositories {
     mavenCentral()

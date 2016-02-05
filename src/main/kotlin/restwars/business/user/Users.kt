@@ -3,7 +3,11 @@ package restwars.business.user
 import restwars.business.UUIDFactory
 import java.util.*
 
-data class User(val id: UUID, val username: String, val password: String)
+data class User(
+        val id: UUID,
+        val username: String,
+        val password: String
+)
 
 interface UserService {
     fun create(username: String, password: String): User
