@@ -4,8 +4,10 @@ import org.slf4j.LoggerFactory
 import restwars.business.RandomNumberGeneratorImpl
 import restwars.business.UUIDFactoryImpl
 import restwars.business.config.Config
+import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
 import restwars.business.planet.PlanetServiceImpl
+import restwars.business.planet.Resources
 import restwars.business.player.PlayerServiceImpl
 import restwars.rest.api.ErrorResponse
 import restwars.rest.controller.*
@@ -44,7 +46,7 @@ fun main(args: Array<String>) {
 }
 
 private fun loadConfig(): Config {
-    return Config(UniverseSize(1, 3, 3)) // TODO: Load config from file
+    return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800))) // TODO: Load config from file
 }
 
 private fun configureSpark() {

@@ -8,7 +8,9 @@ import java.util.*
 
 data class Location(val galaxy: Int, val system: Int, val planet: Int)
 
-data class Planet(val id: UUID, val owner: UUID?, val location: Location)
+data class Resources(val crystal: Int, val gas: Int, val energy: Int)
+
+data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources)
 
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
@@ -43,7 +45,7 @@ class PlanetServiceImpl(
         } while (planetRepository.findAtLocation(location) != null)
 
         val id = uuidFactory.create()
-        val planet = Planet(id, player.id, location)
+        val planet = Planet(id, player.id, location, config.starterPlanet.resources)
         planetRepository.insert(planet)
 
         return planet
