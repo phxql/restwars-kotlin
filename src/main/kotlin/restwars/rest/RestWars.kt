@@ -3,7 +3,6 @@ package restwars.rest
 import org.slf4j.LoggerFactory
 import restwars.business.RandomNumberGeneratorImpl
 import restwars.business.UUIDFactoryImpl
-import restwars.business.building.BuildingService
 import restwars.business.building.BuildingServiceImpl
 import restwars.business.clock.Clock
 import restwars.business.clock.ClockImpl
@@ -62,7 +61,7 @@ fun main(args: Array<String>) {
 }
 
 private fun startClock(clock: Clock, config: Config) {
-    val executor = Executors.newSingleThreadScheduledExecutor()
+    val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Clock") })
     executor.scheduleAtFixedRate({
         clock.tick()
     }, config.roundTime.toLong(), config.roundTime.toLong(), TimeUnit.SECONDS)
