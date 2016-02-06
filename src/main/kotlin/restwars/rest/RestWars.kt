@@ -5,12 +5,15 @@ import restwars.business.RandomNumberGeneratorImpl
 import restwars.business.UUIDFactoryImpl
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingServiceImpl
+import restwars.business.clock.Clock
+import restwars.business.clock.ClockImpl
 import restwars.business.config.Config
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
 import restwars.business.planet.PlanetServiceImpl
 import restwars.business.planet.Resources
 import restwars.business.player.PlayerServiceImpl
+import restwars.business.resource.ResourceServiceImpl
 import restwars.rest.api.ErrorResponse
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
@@ -18,6 +21,8 @@ import restwars.storage.InMemoryBuildingRepository
 import restwars.storage.InMemoryPlanetRepository
 import restwars.storage.InMemoryPlayerRepository
 import spark.Spark
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import javax.validation.Validation
 
 val port = 7777
@@ -37,8 +42,11 @@ fun main(args: Array<String>) {
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
     val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config)
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository)
-    val validatorFactory = Validation.buildDefaultValidatorFactory()
+    val resourceService = ResourceServiceImpl
 
+    val clock = ClockImpl(planetService, resourceService, buildingService)
+
+    val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
     val planetController = PlanetController(playerService, planetService)
     val buildingController = BuildingController(playerService, planetService, buildingService)
@@ -48,11 +56,20 @@ fun main(args: Array<String>) {
     registerRoutes(playerController, planetController, buildingController)
 
     Spark.awaitInitialization()
+
+    startClock(clock, config)
     logger.info("RESTwars started on port {}", port)
 }
 
+private fun startClock(clock: Clock, config: Config) {
+    val executor = Executors.newSingleThreadScheduledExecutor()
+    executor.scheduleAtFixedRate({
+        clock.tick()
+    }, config.roundTime.toLong(), config.roundTime.toLong(), TimeUnit.SECONDS)
+}
+
 private fun loadConfig(): Config {
-    return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800))) // TODO: Load config from file
+    return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), 5) // TODO: Load config from file
 }
 
 private fun configureSpark() {

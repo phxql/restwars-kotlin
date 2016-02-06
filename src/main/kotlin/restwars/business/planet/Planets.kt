@@ -19,7 +19,19 @@ data class Location(val galaxy: Int, val system: Int, val planet: Int) {
     }
 }
 
-data class Resources(val crystal: Int, val gas: Int, val energy: Int)
+data class Resources(val crystal: Int, val gas: Int, val energy: Int) {
+    companion object {
+        fun crystal(crystal: Int) = Resources(crystal, 0, 0)
+
+        fun gas(gas: Int) = Resources(0, gas, 0)
+
+        fun energy(energy: Int) = Resources(0, 0, energy)
+
+        fun none() = Resources(0, 0, 0)
+    }
+
+    operator fun plus(other: Resources) = Resources(crystal + other.crystal, gas + other.gas, energy + other.energy)
+}
 
 data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources)
 
@@ -29,6 +41,10 @@ interface PlanetService {
     fun findByOwner(owner: Player?): List<Planet>
 
     fun findByLocation(location: Location): Planet?
+
+    fun findAllInhabitated(): List<Planet>
+
+    fun addResources(planet: Planet, resources: Resources): Planet
 }
 
 interface PlanetRepository {
@@ -39,6 +55,10 @@ interface PlanetRepository {
     fun insert(planet: Planet)
 
     fun findByLocation(location: Location): Planet?
+
+    fun findAllInhabitated(): List<Planet>
+
+    fun addResources(planetId: UUID, resources: Resources)
 }
 
 class PlanetServiceImpl(
@@ -47,6 +67,12 @@ class PlanetServiceImpl(
         private val planetRepository: PlanetRepository,
         private val config: Config
 ) : PlanetService {
+    override fun addResources(planet: Planet, resources: Resources): Planet {
+        planetRepository.addResources(planet.id, resources)
+
+        return planet.copy(resources = planet.resources + resources)
+    }
+
     override fun findByLocation(location: Location): Planet? {
         return planetRepository.findByLocation(location)
     }
@@ -68,5 +94,9 @@ class PlanetServiceImpl(
         planetRepository.insert(planet)
 
         return planet
+    }
+
+    override fun findAllInhabitated(): List<Planet> {
+        return planetRepository.findAllInhabitated()
     }
 }
