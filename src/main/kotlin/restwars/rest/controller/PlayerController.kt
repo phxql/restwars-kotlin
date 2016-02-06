@@ -1,5 +1,6 @@
 package restwars.rest.controller
 
+import restwars.business.building.BuildingService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.CreatePlayerRequest
@@ -11,16 +12,18 @@ import javax.validation.ValidatorFactory
 class PlayerController(
         private val validation: ValidatorFactory,
         private val playerService: PlayerService,
-        private val planetService: PlanetService
+        private val planetService: PlanetService,
+        private val buildingService: BuildingService
 ) : ControllerHelper {
     fun create(): Route {
         return Route { req, res ->
             val request = validate(validation, Json.fromJson(req, CreatePlayerRequest::class.java))
 
             val player = playerService.create(request.username, request.password)
-            planetService.createStarterPlanet(player)
+            val planet = planetService.createStarterPlanet(player)
+            buildingService.createStarterBuildings(planet)
 
-            res.status(StatusCode.created)
+            res.status(StatusCode.CREATED)
             Json.toJson(res, SuccessResponse("Player created"))
         }
     }

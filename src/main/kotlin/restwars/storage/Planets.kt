@@ -23,4 +23,8 @@ object InMemoryPlanetRepository : PlanetRepository {
     override fun findByOwnerId(ownerId: UUID?): List<Planet> {
         return planets.filter { it.owner == ownerId }
     }
+
+    override fun findByLocation(location: Location): Planet? {
+        return planets.firstOrNull { it.location == location }
+    }
 }

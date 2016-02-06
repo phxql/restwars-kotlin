@@ -1,9 +1,11 @@
 package restwars.rest.http
 
 object StatusCode {
-    val created = 201
+    val CREATED = 201
 
-    val badRequest = 400
+    val BAD_REQUEST = 400
 
-    val unauthorized = 401
+    val UNAUTHORIZED = 401
+
+    val NOT_FOUND = 404
 }

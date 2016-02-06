@@ -10,6 +10,8 @@ class ValidationException(message: String) : Exception(message)
 
 class AuthenticationException(message: String) : Exception(message)
 
+class BadRequestException(val response: Any) : Exception("Bad request")
+
 interface ControllerHelper {
     fun <T> validate(validatorFactory: ValidatorFactory, obj: T?): T {
         obj ?: throw ValidationException("Object is null")
