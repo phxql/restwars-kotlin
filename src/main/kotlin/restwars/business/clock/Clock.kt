@@ -1,6 +1,7 @@
 package restwars.business.clock
 
 import org.slf4j.LoggerFactory
+import restwars.business.LockService
 import restwars.business.building.Building
 import restwars.business.building.BuildingService
 import restwars.business.planet.Planet
@@ -12,16 +13,26 @@ interface Clock {
     fun tick()
 }
 
-class ClockImpl(val planetService: PlanetService, val resourceService: ResourceService, val buildingService: BuildingService) : Clock {
+class ClockImpl(
+        val planetService: PlanetService,
+        val resourceService: ResourceService,
+        val buildingService: BuildingService,
+        val lockService: LockService
+) : Clock {
     private val logger = LoggerFactory.getLogger(ClockImpl::class.java)
 
     override fun tick() {
-        logger.debug("Tick")
+        lockService.beforeClock()
+        try {
+            logger.debug("Tick")
 
-        for (planet in planetService.findAllInhabitated()) {
-            var updatedPlanet = planet
-            val buildings = buildingService.findByPlanet(updatedPlanet)
-            updatedPlanet = gatherResources(buildings, updatedPlanet)
+            for (planet in planetService.findAllInhabitated()) {
+                var updatedPlanet = planet
+                val buildings = buildingService.findByPlanet(updatedPlanet)
+                updatedPlanet = gatherResources(buildings, updatedPlanet)
+            }
+        } finally {
+            lockService.afterClock()
         }
     }
 

@@ -1,6 +1,8 @@
 package restwars.rest
 
 import org.slf4j.LoggerFactory
+import restwars.business.LockService
+import restwars.business.LockServiceImpl
 import restwars.business.RandomNumberGeneratorImpl
 import restwars.business.UUIDFactoryImpl
 import restwars.business.building.BuildingServiceImpl
@@ -42,8 +44,9 @@ fun main(args: Array<String>) {
     val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config)
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository)
     val resourceService = ResourceServiceImpl
+    val lockService = LockServiceImpl
 
-    val clock = ClockImpl(planetService, resourceService, buildingService)
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
@@ -52,12 +55,18 @@ fun main(args: Array<String>) {
 
     configureSpark()
     addExceptionHandler()
+    addLocking(lockService)
     registerRoutes(playerController, planetController, buildingController)
 
     Spark.awaitInitialization()
 
     startClock(clock, config)
     logger.info("RESTwars started on port {}", port)
+}
+
+private fun addLocking(lockService: LockService) {
+    Spark.before { request, response -> lockService.beforeRequest() }
+    Spark.after { request, response -> lockService.afterRequest() }
 }
 
 private fun startClock(clock: Clock, config: Config) {
