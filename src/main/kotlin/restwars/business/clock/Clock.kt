@@ -8,6 +8,7 @@ import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
 import restwars.business.resource.ResourceService
+import java.util.concurrent.atomic.AtomicLong
 
 interface Clock {
     fun tick()
@@ -17,7 +18,8 @@ class ClockImpl(
         val planetService: PlanetService,
         val resourceService: ResourceService,
         val buildingService: BuildingService,
-        val lockService: LockService
+        val lockService: LockService,
+        val roundService: RoundService
 ) : Clock {
     private val logger = LoggerFactory.getLogger(ClockImpl::class.java)
 
@@ -25,6 +27,8 @@ class ClockImpl(
         lockService.beforeClock()
         try {
             logger.debug("Tick")
+
+            roundService.increaseRound()
 
             for (planet in planetService.findAllInhabitated()) {
                 var updatedPlanet = planet

@@ -1,28 +1,27 @@
 package restwars.rest.controller
 
+import org.eclipse.jetty.http.HttpStatus
 import restwars.business.building.BuildingService
+import restwars.business.building.BuildingType
 import restwars.business.planet.Location
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
-import restwars.rest.api.BuildingsResponse
-import restwars.rest.api.ErrorResponse
+import restwars.rest.api.*
 import restwars.rest.http.StatusCode
+import spark.Request
 import spark.Route
+import javax.validation.ValidatorFactory
 
 class BuildingController(
+        val validation: ValidatorFactory,
         val playerService: PlayerService,
         val planetService: PlanetService,
         val buildingService: BuildingService
 ) : ControllerHelper {
     fun listOnPlanet(): Route {
         return Route { req, res ->
-            val locationString = req.params(":location") ?: throw BadRequestException(ErrorResponse("Path variable location is missing"))
-            val location = try {
-                Location.parse(locationString)
-            } catch(e: IllegalArgumentException) {
-                throw BadRequestException(ErrorResponse(e.message ?: ""))
-            }
             val context = RequestContext.build(req, playerService)
+            val location = parseLocation(req)
 
             val planet = planetService.findByLocation(location)
             if (planet == null || planet.owner != context.player.id) {
@@ -32,6 +31,35 @@ class BuildingController(
 
             val buildings = buildingService.findByPlanet(planet)
             return@Route Json.toJson(res, BuildingsResponse.fromBuildings(buildings))
+        }
+    }
+
+    fun build(): Route {
+        return Route { req, res ->
+            val context = RequestContext.build(req, playerService)
+            val request = validate(validation, Json.fromJson(req, CreateBuildingRequest::class.java))
+            val type = BuildingType.parse(request.type)
+            val location = parseLocation(req)
+
+            val planet = planetService.findByLocation(location)
+            if (planet == null || planet.owner != context.player.id) {
+                res.status(StatusCode.NOT_FOUND)
+                return@Route Json.toJson(res, ErrorResponse("No planet at $location found"))
+            }
+
+            val constructionSite = buildingService.build(planet, type)
+
+            res.status(StatusCode.CREATED)
+            return@Route Json.toJson(res, ConstructionSiteResponse.fromConstructionSite(constructionSite))
+        }
+    }
+
+    private fun parseLocation(req: Request, parameter: String = ":location"): Location {
+        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse("Path variable $parameter is missing"))
+        try {
+            return Location.parse(locationString)
+        } catch(e: IllegalArgumentException) {
+            throw BadRequestException(ErrorResponse(e.message ?: ""))
         }
     }
 }

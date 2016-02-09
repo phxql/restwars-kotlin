@@ -1,13 +1,11 @@
 package restwars.rest
 
 import org.slf4j.LoggerFactory
-import restwars.business.LockService
-import restwars.business.LockServiceImpl
-import restwars.business.RandomNumberGeneratorImpl
-import restwars.business.UUIDFactoryImpl
+import restwars.business.*
 import restwars.business.building.BuildingServiceImpl
 import restwars.business.clock.Clock
 import restwars.business.clock.ClockImpl
+import restwars.business.clock.RoundServiceImpl
 import restwars.business.config.Config
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
@@ -18,9 +16,7 @@ import restwars.business.resource.ResourceServiceImpl
 import restwars.rest.api.ErrorResponse
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
-import restwars.storage.InMemoryBuildingRepository
-import restwars.storage.InMemoryPlanetRepository
-import restwars.storage.InMemoryPlayerRepository
+import restwars.storage.*
 import spark.Spark
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -39,19 +35,24 @@ fun main(args: Array<String>) {
     val playerRepository = InMemoryPlayerRepository
     val planetRepository = InMemoryPlanetRepository
     val buildingRepository = InMemoryBuildingRepository
+    val constructionSiteRepository = InMemoryConstructionSiteRepository
+    val roundRepository = InMemoryRoundRepository
 
+    val buildingFormula = BuildingFormulaImpl
+
+    val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
     val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config)
-    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository)
+    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormula, roundService)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
 
-    val clock = ClockImpl(planetService, resourceService, buildingService, lockService)
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
     val planetController = PlanetController(playerService, planetService)
-    val buildingController = BuildingController(playerService, planetService, buildingService)
+    val buildingController = BuildingController(validatorFactory, playerService, planetService, buildingService)
 
     configureSpark()
     addExceptionHandler()
@@ -88,6 +89,7 @@ private fun registerRoutes(playerController: PlayerController, planetController:
     Spark.post("/v1/player", Json.contentType, playerController.create())
     Spark.get("/v1/planet", Json.contentType, planetController.list())
     Spark.get("/v1/planet/:location/building", Json.contentType, buildingController.listOnPlanet())
+    Spark.post("/v1/planet/:location/building", Json.contentType, buildingController.build())
 }
 
 private fun addExceptionHandler() {

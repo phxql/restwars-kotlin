@@ -1,6 +1,8 @@
 package restwars.rest.api
 
 import restwars.business.building.Building
+import restwars.business.building.ConstructionSite
+import java.util.*
 
 data class BuildingResponse(val type: String, val level: Int) {
     companion object {
@@ -13,3 +15,14 @@ data class BuildingsResponse(val buildings: BuildingResponse) {
         fun fromBuildings(buildings: List<Building>) = buildings.map { BuildingResponse.fromBuilding(it) }
     }
 }
+
+data class ConstructionSiteResponse(val id: UUID, val type: String, val level: Int) {
+    companion object {
+        fun fromConstructionSite(constructionSite: ConstructionSite) = ConstructionSiteResponse(constructionSite.id, constructionSite.type.name, constructionSite.level)
+    }
+}
+
+data class CreateBuildingRequest(
+        @get:org.hibernate.validator.constraints.NotBlank
+        val type: String
+)
