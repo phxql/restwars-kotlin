@@ -18,8 +18,9 @@ object LockServiceImpl : LockService {
     private val lock = ReentrantReadWriteLock()
 
     override fun beforeRequest() {
-        logger.trace("Locking read lock")
+        logger.trace("Locking read lock...")
         lock.readLock().lock()
+        logger.trace("Locked read lock")
     }
 
     override fun afterRequest() {
@@ -28,8 +29,9 @@ object LockServiceImpl : LockService {
     }
 
     override fun beforeClock() {
-        logger.trace("Locking write lock")
+        logger.trace("Locking write lock...")
         lock.writeLock().lock()
+        logger.trace("Locked write lock")
     }
 
     override fun afterClock() {

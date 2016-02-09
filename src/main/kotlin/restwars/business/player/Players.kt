@@ -34,6 +34,7 @@ class PlayerServiceImpl(
     override fun create(username: String, password: String): Player {
         val id = uuidFactory.create()
 
+        // TODO: Deny duplicate usernames
         val player = Player(id, username, password) // TODO: Hash password
         playerRepository.insert(player)
         return player
