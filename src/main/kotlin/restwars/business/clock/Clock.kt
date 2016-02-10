@@ -30,6 +30,7 @@ class ClockImpl(
 
             roundService.increaseRound()
 
+            buildingService.finishConstructionSites()
             for (planet in planetService.findAllInhabitated()) {
                 var updatedPlanet = planet
                 val buildings = buildingService.findByPlanet(updatedPlanet)

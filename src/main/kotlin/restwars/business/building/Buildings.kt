@@ -1,5 +1,6 @@
 package restwars.business.building
 
+import org.slf4j.LoggerFactory
 import restwars.business.BuildingFormula
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
@@ -29,10 +30,14 @@ interface BuildingService {
     fun findByPlanet(planet: Planet): List<Building>
 
     fun build(planet: Planet, type: BuildingType): ConstructionSite
+
+    fun finishConstructionSites()
 }
 
 interface BuildingRepository {
     fun insert(building: Building)
+
+    fun updateLevel(buildingId: UUID, newLevel: Int)
 
     fun findByPlanetId(planetId: UUID): List<Building>
 
@@ -41,6 +46,10 @@ interface BuildingRepository {
 
 interface ConstructionSiteRepository {
     fun insert(constructionSite: ConstructionSite)
+
+    fun findByDone(done: Long): List<ConstructionSite>
+
+    fun delete(id: UUID)
 }
 
 class BuildingServiceImpl(
@@ -50,6 +59,8 @@ class BuildingServiceImpl(
         val buildingFormula: BuildingFormula,
         val roundService: RoundService
 ) : BuildingService {
+    private val logger = LoggerFactory.getLogger(BuildingServiceImpl::class.java)
+
     override fun build(planet: Planet, type: BuildingType): ConstructionSite {
         val building = buildingRepository.findByPlanetIdAndType(planet.id, type)
         // TODO: Check resources
@@ -84,5 +95,21 @@ class BuildingServiceImpl(
 
         buildings.forEach { buildingRepository.insert(it) }
         return buildings
+    }
+
+    override fun finishConstructionSites() {
+        val currentRound = roundService.currentRound()
+
+        val sitesDone = constructionSiteRepository.findByDone(currentRound)
+        for (siteDone in sitesDone) {
+            logger.debug("Finishing construction site {}", siteDone)
+            if (siteDone.level == 1) {
+                buildingRepository.insert(Building(uuidFactory.create(), siteDone.planetId, siteDone.type, siteDone.level))
+            } else {
+                val building = buildingRepository.findByPlanetIdAndType(siteDone.planetId, siteDone.type) ?: throw IllegalStateException("Expected to find building with type ${siteDone.type} on planet ${siteDone.planetId}, but found none")
+                buildingRepository.updateLevel(building.id, siteDone.level)
+            }
+            constructionSiteRepository.delete(siteDone.id)
+        }
     }
 }

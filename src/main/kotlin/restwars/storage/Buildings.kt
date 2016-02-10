@@ -21,6 +21,12 @@ object InMemoryBuildingRepository : BuildingRepository {
     override fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): Building? {
         return buildings.firstOrNull { it.planetId == planetId && it.type == type }
     }
+
+    override fun updateLevel(buildingId: UUID, newLevel: Int) {
+        val index = buildings.indexOfFirst { it.id == buildingId }
+
+        buildings[index] = buildings[index].copy(level = newLevel)
+    }
 }
 
 object InMemoryConstructionSiteRepository : ConstructionSiteRepository {
@@ -31,5 +37,13 @@ object InMemoryConstructionSiteRepository : ConstructionSiteRepository {
         logger.info("Inserting construction site $constructionSite")
 
         constructionSites.add(constructionSite)
+    }
+
+    override fun findByDone(done: Long): List<ConstructionSite> {
+        return constructionSites.filter { it.done == done }
+    }
+
+    override fun delete(id: UUID) {
+        constructionSites.removeAll { it.id == id }
     }
 }
