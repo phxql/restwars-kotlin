@@ -18,6 +18,8 @@ import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
 import spark.Spark
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.validation.Validation
@@ -79,7 +81,14 @@ private fun startClock(clock: Clock, config: Config) {
 }
 
 private fun loadConfig(): Config {
-    return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), 1) // TODO: Load config from file
+    val configFile = Paths.get("config.yaml")
+    if (!Files.exists(configFile)) {
+        logger.warn("No config file at ${configFile.toAbsolutePath()} found, using default values")
+        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), 5)
+    }
+
+    logger.info("Loading config from file ${configFile.toAbsolutePath()}")
+    return Config.loadFromFile(configFile)
 }
 
 private fun configureSpark() {

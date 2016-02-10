@@ -19,12 +19,18 @@ mainClassName = 'restwars.rest.RestWarsKt'
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // REST layer
     compile('com.sparkjava:spark-core:2.3') {
         exclude module: 'slf4j-simple'
     }
+    // Logging API
     compile 'org.slf4j:slf4j-api:1.7.14'
+    // JSON
     compile 'com.google.code.gson:gson:2.5'
+    // Validation
     compile 'org.hibernate:hibernate-validator:5.2.3.Final'
+    // YAML parsing
+    compile 'org.yaml:snakeyaml:1.16'
 
     // Needed for validation
     runtime 'javax.el:javax.el-api:2.2.5'
