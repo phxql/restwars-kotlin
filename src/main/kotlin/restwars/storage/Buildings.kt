@@ -46,4 +46,8 @@ object InMemoryConstructionSiteRepository : ConstructionSiteRepository {
     override fun delete(id: UUID) {
         constructionSites.removeAll { it.id == id }
     }
+
+    override fun findByPlanetId(planetId: UUID): List<ConstructionSite> {
+        return constructionSites.filter { it.planetId == planetId }
+    }
 }

@@ -27,7 +27,9 @@ data class ConstructionSite(val id: UUID, val planetId: UUID, val type: Building
 interface BuildingService {
     fun createStarterBuildings(planet: Planet): List<Building>
 
-    fun findByPlanet(planet: Planet): List<Building>
+    fun findBuildingsByPlanet(planet: Planet): List<Building>
+
+    fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite>
 
     fun build(planet: Planet, type: BuildingType): ConstructionSite
 
@@ -48,6 +50,8 @@ interface ConstructionSiteRepository {
     fun insert(constructionSite: ConstructionSite)
 
     fun findByDone(done: Long): List<ConstructionSite>
+
+    fun findByPlanetId(planetId: UUID): List<ConstructionSite>
 
     fun delete(id: UUID)
 }
@@ -81,7 +85,7 @@ class BuildingServiceImpl(
         return constructionSite
     }
 
-    override fun findByPlanet(planet: Planet): List<Building> {
+    override fun findBuildingsByPlanet(planet: Planet): List<Building> {
         return buildingRepository.findByPlanetId(planet.id)
     }
 
@@ -111,5 +115,9 @@ class BuildingServiceImpl(
             }
             constructionSiteRepository.delete(siteDone.id)
         }
+    }
+
+    override fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite> {
+        return constructionSiteRepository.findByPlanetId(planet.id)
     }
 }

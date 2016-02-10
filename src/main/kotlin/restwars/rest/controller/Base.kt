@@ -1,7 +1,9 @@
 package restwars.rest.controller
 
+import restwars.business.planet.Location
 import restwars.business.player.Player
 import restwars.business.player.PlayerService
+import restwars.rest.api.ErrorResponse
 import spark.Request
 import java.util.*
 import javax.validation.ValidatorFactory
@@ -22,6 +24,15 @@ interface ControllerHelper {
         }
 
         return obj
+    }
+
+    fun parseLocation(req: Request, parameter: String = ":location"): Location {
+        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse("Path variable $parameter is missing"))
+        try {
+            return Location.parse(locationString)
+        } catch(e: IllegalArgumentException) {
+            throw BadRequestException(ErrorResponse(e.message ?: ""))
+        }
     }
 }
 

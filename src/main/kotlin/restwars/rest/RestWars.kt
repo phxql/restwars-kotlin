@@ -53,11 +53,12 @@ fun main(args: Array<String>) {
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
     val planetController = PlanetController(playerService, planetService)
     val buildingController = BuildingController(validatorFactory, playerService, planetService, buildingService)
+    val constructionSiteController = ConstructionSiteController(validatorFactory, playerService, planetService, buildingService)
 
     configureSpark()
     addExceptionHandler()
     addLocking(lockService)
-    registerRoutes(playerController, planetController, buildingController)
+    registerRoutes(playerController, planetController, buildingController, constructionSiteController)
 
     Spark.awaitInitialization()
 
@@ -78,18 +79,19 @@ private fun startClock(clock: Clock, config: Config) {
 }
 
 private fun loadConfig(): Config {
-    return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), 5) // TODO: Load config from file
+    return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), 1) // TODO: Load config from file
 }
 
 private fun configureSpark() {
     Spark.port(port)
 }
 
-private fun registerRoutes(playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController) {
+private fun registerRoutes(playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController) {
     Spark.post("/v1/player", Json.contentType, playerController.create())
     Spark.get("/v1/planet", Json.contentType, planetController.list())
     Spark.get("/v1/planet/:location/building", Json.contentType, buildingController.listOnPlanet())
     Spark.post("/v1/planet/:location/building", Json.contentType, buildingController.build())
+    Spark.get("/v1/planet/:location/construction-site", Json.contentType, constructionSiteController.listOnPlanet())
 }
 
 private fun addExceptionHandler() {

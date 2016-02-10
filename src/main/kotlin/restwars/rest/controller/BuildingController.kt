@@ -29,7 +29,7 @@ class BuildingController(
                 return@Route Json.toJson(res, ErrorResponse("No planet at $location found"))
             }
 
-            val buildings = buildingService.findByPlanet(planet)
+            val buildings = buildingService.findBuildingsByPlanet(planet)
             return@Route Json.toJson(res, BuildingsResponse.fromBuildings(buildings))
         }
     }
@@ -51,15 +51,6 @@ class BuildingController(
 
             res.status(StatusCode.CREATED)
             return@Route Json.toJson(res, ConstructionSiteResponse.fromConstructionSite(constructionSite))
-        }
-    }
-
-    private fun parseLocation(req: Request, parameter: String = ":location"): Location {
-        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse("Path variable $parameter is missing"))
-        try {
-            return Location.parse(locationString)
-        } catch(e: IllegalArgumentException) {
-            throw BadRequestException(ErrorResponse(e.message ?: ""))
         }
     }
 }

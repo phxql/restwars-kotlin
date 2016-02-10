@@ -16,9 +16,15 @@ data class BuildingsResponse(val buildings: BuildingResponse) {
     }
 }
 
-data class ConstructionSiteResponse(val id: UUID, val type: String, val level: Int) {
+data class ConstructionSiteResponse(val id: UUID, val type: String, val level: Int, val done: Long) {
     companion object {
-        fun fromConstructionSite(constructionSite: ConstructionSite) = ConstructionSiteResponse(constructionSite.id, constructionSite.type.name, constructionSite.level)
+        fun fromConstructionSite(constructionSite: ConstructionSite) = ConstructionSiteResponse(constructionSite.id, constructionSite.type.name, constructionSite.level, constructionSite.done)
+    }
+}
+
+data class ConstructionSitesResponse(val constructionSites: List<ConstructionSiteResponse>) {
+    companion object {
+        fun fromConstructionSites(constructionSites: List<ConstructionSite>) = constructionSites.map { ConstructionSiteResponse.fromConstructionSite(it) }
     }
 }
 
