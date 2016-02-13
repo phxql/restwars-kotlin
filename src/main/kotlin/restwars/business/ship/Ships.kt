@@ -41,6 +41,10 @@ data class Ships(val ships: List<Ship>) {
             })
         }
     }
+
+    companion object {
+        fun none(): Ships = Ships(listOf())
+    }
 }
 
 data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) {
@@ -48,6 +52,8 @@ data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) {
 
 interface ShipService {
     fun buildShip(planet: Planet, type: ShipType): ShipInConstruction
+
+    fun findShipsByPlanet(planet: Planet): Ships
 
     fun finishShipsInConstruction()
 }
@@ -106,7 +112,11 @@ class ShipServiceImpl(
             }
             shipInConstructionRepository.delete(shipDone.id)
         }
-
     }
 
+    override fun findShipsByPlanet(planet: Planet): Ships {
+        val hangar = hangarRepository.findByPlanetId(planet.id)
+
+        return if (hangar == null) Ships.none() else hangar.ships
+    }
 }

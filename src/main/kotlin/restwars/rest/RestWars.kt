@@ -117,6 +117,7 @@ private fun registerRoutes(lockService: LockService, playerController: PlayerCon
     Spark.get("/v1/planet/:location/building", Json.contentType, call(lockService, buildingController.listOnPlanet()))
     Spark.post("/v1/planet/:location/building", Json.contentType, call(lockService, buildingController.build()))
     Spark.get("/v1/planet/:location/construction-site", Json.contentType, call(lockService, constructionSiteController.listOnPlanet()))
+    Spark.get("/v1/planet/:location/ship", Json.contentType, call(lockService, shipController.listOnPlanet()))
     Spark.post("/v1/planet/:location/ship", Json.contentType, call(lockService, shipController.build()))
 }
 
