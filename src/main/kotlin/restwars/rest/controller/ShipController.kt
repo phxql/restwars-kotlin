@@ -5,7 +5,6 @@ import restwars.business.player.PlayerService
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.rest.api.BuildShipRequest
-import restwars.rest.api.ErrorResponse
 import restwars.rest.api.ShipInConstructionResponse
 import restwars.rest.api.ShipsResponse
 import restwars.rest.http.StatusCode
@@ -23,13 +22,9 @@ class ShipController(
             val context = RequestContext.build(req, playerService)
             val location = parseLocation(req)
 
-            val planet = planetService.findByLocation(location)
-            if (planet == null || planet.owner != context.player.id) {
-                res.status(StatusCode.NOT_FOUND)
-                return@Route Json.toJson(res, ErrorResponse("No planet at $location found"))
-            }
-
+            val planet = getOwnPlanet(planetService, context.player, location)
             val ships = shipService.findShipsByPlanet(planet)
+
             return@Route Json.toJson(res, ShipsResponse.fromShips(ships))
         }
     }
@@ -41,12 +36,7 @@ class ShipController(
             val type = ShipType.parse(request.type)
             val location = parseLocation(req)
 
-            val planet = planetService.findByLocation(location)
-            if (planet == null || planet.owner != context.player.id) {
-                res.status(StatusCode.NOT_FOUND)
-                return@Route Json.toJson(res, ErrorResponse("No planet at $location found"))
-            }
-
+            val planet = getOwnPlanet(planetService, context.player, location)
             val shipInConstruction = shipService.buildShip(planet, type)
 
             res.status(StatusCode.CREATED)

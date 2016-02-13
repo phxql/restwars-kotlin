@@ -132,10 +132,14 @@ private fun addExceptionHandler() {
         res.body(Json.toJson(res, ErrorResponse("Invalid credentials")))
     })
 
+    Spark.exception(PlanetNotFoundOrOwnedException::class.java, fun(e, req, res) {
+        res.status(StatusCode.NOT_FOUND)
+        res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
+    })
+
     Spark.exception(BadRequestException::class.java, fun(e, req, res) {
         res.status(StatusCode.BAD_REQUEST)
         e as BadRequestException
-
         res.body(Json.toJson(res, e.response))
     })
 

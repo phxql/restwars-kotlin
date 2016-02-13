@@ -1,6 +1,8 @@
 package restwars.rest.controller
 
 import restwars.business.planet.Location
+import restwars.business.planet.Planet
+import restwars.business.planet.PlanetService
 import restwars.business.player.Player
 import restwars.business.player.PlayerService
 import restwars.rest.api.ErrorResponse
@@ -13,6 +15,8 @@ class ValidationException(message: String) : Exception(message)
 class AuthenticationException(message: String) : Exception(message)
 
 class BadRequestException(val response: Any) : Exception("Bad request")
+
+class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet at $location found")
 
 interface ControllerHelper {
     fun <T> validate(validatorFactory: ValidatorFactory, obj: T?): T {
@@ -33,6 +37,14 @@ interface ControllerHelper {
         } catch(e: IllegalArgumentException) {
             throw BadRequestException(ErrorResponse(e.message ?: ""))
         }
+    }
+
+    fun getOwnPlanet(planetService: PlanetService, player: Player, location: Location): Planet {
+        val planet = planetService.findByLocation(location)
+        if (planet == null || planet.owner != player.id) {
+            throw PlanetNotFoundOrOwnedException(location)
+        }
+        return planet
     }
 }
 

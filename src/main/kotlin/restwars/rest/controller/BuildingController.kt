@@ -1,14 +1,13 @@
 package restwars.rest.controller
 
-import org.eclipse.jetty.http.HttpStatus
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
-import restwars.business.planet.Location
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
-import restwars.rest.api.*
+import restwars.rest.api.BuildBuildingRequest
+import restwars.rest.api.BuildingsResponse
+import restwars.rest.api.ConstructionSiteResponse
 import restwars.rest.http.StatusCode
-import spark.Request
 import spark.Route
 import javax.validation.ValidatorFactory
 
@@ -23,13 +22,9 @@ class BuildingController(
             val context = RequestContext.build(req, playerService)
             val location = parseLocation(req)
 
-            val planet = planetService.findByLocation(location)
-            if (planet == null || planet.owner != context.player.id) {
-                res.status(StatusCode.NOT_FOUND)
-                return@Route Json.toJson(res, ErrorResponse("No planet at $location found"))
-            }
-
+            val planet = getOwnPlanet(planetService, context.player, location)
             val buildings = buildingService.findBuildingsByPlanet(planet)
+
             return@Route Json.toJson(res, BuildingsResponse.fromBuildings(buildings))
         }
     }
@@ -41,12 +36,7 @@ class BuildingController(
             val type = BuildingType.parse(request.type)
             val location = parseLocation(req)
 
-            val planet = planetService.findByLocation(location)
-            if (planet == null || planet.owner != context.player.id) {
-                res.status(StatusCode.NOT_FOUND)
-                return@Route Json.toJson(res, ErrorResponse("No planet at $location found"))
-            }
-
+            val planet = getOwnPlanet(planetService, context.player, location)
             val constructionSite = buildingService.build(planet, type)
 
             res.status(StatusCode.CREATED)
