@@ -13,4 +13,4 @@ starterPlanet:
     energy: 800
 
 # Round time in seconds
-roundTime: 5
+roundTime: 1

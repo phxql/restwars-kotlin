@@ -3,27 +3,48 @@ package restwars.business.ship
 import org.slf4j.LoggerFactory
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
-import restwars.business.building.Building
-import restwars.business.building.ConstructionSite
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
 import java.util.*
 
 enum class ShipType {
-    MOSQUITO
+    MOSQUITO;
+
+    companion object {
+        fun parse(value: String): ShipType {
+            return ShipType.valueOf(value)
+        }
+    }
+
 }
 
 data class Ship(val type: ShipType, val amount: Int)
 
-data class ShipInConstruction(val id: UUID, val planetId: UUID, val shipType: ShipType, val done: Long)
+data class ShipInConstruction(val id: UUID, val planetId: UUID, val type: ShipType, val done: Long)
 
 data class Ships(val ships: List<Ship>) {
-    fun amount(type: ShipType): Int {
+    operator fun get(type: ShipType): Int {
         return ships.find { it.type == type }?.amount ?: 0
+    }
+
+    fun with(type: ShipType, amount: Int): Ships {
+        val containsShip = ships.any { it.type == type }
+        if (!containsShip) {
+            return copy(ships = ships + Ship(type, amount))
+        } else {
+            return copy(ships = ships.map {
+                if (it.type == type) {
+                    Ship(type, amount)
+                } else {
+                    it
+                }
+            })
+        }
     }
 }
 
-data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships)
+data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) {
+}
 
 interface ShipService {
     fun buildShip(planet: Planet, type: ShipType): ShipInConstruction
@@ -44,7 +65,7 @@ interface HangarRepository {
 
     fun insert(hangar: Hangar)
 
-    fun updateShips(planetId: UUID, type: ShipType, newAmount: Int)
+    fun updateShips(hangarId: UUID, type: ShipType, newAmount: Int)
 }
 
 class ShipServiceImpl(
@@ -77,11 +98,11 @@ class ShipServiceImpl(
 
             val hangar = hangarRepository.findByPlanetId(shipDone.planetId)
             if (hangar == null) {
-                val newHangar = Hangar(uuidFactory.create(), shipDone.planetId, Ships(listOf(Ship(shipDone.shipType, 1))))
+                val newHangar = Hangar(uuidFactory.create(), shipDone.planetId, Ships(listOf(Ship(shipDone.type, 1))))
                 hangarRepository.insert(newHangar)
             } else {
-                val newAmount = hangar.ships.amount(shipDone.shipType) + 1
-                hangarRepository.updateShips(shipDone.planetId, shipDone.shipType, newAmount)
+                val newAmount = hangar.ships[shipDone.type] + 1
+                hangarRepository.updateShips(hangar.id, shipDone.type, newAmount)
             }
             shipInConstructionRepository.delete(shipDone.id)
         }

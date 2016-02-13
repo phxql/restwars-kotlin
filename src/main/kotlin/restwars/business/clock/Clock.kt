@@ -8,6 +8,7 @@ import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
 import restwars.business.resource.ResourceService
+import restwars.business.ship.ShipService
 import java.util.concurrent.atomic.AtomicLong
 
 interface Clock {
@@ -15,13 +16,14 @@ interface Clock {
 }
 
 class ClockImpl(
-        val planetService: PlanetService,
-        val resourceService: ResourceService,
-        val buildingService: BuildingService,
-        val lockService: LockService,
-        val roundService: RoundService
+        private val planetService: PlanetService,
+        private val resourceService: ResourceService,
+        private val buildingService: BuildingService,
+        private val lockService: LockService,
+        private val roundService: RoundService,
+        private val shipService: ShipService
 ) : Clock {
-    private val logger = LoggerFactory.getLogger(ClockImpl::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun tick() {
         lockService.beforeClock()
@@ -29,8 +31,9 @@ class ClockImpl(
             logger.debug("Tick")
 
             roundService.increaseRound()
-
             buildingService.finishConstructionSites()
+            shipService.finishShipsInConstruction()
+
             for (planet in planetService.findAllInhabitated()) {
                 var updatedPlanet = planet
                 val buildings = buildingService.findBuildingsByPlanet(updatedPlanet)

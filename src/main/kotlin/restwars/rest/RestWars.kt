@@ -13,10 +13,12 @@ import restwars.business.planet.PlanetServiceImpl
 import restwars.business.planet.Resources
 import restwars.business.player.PlayerServiceImpl
 import restwars.business.resource.ResourceServiceImpl
+import restwars.business.ship.ShipServiceImpl
 import restwars.rest.api.ErrorResponse
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
+import spark.Route
 import spark.Spark
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -39,8 +41,11 @@ fun main(args: Array<String>) {
     val buildingRepository = InMemoryBuildingRepository
     val constructionSiteRepository = InMemoryConstructionSiteRepository
     val roundRepository = InMemoryRoundRepository
+    val hangarRepository = InMemoryHangarRepository
+    val shipInConstructionRepository = InMemoryShipInConstructionRepository
 
     val buildingFormula = BuildingFormulasImpl
+    val shipFormulas = ShipFormulasImpl
 
     val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
@@ -48,19 +53,20 @@ fun main(args: Array<String>) {
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormula, roundService)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
+    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)
 
-    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService)
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
     val planetController = PlanetController(playerService, planetService)
     val buildingController = BuildingController(validatorFactory, playerService, planetService, buildingService)
     val constructionSiteController = ConstructionSiteController(validatorFactory, playerService, planetService, buildingService)
+    val shipController = ShipController(validatorFactory, playerService, planetService, shipService)
 
     configureSpark()
     addExceptionHandler()
-    addLocking(lockService)
-    registerRoutes(playerController, planetController, buildingController, constructionSiteController)
+    registerRoutes(lockService, playerController, planetController, buildingController, constructionSiteController, shipController)
 
     Spark.awaitInitialization()
 
@@ -68,9 +74,19 @@ fun main(args: Array<String>) {
     logger.info("RESTwars started on port {}", port)
 }
 
-private fun addLocking(lockService: LockService) {
-    Spark.before { request, response -> lockService.beforeRequest() }
-    Spark.after { request, response -> lockService.afterRequest() }
+/**
+ * Function to create a route which aquires a lock before the request and reliably releases the lock afterwards.
+ */
+// May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
+private fun call(lockService: LockService, route: Route): Route {
+    return Route { request, response ->
+        lockService.beforeRequest()
+        try {
+            return@Route route.handle(request, response)
+        } finally {
+            lockService.afterRequest()
+        }
+    }
 }
 
 private fun startClock(clock: Clock, config: Config) {
@@ -95,12 +111,13 @@ private fun configureSpark() {
     Spark.port(port)
 }
 
-private fun registerRoutes(playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController) {
-    Spark.post("/v1/player", Json.contentType, playerController.create())
-    Spark.get("/v1/planet", Json.contentType, planetController.list())
-    Spark.get("/v1/planet/:location/building", Json.contentType, buildingController.listOnPlanet())
-    Spark.post("/v1/planet/:location/building", Json.contentType, buildingController.build())
-    Spark.get("/v1/planet/:location/construction-site", Json.contentType, constructionSiteController.listOnPlanet())
+private fun registerRoutes(lockService: LockService, playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController, shipController: ShipController) {
+    Spark.post("/v1/player", Json.contentType, call(lockService, playerController.create()))
+    Spark.get("/v1/planet", Json.contentType, call(lockService, planetController.list()))
+    Spark.get("/v1/planet/:location/building", Json.contentType, call(lockService, buildingController.listOnPlanet()))
+    Spark.post("/v1/planet/:location/building", Json.contentType, call(lockService, buildingController.build()))
+    Spark.get("/v1/planet/:location/construction-site", Json.contentType, call(lockService, constructionSiteController.listOnPlanet()))
+    Spark.post("/v1/planet/:location/ship", Json.contentType, call(lockService, shipController.build()))
 }
 
 private fun addExceptionHandler() {

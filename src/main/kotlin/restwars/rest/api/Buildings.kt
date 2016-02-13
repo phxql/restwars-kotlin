@@ -28,7 +28,7 @@ data class ConstructionSitesResponse(val constructionSites: List<ConstructionSit
     }
 }
 
-data class CreateBuildingRequest(
+data class BuildBuildingRequest(
         @get:org.hibernate.validator.constraints.NotBlank
         val type: String
 )

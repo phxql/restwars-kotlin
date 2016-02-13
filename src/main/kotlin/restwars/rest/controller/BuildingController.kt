@@ -37,7 +37,7 @@ class BuildingController(
     fun build(): Route {
         return Route { req, res ->
             val context = RequestContext.build(req, playerService)
-            val request = validate(validation, Json.fromJson(req, CreateBuildingRequest::class.java))
+            val request = validate(validation, Json.fromJson(req, BuildBuildingRequest::class.java))
             val type = BuildingType.parse(request.type)
             val location = parseLocation(req)
 

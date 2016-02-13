@@ -5,7 +5,7 @@ import restwars.business.clock.RoundRepository
 import java.util.concurrent.atomic.AtomicLong
 
 object InMemoryRoundRepository : RoundRepository {
-    private val logger = LoggerFactory.getLogger(InMemoryBuildingRepository::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val currentRound = AtomicLong(0)
 
     override fun update(round: Long) {
