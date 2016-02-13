@@ -78,7 +78,7 @@ fun main(args: Array<String>) {
  * Function to create a route which aquires a lock before the request and reliably releases the lock afterwards.
  */
 // May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
-private fun call(lockService: LockService, route: Route): Route {
+private fun route(lockService: LockService, route: Route): Route {
     return Route { request, response ->
         lockService.beforeRequest()
         try {
@@ -112,13 +112,13 @@ private fun configureSpark() {
 }
 
 private fun registerRoutes(lockService: LockService, playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController, shipController: ShipController) {
-    Spark.post("/v1/player", Json.contentType, call(lockService, playerController.create()))
-    Spark.get("/v1/planet", Json.contentType, call(lockService, planetController.list()))
-    Spark.get("/v1/planet/:location/building", Json.contentType, call(lockService, buildingController.listOnPlanet()))
-    Spark.post("/v1/planet/:location/building", Json.contentType, call(lockService, buildingController.build()))
-    Spark.get("/v1/planet/:location/construction-site", Json.contentType, call(lockService, constructionSiteController.listOnPlanet()))
-    Spark.get("/v1/planet/:location/ship", Json.contentType, call(lockService, shipController.listOnPlanet()))
-    Spark.post("/v1/planet/:location/ship", Json.contentType, call(lockService, shipController.build()))
+    Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
+    Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
+    Spark.get("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.listOnPlanet()))
+    Spark.post("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.build()))
+    Spark.get("/v1/planet/:location/construction-site", Json.contentType, route(lockService, constructionSiteController.listOnPlanet()))
+    Spark.get("/v1/planet/:location/ship", Json.contentType, route(lockService, shipController.listOnPlanet()))
+    Spark.post("/v1/planet/:location/ship", Json.contentType, route(lockService, shipController.build()))
 }
 
 private fun addExceptionHandler() {
