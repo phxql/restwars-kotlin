@@ -22,6 +22,10 @@ object InMemoryShipInConstructionRepository : ShipInConstructionRepository {
     override fun findByDone(done: Long): List<ShipInConstruction> {
         return shipsInConstruction.filter { it.done == done }
     }
+
+    override fun findByPlanetId(planetId: UUID): List<ShipInConstruction> {
+        return shipsInConstruction.filter { it.planetId == planetId }
+    }
 }
 
 object InMemoryHangarRepository : HangarRepository {

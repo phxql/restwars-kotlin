@@ -63,10 +63,11 @@ fun main(args: Array<String>) {
     val buildingController = BuildingController(validatorFactory, playerService, planetService, buildingService)
     val constructionSiteController = ConstructionSiteController(validatorFactory, playerService, planetService, buildingService)
     val shipController = ShipController(validatorFactory, playerService, planetService, shipService)
+    val shipyardController = ShipyardController(validatorFactory, playerService, planetService, shipService)
 
     configureSpark()
     addExceptionHandler()
-    registerRoutes(lockService, playerController, planetController, buildingController, constructionSiteController, shipController)
+    registerRoutes(lockService, playerController, planetController, buildingController, constructionSiteController, shipController, shipyardController)
 
     Spark.awaitInitialization()
 
@@ -111,14 +112,15 @@ private fun configureSpark() {
     Spark.port(port)
 }
 
-private fun registerRoutes(lockService: LockService, playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController, shipController: ShipController) {
+private fun registerRoutes(lockService: LockService, playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController, shipController: ShipController, shipyardController: ShipyardController) {
     Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
     Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.listOnPlanet()))
     Spark.post("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.build()))
     Spark.get("/v1/planet/:location/construction-site", Json.contentType, route(lockService, constructionSiteController.listOnPlanet()))
-    Spark.get("/v1/planet/:location/ship", Json.contentType, route(lockService, shipController.listOnPlanet()))
-    Spark.post("/v1/planet/:location/ship", Json.contentType, route(lockService, shipController.build()))
+    Spark.get("/v1/planet/:location/hangar", Json.contentType, route(lockService, shipController.listOnPlanet()))
+    Spark.post("/v1/planet/:location/hangar", Json.contentType, route(lockService, shipController.build()))
+    Spark.get("/v1/planet/:location/shipyard", Json.contentType, route(lockService, shipyardController.listOnPlanet()))
 }
 
 private fun addExceptionHandler() {

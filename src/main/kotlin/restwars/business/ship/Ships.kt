@@ -53,6 +53,8 @@ data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) {
 interface ShipService {
     fun buildShip(planet: Planet, type: ShipType): ShipInConstruction
 
+    fun findShipsInConstructionByPlanet(planet: Planet): List<ShipInConstruction>
+
     fun findShipsByPlanet(planet: Planet): Ships
 
     fun finishShipsInConstruction()
@@ -62,6 +64,8 @@ interface ShipInConstructionRepository {
     fun insert(shipInConstruction: ShipInConstruction)
 
     fun delete(id: UUID)
+
+    fun findByPlanetId(planetId: UUID): List<ShipInConstruction>
 
     fun findByDone(done: Long): List<ShipInConstruction>
 }
@@ -112,6 +116,10 @@ class ShipServiceImpl(
             }
             shipInConstructionRepository.delete(shipDone.id)
         }
+    }
+
+    override fun findShipsInConstructionByPlanet(planet: Planet): List<ShipInConstruction> {
+        return shipInConstructionRepository.findByPlanetId(planet.id)
     }
 
     override fun findShipsByPlanet(planet: Planet): Ships {

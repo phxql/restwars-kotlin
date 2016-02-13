@@ -11,6 +11,12 @@ data class ShipInConstructionResponse(val id: UUID, val type: String, val done: 
     }
 }
 
+data class ShipsInConstructionResponse(val shipsInConstruction: List<ShipInConstructionResponse>) {
+    companion object {
+        fun fromShipsInConstruction(shipsInConstruction: List<ShipInConstruction>) = ShipsInConstructionResponse(shipsInConstruction.map { ShipInConstructionResponse.fromShipInConstruction(it) })
+    }
+}
+
 data class ShipResponse(val type: String, val amount: Int) {
     companion object {
         fun fromShip(ship: Ship) = ShipResponse(ship.type.name, ship.amount)
