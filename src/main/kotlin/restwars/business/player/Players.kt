@@ -1,13 +1,14 @@
 package restwars.business.player
 
 import restwars.business.UUIDFactory
+import java.io.Serializable
 import java.util.*
 
 data class Player(
         val id: UUID,
         val username: String,
         val password: String
-)
+) : Serializable
 
 interface PlayerService {
     fun create(username: String, password: String): Player

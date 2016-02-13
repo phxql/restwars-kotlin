@@ -2,12 +2,13 @@ package restwars.storage
 
 import org.slf4j.LoggerFactory
 import restwars.business.ship.*
+import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object InMemoryShipInConstructionRepository : ShipInConstructionRepository {
+object InMemoryShipInConstructionRepository : ShipInConstructionRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val shipsInConstruction: MutableList<ShipInConstruction> = CopyOnWriteArrayList()
+    private var shipsInConstruction: MutableList<ShipInConstruction> = CopyOnWriteArrayList()
 
     override fun insert(shipInConstruction: ShipInConstruction) {
         logger.debug("Inserting {}", shipInConstruction)
@@ -26,11 +27,20 @@ object InMemoryShipInConstructionRepository : ShipInConstructionRepository {
     override fun findByPlanetId(planetId: UUID): List<ShipInConstruction> {
         return shipsInConstruction.filter { it.planetId == planetId }
     }
+
+    override fun persist(path: Path) {
+        Persister.saveData(path, shipsInConstruction)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun load(path: Path) {
+        shipsInConstruction = Persister.loadData(path) as MutableList<ShipInConstruction>
+    }
 }
 
-object InMemoryHangarRepository : HangarRepository {
+object InMemoryHangarRepository : HangarRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val hangars: MutableList<Hangar> = CopyOnWriteArrayList()
+    private var hangars: MutableList<Hangar> = CopyOnWriteArrayList()
 
     override fun findByPlanetId(planetId: UUID): Hangar? {
         return hangars.find { it.planetId == planetId }
@@ -49,5 +59,14 @@ object InMemoryHangarRepository : HangarRepository {
 
         val hangar = hangars[index]
         hangars[index] = hangar.copy(ships = hangar.ships.with(type, newAmount))
+    }
+
+    override fun persist(path: Path) {
+        Persister.saveData(path, hangars)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun load(path: Path) {
+        hangars = Persister.loadData(path) as MutableList<Hangar>
     }
 }

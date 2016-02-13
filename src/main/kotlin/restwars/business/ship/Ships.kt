@@ -5,6 +5,7 @@ import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import java.io.Serializable
 import java.util.*
 
 enum class ShipType {
@@ -18,11 +19,11 @@ enum class ShipType {
 
 }
 
-data class Ship(val type: ShipType, val amount: Int)
+data class Ship(val type: ShipType, val amount: Int) : Serializable
 
-data class ShipInConstruction(val id: UUID, val planetId: UUID, val type: ShipType, val done: Long)
+data class ShipInConstruction(val id: UUID, val planetId: UUID, val type: ShipType, val done: Long) : Serializable
 
-data class Ships(val ships: List<Ship>) {
+data class Ships(val ships: List<Ship>) : Serializable {
     operator fun get(type: ShipType): Int {
         return ships.find { it.type == type }?.amount ?: 0
     }
@@ -47,7 +48,7 @@ data class Ships(val ships: List<Ship>) {
     }
 }
 
-data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) {
+data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) : Serializable {
 }
 
 interface ShipService {

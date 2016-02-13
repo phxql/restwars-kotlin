@@ -72,6 +72,7 @@ fun main(args: Array<String>) {
     Spark.awaitInitialization()
 
     startClock(clock, config)
+    Persister.start()
     logger.info("RESTwars started on port {}", port)
 }
 

@@ -5,12 +5,13 @@ import restwars.business.planet.Location
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.planet.Resources
+import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object InMemoryPlanetRepository : PlanetRepository {
+object InMemoryPlanetRepository : PlanetRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val planets: MutableList<Planet> = CopyOnWriteArrayList()
+    private var planets: MutableList<Planet> = CopyOnWriteArrayList()
 
     override fun findAllInhabitated(): List<Planet> {
         return planets.filter { it.owner != null }
@@ -38,5 +39,14 @@ object InMemoryPlanetRepository : PlanetRepository {
 
     override fun findByLocation(location: Location): Planet? {
         return planets.firstOrNull { it.location == location }
+    }
+
+    override fun persist(path: Path) {
+        Persister.saveData(path, planets)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun load(path: Path) {
+        planets = Persister.loadData(path) as MutableList<Planet>
     }
 }

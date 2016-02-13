@@ -4,9 +4,10 @@ import restwars.business.RandomNumberGenerator
 import restwars.business.UUIDFactory
 import restwars.business.config.Config
 import restwars.business.player.Player
+import java.io.Serializable
 import java.util.*
 
-data class Location(val galaxy: Int, val system: Int, val planet: Int) {
+data class Location(val galaxy: Int, val system: Int, val planet: Int) : Serializable {
     override fun toString(): String = "$galaxy.$system.$planet"
 
     companion object {
@@ -19,7 +20,7 @@ data class Location(val galaxy: Int, val system: Int, val planet: Int) {
     }
 }
 
-data class Resources(val crystal: Int, val gas: Int, val energy: Int) {
+data class Resources(val crystal: Int, val gas: Int, val energy: Int) : Serializable {
     companion object {
         fun crystal(crystal: Int) = Resources(crystal, 0, 0)
 
@@ -33,7 +34,7 @@ data class Resources(val crystal: Int, val gas: Int, val energy: Int) {
     operator fun plus(other: Resources) = Resources(crystal + other.crystal, gas + other.gas, energy + other.energy)
 }
 
-data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources)
+data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources) : Serializable
 
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet

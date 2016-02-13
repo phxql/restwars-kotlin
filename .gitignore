@@ -5,3 +5,7 @@
 # Gradle
 build/
 .gradle/
+
+# Data
+data/*
+!data/.keep

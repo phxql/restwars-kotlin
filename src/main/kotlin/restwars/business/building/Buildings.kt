@@ -5,6 +5,7 @@ import restwars.business.BuildingFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import java.io.Serializable
 import java.util.*
 
 enum class BuildingType {
@@ -20,9 +21,9 @@ enum class BuildingType {
     }
 }
 
-data class Building(val id: UUID, val planetId: UUID, val type: BuildingType, val level: Int)
+data class Building(val id: UUID, val planetId: UUID, val type: BuildingType, val level: Int) : Serializable
 
-data class ConstructionSite(val id: UUID, val planetId: UUID, val type: BuildingType, val level: Int, val done: Long)
+data class ConstructionSite(val id: UUID, val planetId: UUID, val type: BuildingType, val level: Int, val done: Long) : Serializable
 
 interface BuildingService {
     fun createStarterBuildings(planet: Planet): List<Building>
