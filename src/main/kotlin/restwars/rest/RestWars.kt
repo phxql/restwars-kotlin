@@ -40,7 +40,7 @@ fun main(args: Array<String>) {
     val constructionSiteRepository = InMemoryConstructionSiteRepository
     val roundRepository = InMemoryRoundRepository
 
-    val buildingFormula = BuildingFormulaImpl
+    val buildingFormula = BuildingFormulasImpl
 
     val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)

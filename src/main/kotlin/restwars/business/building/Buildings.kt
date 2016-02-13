@@ -1,7 +1,7 @@
 package restwars.business.building
 
 import org.slf4j.LoggerFactory
-import restwars.business.BuildingFormula
+import restwars.business.BuildingFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
@@ -60,10 +60,10 @@ class BuildingServiceImpl(
         val uuidFactory: UUIDFactory,
         val buildingRepository: BuildingRepository,
         val constructionSiteRepository: ConstructionSiteRepository,
-        val buildingFormula: BuildingFormula,
+        val buildingFormulas: BuildingFormulas,
         val roundService: RoundService
 ) : BuildingService {
-    private val logger = LoggerFactory.getLogger(BuildingServiceImpl::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun build(planet: Planet, type: BuildingType): ConstructionSite {
         val building = buildingRepository.findByPlanetIdAndType(planet.id, type)
@@ -77,7 +77,7 @@ class BuildingServiceImpl(
         }
 
         val id = uuidFactory.create()
-        val buildTime = buildingFormula.calculateBuildTime(type, level)
+        val buildTime = buildingFormulas.calculateBuildTime(type, level)
         val done = roundService.currentRound() + buildTime
 
         val constructionSite = ConstructionSite(id, planet.id, type, level, done)
