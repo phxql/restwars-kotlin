@@ -6,7 +6,7 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 object InMemoryBuildingRepository : BuildingRepository {
-    private val logger = LoggerFactory.getLogger(InMemoryBuildingRepository::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val buildings: MutableList<Building> = CopyOnWriteArrayList()
 
     override fun findByPlanetId(planetId: UUID): List<Building> {
@@ -30,7 +30,7 @@ object InMemoryBuildingRepository : BuildingRepository {
 }
 
 object InMemoryConstructionSiteRepository : ConstructionSiteRepository {
-    private val logger = LoggerFactory.getLogger(InMemoryConstructionSiteRepository::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val constructionSites: MutableList<ConstructionSite> = CopyOnWriteArrayList()
 
     override fun insert(constructionSite: ConstructionSite) {

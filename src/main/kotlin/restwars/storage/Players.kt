@@ -6,7 +6,7 @@ import restwars.business.player.PlayerRepository
 import java.util.concurrent.CopyOnWriteArrayList
 
 object InMemoryPlayerRepository : PlayerRepository {
-    private val logger = LoggerFactory.getLogger(InMemoryPlayerRepository::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val players: MutableList<Player> = CopyOnWriteArrayList()
 
     override fun insert(player: Player) {

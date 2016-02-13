@@ -9,7 +9,7 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 object InMemoryPlanetRepository : PlanetRepository {
-    private val logger = LoggerFactory.getLogger(InMemoryPlanetRepository::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val planets: MutableList<Planet> = CopyOnWriteArrayList()
 
     override fun findAllInhabitated(): List<Planet> {

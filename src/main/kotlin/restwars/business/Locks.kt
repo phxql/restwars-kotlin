@@ -14,7 +14,7 @@ interface LockService {
 }
 
 object LockServiceImpl : LockService {
-    private val logger = LoggerFactory.getLogger(LockServiceImpl::class.java)
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val lock = ReentrantReadWriteLock()
 
     override fun beforeRequest() {
