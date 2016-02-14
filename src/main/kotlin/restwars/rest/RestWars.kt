@@ -67,12 +67,14 @@ fun main(args: Array<String>) {
     val shipyardController = ShipyardController(validatorFactory, playerService, planetService, shipService)
     val applicationInformationController = ApplicationInformationController(applicationInformationService)
     val configurationController = ConfigurationController(config)
+    val roundController = RoundController(roundService, config)
 
     configureSpark()
     addExceptionHandler()
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
-            shipController, shipyardController, applicationInformationController, configurationController
+            shipController, shipyardController, applicationInformationController, configurationController,
+            roundController
     )
 
     Spark.awaitInitialization()
@@ -124,10 +126,11 @@ private fun registerRoutes(
         buildingController: BuildingController, constructionSiteController: ConstructionSiteController,
         shipController: ShipController, shipyardController: ShipyardController,
         applicationInformationController: ApplicationInformationController,
-        configurationController: ConfigurationController
+        configurationController: ConfigurationController, roundController: RoundController
 ) {
-    Spark.get("/v1/restwars", Json.contentType, applicationInformationController.get())
-    Spark.get("/v1/configuration", Json.contentType, configurationController.get())
+    Spark.get("/v1/restwars", Json.contentType, route(lockService, applicationInformationController.get()))
+    Spark.get("/v1/configuration", Json.contentType, route(lockService, configurationController.get()))
+    Spark.get("/v1/round", Json.contentType, route(lockService, roundController.get()))
     Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
     Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.listOnPlanet()))
