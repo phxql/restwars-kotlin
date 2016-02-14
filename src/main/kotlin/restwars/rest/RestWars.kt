@@ -66,10 +66,14 @@ fun main(args: Array<String>) {
     val shipController = ShipController(validatorFactory, playerService, planetService, shipService)
     val shipyardController = ShipyardController(validatorFactory, playerService, planetService, shipService)
     val applicationInformationController = ApplicationInformationController(applicationInformationService)
+    val configurationController = ConfigurationController(config)
 
     configureSpark()
     addExceptionHandler()
-    registerRoutes(lockService, playerController, planetController, buildingController, constructionSiteController, shipController, shipyardController, applicationInformationController)
+    registerRoutes(
+            lockService, playerController, planetController, buildingController, constructionSiteController,
+            shipController, shipyardController, applicationInformationController, configurationController
+    )
 
     Spark.awaitInitialization()
 
@@ -119,9 +123,11 @@ private fun registerRoutes(
         lockService: LockService, playerController: PlayerController, planetController: PlanetController,
         buildingController: BuildingController, constructionSiteController: ConstructionSiteController,
         shipController: ShipController, shipyardController: ShipyardController,
-        applicationInformationController: ApplicationInformationController
+        applicationInformationController: ApplicationInformationController,
+        configurationController: ConfigurationController
 ) {
     Spark.get("/v1/restwars", Json.contentType, applicationInformationController.get())
+    Spark.get("/v1/configuration", Json.contentType, configurationController.get())
     Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
     Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.listOnPlanet()))
