@@ -7,5 +7,4 @@ build/
 .gradle/
 
 # Data
-data/*
-!data/.keep
+data/
