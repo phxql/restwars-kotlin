@@ -55,6 +55,10 @@ object Persister {
         logger.debug("Persisting repositories...")
         try {
             for ((repo, path) in repositories) {
+                if (!Files.exists(path.parent)) {
+                    Files.createDirectories(path.parent)
+                }
+
                 repo.persist(path)
             }
             logger.debug("Done persisting repositories")
