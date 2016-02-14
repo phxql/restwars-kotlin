@@ -56,7 +56,7 @@ class FlightServiceImpl(
     val logger = LoggerFactory.getLogger(javaClass)
 
     override fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships): Flight {
-        // Flights which where start = location are forbissen
+        // Flights which where start = location are forbidden
         if (start.location == destination) throw SameStartAndDestinationException()
         // Check that the location is contained in the universe
         if (!destination.isValid(config.universeSize)) throw InvalidLocationException(destination)
