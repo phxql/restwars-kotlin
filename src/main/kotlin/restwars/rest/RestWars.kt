@@ -83,7 +83,7 @@ fun main(args: Array<String>) {
 }
 
 /**
- * Function to create a route which aquires a lock before the request and reliably releases the lock afterwards.
+ * Function to create a route which acquires a lock before the request and reliably releases the lock afterwards.
  */
 // May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
 private fun route(lockService: LockService, route: Route): Route {
