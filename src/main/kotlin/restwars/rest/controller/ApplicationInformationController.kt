@@ -1,14 +1,8 @@
 package restwars.rest.controller
 
-import restwars.business.ApplicationInformation
 import restwars.business.ApplicationInformationService
+import restwars.rest.api.ApplicationInformationResponse
 import spark.Route
-
-data class ApplicationInformationResponse(val version: String, val hash: String) {
-    companion object {
-        fun fromApplicationInformation(applicationInformation: ApplicationInformation) = ApplicationInformationResponse(applicationInformation.version, applicationInformation.hash)
-    }
-}
 
 class ApplicationInformationController(val applicationInformationService: ApplicationInformationService) : ControllerHelper {
     fun get(): Route {
