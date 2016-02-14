@@ -6,7 +6,7 @@ import spark.Route
 
 data class ApplicationInformationResponse(val version: String, val hash: String) {
     companion object {
-        fun fromApplicationInformation(applicationInformation: ApplicationInformation) = ApplicationInformation(applicationInformation.version, applicationInformation.hash)
+        fun fromApplicationInformation(applicationInformation: ApplicationInformation) = ApplicationInformationResponse(applicationInformation.version, applicationInformation.hash)
     }
 }
 
