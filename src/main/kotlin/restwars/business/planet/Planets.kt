@@ -3,12 +3,21 @@ package restwars.business.planet
 import restwars.business.RandomNumberGenerator
 import restwars.business.UUIDFactory
 import restwars.business.config.Config
+import restwars.business.config.UniverseSize
 import restwars.business.player.Player
 import java.io.Serializable
 import java.util.*
 
+class InvalidLocationException(val location: Location) : Exception("Location $location is invalid")
+
 data class Location(val galaxy: Int, val system: Int, val planet: Int) : Serializable {
     override fun toString(): String = "$galaxy.$system.$planet"
+
+    fun isValid(universeSize: UniverseSize): Boolean {
+        return galaxy in 1..universeSize.maxGalaxies &&
+                system in 1..universeSize.maxSystems &&
+                planet in 1..universeSize.maxPlanets
+    }
 
     companion object {
         fun parse(input: String): Location {
