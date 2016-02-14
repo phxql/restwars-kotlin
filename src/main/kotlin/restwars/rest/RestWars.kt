@@ -5,6 +5,7 @@ import restwars.business.*
 import restwars.business.building.BuildingServiceImpl
 import restwars.business.clock.Clock
 import restwars.business.clock.ClockImpl
+import restwars.business.clock.RoundService
 import restwars.business.clock.RoundServiceImpl
 import restwars.business.config.Config
 import restwars.business.config.StarterPlanet
@@ -71,6 +72,7 @@ fun main(args: Array<String>) {
 
     configureSpark()
     addExceptionHandler()
+    registerWebsockets(roundService)
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
@@ -82,6 +84,11 @@ fun main(args: Array<String>) {
     startClock(clock, config)
     Persister.start()
     logger.info("RESTwars started on port {}", port)
+}
+
+fun registerWebsockets(roundService: RoundService) {
+    RoundWebsocketController.roundService = roundService
+    Spark.webSocket("/v1/round/websocket", RoundWebsocketController::class.java)
 }
 
 /**

@@ -11,6 +11,10 @@ object Json {
 
     fun toJson(response: Response, model: Any): String {
         response.type(contentType)
+        return toJson(model)
+    }
+
+    fun toJson(model: Any): String {
         return gson.toJson(model)
     }
 
