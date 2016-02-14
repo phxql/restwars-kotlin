@@ -14,6 +14,7 @@ import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
 import restwars.util.ceil
+import java.io.Serializable
 import java.util.*
 
 enum class FlightDirection {
@@ -23,7 +24,7 @@ enum class FlightDirection {
 data class Flight(
         val id: UUID, val playerId: UUID, val start: Location, val destination: Location,
         val startedInRound: Long, val arrivalInRound: Long, val ships: Ships, val direction: FlightDirection
-)
+) : Serializable
 
 interface FlightService {
     fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships): Flight
@@ -68,7 +69,7 @@ class FlightServiceImpl(
         // Check that enough ships are available
         for (ship in ships.ships) {
             val available = shipsAvailable[ship.type]
-            if (ship.amount < available) throw NotEnoughShipsException(ship.type, ship.amount, available)
+            if (ship.amount > available) throw NotEnoughShipsException(ship.type, ship.amount, available)
         }
 
         // Find the slowest ship

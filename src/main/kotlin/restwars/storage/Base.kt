@@ -27,7 +27,8 @@ object Persister {
             InMemoryPlayerRepository to Paths.get("data/players.dat"),
             InMemoryRoundRepository to Paths.get("data/round.dat"),
             InMemoryHangarRepository to Paths.get("data/hangars.dat"),
-            InMemoryShipInConstructionRepository to Paths.get("data/ships-in-construction.dat")
+            InMemoryShipInConstructionRepository to Paths.get("data/ships-in-construction.dat"),
+            InMemoryFlightRepository to Paths.get("data/flights.dat")
     )
 
     fun start() {

@@ -1,8 +1,8 @@
 # Size of the universe
 universeSize:
-  maxGalaxies: 1
-  maxSystems: 1
-  maxPlanets: 1
+  maxGalaxies: 3
+  maxSystems: 3
+  maxPlanets: 3
 
 # Starter planet settings
 starterPlanet:

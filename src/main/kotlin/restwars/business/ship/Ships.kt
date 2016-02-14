@@ -45,7 +45,7 @@ data class Ships(val ships: List<Ship>) : Serializable {
 
     fun isEmpty(): Boolean {
         val amount = ships.map { it.amount }.sum()
-        return amount > 0
+        return amount <= 0
     }
 
     companion object {

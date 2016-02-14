@@ -10,6 +10,7 @@ import restwars.business.clock.RoundServiceImpl
 import restwars.business.config.Config
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
+import restwars.business.flight.FlightServiceImpl
 import restwars.business.planet.PlanetServiceImpl
 import restwars.business.planet.Resources
 import restwars.business.player.PlayerServiceImpl
@@ -44,9 +45,11 @@ fun main(args: Array<String>) {
     val roundRepository = InMemoryRoundRepository
     val hangarRepository = InMemoryHangarRepository
     val shipInConstructionRepository = InMemoryShipInConstructionRepository
+    val flightRepository = InMemoryFlightRepository
 
     val buildingFormula = BuildingFormulasImpl
     val shipFormulas = ShipFormulasImpl
+    val locationFormulas = LocationFormulasImpl
 
     val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
@@ -56,6 +59,7 @@ fun main(args: Array<String>) {
     val lockService = LockServiceImpl
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)
     val applicationInformationService = ApplicationInformationServiceImpl
+    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService)
 
     val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService)
 
@@ -69,6 +73,7 @@ fun main(args: Array<String>) {
     val applicationInformationController = ApplicationInformationController(applicationInformationService)
     val configurationController = ConfigurationController(config)
     val roundController = RoundController(roundService, config)
+    val flightController = FlightController(validatorFactory, playerService, planetService, flightService)
 
     configureSpark()
     addExceptionHandler()
@@ -76,7 +81,7 @@ fun main(args: Array<String>) {
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
-            roundController
+            roundController, flightController
     )
 
     Spark.awaitInitialization()
@@ -133,7 +138,8 @@ private fun registerRoutes(
         buildingController: BuildingController, constructionSiteController: ConstructionSiteController,
         shipController: ShipController, shipyardController: ShipyardController,
         applicationInformationController: ApplicationInformationController,
-        configurationController: ConfigurationController, roundController: RoundController
+        configurationController: ConfigurationController, roundController: RoundController,
+        flightController: FlightController
 ) {
     Spark.get("/v1/restwars", Json.contentType, route(lockService, applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(lockService, configurationController.get()))
@@ -146,6 +152,7 @@ private fun registerRoutes(
     Spark.get("/v1/planet/:location/hangar", Json.contentType, route(lockService, shipController.listOnPlanet()))
     Spark.post("/v1/planet/:location/hangar", Json.contentType, route(lockService, shipController.build()))
     Spark.get("/v1/planet/:location/shipyard", Json.contentType, route(lockService, shipyardController.listOnPlanet()))
+    Spark.post("/v1/planet/:location/flight", Json.contentType, route(lockService, flightController.create()))
 }
 
 private fun addExceptionHandler() {
