@@ -45,7 +45,7 @@ object Persister {
                     repo.load(path)
                 }
             }
-            logger.debug("Done loading repositories...")
+            logger.debug("Done loading repositories")
         } catch(e: Exception) {
             logger.error("Exception while loading repositories", e)
         }
