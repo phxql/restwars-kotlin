@@ -54,6 +54,7 @@ fun main(args: Array<String>) {
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)
+    val applicationInformationService = ApplicationInformationServiceImpl
 
     val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService)
 
@@ -64,10 +65,11 @@ fun main(args: Array<String>) {
     val constructionSiteController = ConstructionSiteController(validatorFactory, playerService, planetService, buildingService)
     val shipController = ShipController(validatorFactory, playerService, planetService, shipService)
     val shipyardController = ShipyardController(validatorFactory, playerService, planetService, shipService)
+    val applicationInformationController = ApplicationInformationController(applicationInformationService)
 
     configureSpark()
     addExceptionHandler()
-    registerRoutes(lockService, playerController, planetController, buildingController, constructionSiteController, shipController, shipyardController)
+    registerRoutes(lockService, playerController, planetController, buildingController, constructionSiteController, shipController, shipyardController, applicationInformationController)
 
     Spark.awaitInitialization()
 
@@ -113,7 +115,13 @@ private fun configureSpark() {
     Spark.port(port)
 }
 
-private fun registerRoutes(lockService: LockService, playerController: PlayerController, planetController: PlanetController, buildingController: BuildingController, constructionSiteController: ConstructionSiteController, shipController: ShipController, shipyardController: ShipyardController) {
+private fun registerRoutes(
+        lockService: LockService, playerController: PlayerController, planetController: PlanetController,
+        buildingController: BuildingController, constructionSiteController: ConstructionSiteController,
+        shipController: ShipController, shipyardController: ShipyardController,
+        applicationInformationController: ApplicationInformationController
+) {
+    Spark.get("/v1/restwars", Json.contentType, applicationInformationController.get())
     Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
     Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.listOnPlanet()))
