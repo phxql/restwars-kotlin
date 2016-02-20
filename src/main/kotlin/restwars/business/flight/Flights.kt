@@ -163,7 +163,15 @@ class FlightServiceImpl(
     private fun finishReturnFlight(flight: Flight) {
         logger.debug("Finishing return flight {}", flight)
 
-        // TODO: Land ships in hangar
+        val planet = planetRepository.findAtLocation(flight.start)
+        if (planet == null) {
+            // TODO: What happens if the planet is no more?
+            return;
+        }
+        // TODO: What happens if the planet changed the owner?
+
+        // Land ships in hangar
+        shipService.addShips(planet, flight.ships)
         flightRepository.delete(flight.id)
     }
 

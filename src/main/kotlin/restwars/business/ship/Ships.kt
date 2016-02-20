@@ -85,6 +85,8 @@ interface ShipService {
     fun finishShipsInConstruction()
 
     fun removeShips(planet: Planet, ships: Ships)
+
+    fun addShips(planet: Planet, ships: Ships)
 }
 
 interface ShipInConstructionRepository {
@@ -174,10 +176,23 @@ class ShipServiceImpl(
         val hangar = hangarRepository.findByPlanetId(planet.id) ?: throw IllegalArgumentException("No hangar for planet $planet found")
 
         for (ship in ships.ships) {
-            val newAmount = ship.amount - hangar.ships[ship.type]
+            val newAmount = hangar.ships[ship.type] - ship.amount
             if (newAmount < 0) throw IllegalStateException("Amount of ships with type ${ship.type} have to be >= 0, would be $newAmount")
 
             hangarRepository.updateShips(hangar.id, ship.type, newAmount)
+        }
+    }
+
+    override fun addShips(planet: Planet, ships: Ships) {
+        val hangar = hangarRepository.findByPlanetId(planet.id)
+        if (hangar == null) {
+            val newHangar = Hangar(uuidFactory.create(), planet.id, ships)
+            hangarRepository.insert(newHangar)
+        } else {
+            for (ship in ships.ships) {
+                val newAmount = hangar.ships[ship.type] + ship.amount
+                hangarRepository.updateShips(hangar.id, ship.type, newAmount)
+            }
         }
     }
 }
