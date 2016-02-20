@@ -69,4 +69,12 @@ object InMemoryConstructionSiteRepository : ConstructionSiteRepository, Persiste
     override fun load(path: Path) {
         this.constructionSites = Persister.loadData(path) as MutableList<ConstructionSite>
     }
+
+    override fun countByPlanetId(planetId: UUID): Int {
+        return constructionSites.count { it.planetId == planetId }
+    }
+
+    override fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): ConstructionSite? {
+        return constructionSites.find { it.planetId == planetId && it.type == type }
+    }
 }

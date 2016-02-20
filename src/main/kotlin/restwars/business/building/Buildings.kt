@@ -58,10 +58,20 @@ interface ConstructionSiteRepository {
 
     fun findByPlanetId(planetId: UUID): List<ConstructionSite>
 
+    fun countByPlanetId(planetId: UUID): Int
+
+    fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): ConstructionSite?
+
     fun delete(id: UUID)
 }
 
 data class BuildResult(val planet: Planet, val constructionSite: ConstructionSite)
+
+abstract class BuildBuildingException(message: String) : Exception(message)
+
+class NotEnoughBuildSlots() : BuildBuildingException("Not enough build slots available")
+
+class BuildingAlreadyInProgress(val type: BuildingType) : BuildBuildingException("Building $type is already in progress")
 
 class BuildingServiceImpl(
         private val uuidFactory: UUIDFactory,
@@ -74,9 +84,20 @@ class BuildingServiceImpl(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun build(planet: Planet, type: BuildingType): BuildResult {
+        // Check if enough slots are available
+        val commandCenter = buildingRepository.findByPlanetIdAndType(planet.id, BuildingType.COMMAND_CENTER) ?: throw AssertionError("Planet $planet has no command center")
+        val slots = buildingFormulas.calculateBuildSlots(commandCenter.level)
+        val constructionSites = constructionSiteRepository.countByPlanetId(planet.id)
+        if (constructionSites >= slots) {
+            throw NotEnoughBuildSlots()
+        }
+
+        // Check if the building type is already in progress
+        if (constructionSiteRepository.findByPlanetIdAndType(planet.id, type) != null) {
+            throw BuildingAlreadyInProgress(type)
+        }
+
         val building = buildingRepository.findByPlanetIdAndType(planet.id, type)
-        // TODO: Check build queues
-        // TODO: Check if building type already in queue
         val level = if (building == null) {
             1
         } else {

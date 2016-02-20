@@ -9,6 +9,8 @@ interface BuildingFormulas {
     fun calculateBuildTime(type: BuildingType, level: Int): Int
 
     fun calculateBuildCost(type: BuildingType, level: Int): Resources
+
+    fun calculateBuildSlots(commandCenterLevel: Int): Int
 }
 
 interface ShipFormulas {
@@ -57,6 +59,10 @@ object BuildingFormulasImpl : BuildingFormulas {
                     50 + (level - 1) * 25,
                     400 + (level - 1) * 200)
         }
+    }
+
+    override fun calculateBuildSlots(commandCenterLevel: Int): Int {
+        return 1
     }
 }
 

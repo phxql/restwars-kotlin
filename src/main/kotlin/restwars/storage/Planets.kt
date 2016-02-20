@@ -18,6 +18,8 @@ object InMemoryPlanetRepository : PlanetRepository, PersistentRepository {
     }
 
     override fun updateResources(planetId: UUID, resources: Resources) {
+        logger.debug("Updating resources of planet {} to {}", planetId, resources)
+
         val index = planets.indexOfFirst { it.id == planetId }
 
         val planet = planets[index]
