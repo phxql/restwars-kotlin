@@ -10,6 +10,8 @@ import restwars.business.clock.RoundServiceImpl
 import restwars.business.config.Config
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
+import restwars.business.flight.AttackFlightHandler
+import restwars.business.flight.ColonizeFlightHandler
 import restwars.business.flight.FlightServiceImpl
 import restwars.business.planet.PlanetServiceImpl
 import restwars.business.planet.Resources
@@ -59,9 +61,12 @@ fun main(args: Array<String>) {
     val lockService = LockServiceImpl
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)
     val applicationInformationService = ApplicationInformationServiceImpl
-    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService)
 
-    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService)
+    val colonizeFlightHandler = ColonizeFlightHandler()
+    val attackFlightHandler = AttackFlightHandler()
+    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler)
+
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)

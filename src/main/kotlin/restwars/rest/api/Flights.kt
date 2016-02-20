@@ -19,7 +19,9 @@ data class CreateFlightRequest(
         @get:org.hibernate.validator.constraints.NotBlank
         val destination: String,
         @get:javax.validation.constraints.NotNull
-        val ships: ShipsRequest
+        val ships: ShipsRequest,
+        @get:org.hibernate.validator.constraints.NotBlank
+        val type: String
 )
 
 data class FlightResponse(

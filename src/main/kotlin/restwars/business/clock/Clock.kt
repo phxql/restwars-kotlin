@@ -4,12 +4,12 @@ import org.slf4j.LoggerFactory
 import restwars.business.LockService
 import restwars.business.building.Building
 import restwars.business.building.BuildingService
+import restwars.business.flight.FlightService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
 import restwars.business.resource.ResourceService
 import restwars.business.ship.ShipService
-import java.util.concurrent.atomic.AtomicLong
 
 interface Clock {
     fun tick()
@@ -21,7 +21,8 @@ class ClockImpl(
         private val buildingService: BuildingService,
         private val lockService: LockService,
         private val roundService: RoundService,
-        private val shipService: ShipService
+        private val shipService: ShipService,
+        private val flightService: FlightService
 ) : Clock {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -33,6 +34,7 @@ class ClockImpl(
             roundService.increaseRound()
             buildingService.finishConstructionSites()
             shipService.finishShipsInConstruction()
+            flightService.finishFlights()
 
             for (planet in planetService.findAllInhabitated()) {
                 var updatedPlanet = planet

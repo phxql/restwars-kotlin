@@ -1,6 +1,7 @@
 package restwars.rest.controller
 
 import restwars.business.flight.FlightService
+import restwars.business.flight.FlightType
 import restwars.business.planet.Location
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
@@ -22,8 +23,9 @@ class FlightController(
             val location = parseLocation(req)
             val planet = getOwnPlanet(planetService, context.player, location)
             val destination = Location.parse(request.destination)
+            val type = FlightType.parse(request.type)
 
-            val flight = flightService.sendShipsToPlanet(context.player, planet, destination, request.ships.toShips())
+            val flight = flightService.sendShipsToPlanet(context.player, planet, destination, request.ships.toShips(), type)
 
             return@Route Json.toJson(res, FlightResponse.fromFlight(flight))
         }
