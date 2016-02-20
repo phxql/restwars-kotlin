@@ -50,20 +50,20 @@ fun main(args: Array<String>) {
     val shipInConstructionRepository = InMemoryShipInConstructionRepository
     val flightRepository = InMemoryFlightRepository
 
-    val buildingFormula = BuildingFormulasImpl
+    val buildingFormulas = BuildingFormulasImpl
     val shipFormulas = ShipFormulasImpl
     val locationFormulas = LocationFormulasImpl
 
     val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
     val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config)
-    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormula, roundService, planetRepository)
+    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormulas, roundService, planetRepository)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
-    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, planetRepository)
+    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, buildingFormulas, planetRepository)
     val applicationInformationService = ApplicationInformationServiceImpl
 
-    val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService)
+    val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService)
     val attackFlightHandler = AttackFlightHandler()
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, planetRepository)
 

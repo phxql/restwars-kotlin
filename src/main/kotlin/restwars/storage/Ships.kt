@@ -28,6 +28,10 @@ object InMemoryShipInConstructionRepository : ShipInConstructionRepository, Pers
         return shipsInConstruction.filter { it.planetId == planetId }
     }
 
+    override fun countByPlanetId(planetId: UUID): Int {
+        return shipsInConstruction.count { it.planetId == planetId }
+    }
+
     override fun persist(path: Path) {
         Persister.saveData(path, shipsInConstruction)
     }

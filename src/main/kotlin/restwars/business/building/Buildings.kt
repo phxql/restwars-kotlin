@@ -69,7 +69,7 @@ data class BuildResult(val planet: Planet, val constructionSite: ConstructionSit
 
 abstract class BuildBuildingException(message: String) : Exception(message)
 
-class NotEnoughBuildSlots() : BuildBuildingException("Not enough build slots available")
+class NotEnoughBuildSlotsException() : BuildBuildingException("Not enough build slots available")
 
 class BuildingAlreadyInProgress(val type: BuildingType) : BuildBuildingException("Building $type is already in progress")
 
@@ -89,7 +89,7 @@ class BuildingServiceImpl(
         val slots = buildingFormulas.calculateBuildSlots(commandCenter.level)
         val constructionSites = constructionSiteRepository.countByPlanetId(planet.id)
         if (constructionSites >= slots) {
-            throw NotEnoughBuildSlots()
+            throw NotEnoughBuildSlotsException()
         }
 
         // Check if the building type is already in progress

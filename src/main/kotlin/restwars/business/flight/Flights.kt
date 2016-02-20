@@ -205,7 +205,8 @@ class AttackFlightHandler : FlightTypeHandler {
 
 class ColonizeFlightHandler(
         private val planetService: PlanetService,
-        private val buildingService: BuildingService
+        private val buildingService: BuildingService,
+        private val shipService: ShipService
 ) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -219,10 +220,12 @@ class ColonizeFlightHandler(
             return
         }
 
-        // TODO: Land remaining ships on planet
-
         logger.debug("Player {} colonized planet at {}", flight.playerId, flight.destination)
         val newPlanet = planetService.createPlanet(flight.playerId, flight.destination)
         buildingService.createBuilding(newPlanet, BuildingType.COMMAND_CENTER, 1)
+
+        // Colony ship gets converted into a command center, land the remaining ships
+        val shipsToLand = flight.ships - Ships.of(ShipType.COLONY, 1)
+        shipService.addShips(newPlanet, shipsToLand)
     }
 }

@@ -1,6 +1,7 @@
 package restwars.business.ship
 
 import org.slf4j.LoggerFactory
+import restwars.business.BuildingFormulas
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
@@ -69,6 +70,8 @@ data class Ships(val ships: List<Ship>) : Serializable {
 
     companion object {
         fun none(): Ships = Ships(listOf())
+
+        fun of(type: ShipType, amount: Int) = Ships(listOf(Ship(type, amount)))
     }
 }
 
@@ -96,6 +99,8 @@ interface ShipInConstructionRepository {
 
     fun findByPlanetId(planetId: UUID): List<ShipInConstruction>
 
+    fun countByPlanetId(planetId: UUID): Int
+
     fun findByDone(done: Long): List<ShipInConstruction>
 }
 
@@ -109,12 +114,16 @@ interface HangarRepository {
 
 data class BuildResult(val planet: Planet, val shipInConstruction: ShipInConstruction)
 
+abstract class BuildShipException(message: String) : Exception(message)
+class NotEnoughBuildSlotsException() : BuildShipException("Not enough build slots available")
+
 class ShipServiceImpl(
         private val uuidFactory: UUIDFactory,
         private val roundService: RoundService,
         private val hangarRepository: HangarRepository,
         private val shipInConstructionRepository: ShipInConstructionRepository,
         private val shipFormulas: ShipFormulas,
+        private val buildingFormulas: BuildingFormulas,
         private val planetRepository: PlanetRepository
 ) : ShipService {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -122,7 +131,13 @@ class ShipServiceImpl(
     override fun buildShip(planet: Planet, type: ShipType): BuildResult {
         logger.debug("Building new ship of type {} on planet {}", type, planet.location)
 
-        // TODO: Check build queues
+        // Check build slots
+        val slots = buildingFormulas.calculateShipBuildSlots(1) // TODO: Use real shipyard level
+        val shipsInConstruction = shipInConstructionRepository.countByPlanetId(planet.id)
+        if (shipsInConstruction >= slots) {
+            throw NotEnoughBuildSlotsException()
+        }
+
         val cost = shipFormulas.calculateBuildCost(type)
         if (!planet.resources.enough(cost)) {
             throw NotEnoughResourcesException(cost, planet.resources)
