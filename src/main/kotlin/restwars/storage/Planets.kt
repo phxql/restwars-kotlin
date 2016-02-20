@@ -17,11 +17,11 @@ object InMemoryPlanetRepository : PlanetRepository, PersistentRepository {
         return planets.filter { it.owner != null }
     }
 
-    override fun addResources(planetId: UUID, resources: Resources) {
+    override fun updateResources(planetId: UUID, resources: Resources) {
         val index = planets.indexOfFirst { it.id == planetId }
 
         val planet = planets[index]
-        planets[index] = planet.copy(resources = planet.resources + resources)
+        planets[index] = planet.copy(resources = resources)
     }
 
     override fun findAtLocation(location: Location): Planet? {

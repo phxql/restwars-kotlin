@@ -5,6 +5,7 @@ import restwars.business.BuildingFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
 import java.io.Serializable
 import java.util.*
@@ -35,7 +36,7 @@ interface BuildingService {
 
     fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite>
 
-    fun build(planet: Planet, type: BuildingType): ConstructionSite
+    fun build(planet: Planet, type: BuildingType): BuildResult
 
     fun finishConstructionSites()
 }
@@ -60,16 +61,19 @@ interface ConstructionSiteRepository {
     fun delete(id: UUID)
 }
 
+data class BuildResult(val planet: Planet, val constructionSite: ConstructionSite)
+
 class BuildingServiceImpl(
-        val uuidFactory: UUIDFactory,
-        val buildingRepository: BuildingRepository,
-        val constructionSiteRepository: ConstructionSiteRepository,
-        val buildingFormulas: BuildingFormulas,
-        val roundService: RoundService
+        private val uuidFactory: UUIDFactory,
+        private val buildingRepository: BuildingRepository,
+        private val constructionSiteRepository: ConstructionSiteRepository,
+        private val buildingFormulas: BuildingFormulas,
+        private val roundService: RoundService,
+        private val planetRepository: PlanetRepository
 ) : BuildingService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun build(planet: Planet, type: BuildingType): ConstructionSite {
+    override fun build(planet: Planet, type: BuildingType): BuildResult {
         val building = buildingRepository.findByPlanetIdAndType(planet.id, type)
         // TODO: Check build queues
         // TODO: Check if building type already in queue
@@ -88,11 +92,15 @@ class BuildingServiceImpl(
         val buildTime = buildingFormulas.calculateBuildTime(type, level)
         val done = roundService.currentRound() + buildTime
 
-        // TODO: Decrease resources
-
+        // Create construction site
         val constructionSite = ConstructionSite(id, planet.id, type, level, done)
         constructionSiteRepository.insert(constructionSite)
-        return constructionSite
+
+        // Decrease resources
+        val updatedPlanet = planet.copy(resources = planet.resources - cost)
+        planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
+
+        return BuildResult(updatedPlanet, constructionSite)
     }
 
     override fun findBuildingsByPlanet(planet: Planet): List<Building> {

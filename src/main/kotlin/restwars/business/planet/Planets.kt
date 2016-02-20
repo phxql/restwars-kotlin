@@ -42,6 +42,8 @@ data class Resources(val crystal: Int, val gas: Int, val energy: Int) : Serializ
 
     operator fun plus(other: Resources) = Resources(crystal + other.crystal, gas + other.gas, energy + other.energy)
 
+    operator fun minus(other: Resources) = Resources(crystal - other.crystal, gas - other.gas, energy - other.energy)
+
     fun enough(cost: Resources): Boolean {
         return crystal >= cost.crystal && gas >= cost.gas && energy >= cost.energy
     }
@@ -74,7 +76,7 @@ interface PlanetRepository {
 
     fun findAllInhabited(): List<Planet>
 
-    fun addResources(planetId: UUID, resources: Resources)
+    fun updateResources(planetId: UUID, resources: Resources)
 }
 
 class PlanetAlreadyExistsException(val location: Location) : Exception("Planet at location $location already exists")
@@ -86,9 +88,9 @@ class PlanetServiceImpl(
         private val config: Config
 ) : PlanetService {
     override fun addResources(planet: Planet, resources: Resources): Planet {
-        planetRepository.addResources(planet.id, resources)
-
-        return planet.copy(resources = planet.resources + resources)
+        val updatedPlanet = planet.copy(resources = planet.resources + resources)
+        planetRepository.updateResources(planet.id, updatedPlanet.resources)
+        return updatedPlanet
     }
 
     override fun findByLocation(location: Location): Planet? {

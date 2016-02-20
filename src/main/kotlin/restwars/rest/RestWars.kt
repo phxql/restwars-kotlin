@@ -57,7 +57,7 @@ fun main(args: Array<String>) {
     val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
     val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config)
-    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormula, roundService)
+    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormula, roundService, planetRepository)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)

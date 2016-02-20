@@ -37,10 +37,10 @@ class BuildingController(
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
-            val constructionSite = buildingService.build(planet, type)
+            val buildResult = buildingService.build(planet, type)
 
             res.status(StatusCode.CREATED)
-            return@Route Json.toJson(res, ConstructionSiteResponse.fromConstructionSite(constructionSite))
+            return@Route Json.toJson(res, ConstructionSiteResponse.fromConstructionSite(buildResult.constructionSite))
         }
     }
 }
