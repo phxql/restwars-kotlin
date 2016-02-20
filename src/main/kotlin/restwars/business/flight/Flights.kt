@@ -38,8 +38,10 @@ data class Flight(
         val type: FlightType
 ) : Serializable
 
+data class SendResult(val planet: Planet, val flight: Flight)
+
 interface FlightService {
-    fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType): Flight
+    fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType): SendResult
 
     fun finishFlights()
 
@@ -81,11 +83,12 @@ class FlightServiceImpl(
         private val locationFormulas: LocationFormulas,
         private val shipService: ShipService,
         private val colonizeFlightHandler: FlightTypeHandler,
-        private val attackFlightHandler: FlightTypeHandler
+        private val attackFlightHandler: FlightTypeHandler,
+        private val planetRepository: PlanetRepository
 ) : FlightService {
     val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType): Flight {
+    override fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType): SendResult {
         // Flights which where start = location are forbidden
         if (start.location == destination) throw SameStartAndDestinationException()
         // Check that the location is contained in the universe
@@ -97,10 +100,10 @@ class FlightServiceImpl(
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
 
-        val energyCost = calculateFlightCost(distance, ships)
+        val cost = calculateFlightCost(distance, ships)
 
-        if (!start.resources.enough(energyCost)) {
-            throw NotEnoughResourcesException(energyCost, start.resources)
+        if (!start.resources.enough(cost)) {
+            throw NotEnoughResourcesException(cost, start.resources)
         }
 
         val shipsAvailable = shipService.findShipsByPlanet(start)
@@ -118,12 +121,15 @@ class FlightServiceImpl(
         val currentRound = roundService.currentRound()
         val arrival = calculateArrivalRound(currentRound, distance, slowestSpeed)
 
-        // TODO: Decrease resources
+        // Decrease resources
+        val updatedPlanet = start.decreaseResources(cost)
+        planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
+
         // TODO: Decrease ships
         val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type)
         flightRepository.insert(flight)
 
-        return flight
+        return SendResult(updatedPlanet, flight)
     }
 
     private fun calculateFlightCost(distance: Long, ships: Ships): Resources {

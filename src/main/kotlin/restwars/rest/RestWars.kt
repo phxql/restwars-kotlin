@@ -60,12 +60,12 @@ fun main(args: Array<String>) {
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormula, roundService, planetRepository)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
-    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)
+    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, planetRepository)
     val applicationInformationService = ApplicationInformationServiceImpl
 
     val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService)
     val attackFlightHandler = AttackFlightHandler()
-    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler)
+    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, planetRepository)
 
     val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService)
 

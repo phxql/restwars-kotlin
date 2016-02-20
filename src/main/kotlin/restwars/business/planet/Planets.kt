@@ -49,7 +49,11 @@ data class Resources(val crystal: Int, val gas: Int, val energy: Int) : Serializ
     }
 }
 
-data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources) : Serializable
+data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources) : Serializable {
+    fun decreaseResources(loss: Resources): Planet = copy(resources = this.resources - loss)
+
+    fun increaseResources(gain: Resources): Planet = copy(resources = this.resources + gain)
+}
 
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
@@ -88,7 +92,7 @@ class PlanetServiceImpl(
         private val config: Config
 ) : PlanetService {
     override fun addResources(planet: Planet, resources: Resources): Planet {
-        val updatedPlanet = planet.copy(resources = planet.resources + resources)
+        val updatedPlanet = planet.increaseResources(resources)
         planetRepository.updateResources(planet.id, updatedPlanet.resources)
         return updatedPlanet
     }

@@ -37,10 +37,10 @@ class ShipController(
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
-            val shipInConstruction = shipService.buildShip(planet, type)
+            val buildResult = shipService.buildShip(planet, type)
 
             res.status(StatusCode.CREATED)
-            return@Route Json.toJson(res, ShipInConstructionResponse.fromShipInConstruction(shipInConstruction))
+            return@Route Json.toJson(res, ShipInConstructionResponse.fromShipInConstruction(buildResult.shipInConstruction))
         }
     }
 

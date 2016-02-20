@@ -5,6 +5,7 @@ import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
 import java.io.Serializable
 import java.util.*
@@ -58,7 +59,7 @@ data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) : Serializ
 }
 
 interface ShipService {
-    fun buildShip(planet: Planet, type: ShipType): ShipInConstruction
+    fun buildShip(planet: Planet, type: ShipType): BuildResult
 
     fun findShipsInConstructionByPlanet(planet: Planet): List<ShipInConstruction>
 
@@ -85,16 +86,19 @@ interface HangarRepository {
     fun updateShips(hangarId: UUID, type: ShipType, newAmount: Int)
 }
 
+data class BuildResult(val planet: Planet, val shipInConstruction: ShipInConstruction)
+
 class ShipServiceImpl(
         private val uuidFactory: UUIDFactory,
         private val roundService: RoundService,
         private val hangarRepository: HangarRepository,
         private val shipInConstructionRepository: ShipInConstructionRepository,
-        private val shipFormulas: ShipFormulas
+        private val shipFormulas: ShipFormulas,
+        private val planetRepository: PlanetRepository
 ) : ShipService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun buildShip(planet: Planet, type: ShipType): ShipInConstruction {
+    override fun buildShip(planet: Planet, type: ShipType): BuildResult {
         logger.debug("Building new ship of type {} on planet {}", type, planet.location)
 
         // TODO: Check build queues
@@ -107,11 +111,15 @@ class ShipServiceImpl(
         val buildTime = shipFormulas.calculateBuildTime(type)
         val done = currentRound + buildTime
 
-        // TODO: Decrease resources
+        // Decrease resources
+        val updatedPlanet = planet.decreaseResources(cost)
+        planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
 
+        // Create ship in construction
         val shipInConstruction = ShipInConstruction(uuidFactory.create(), planet.id, type, done)
         shipInConstructionRepository.insert(shipInConstruction)
-        return shipInConstruction
+
+        return BuildResult(updatedPlanet, shipInConstruction)
     }
 
     override fun finishShipsInConstruction() {

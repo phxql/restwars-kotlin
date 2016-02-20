@@ -25,9 +25,9 @@ class FlightController(
             val destination = Location.parse(request.destination)
             val type = FlightType.parse(request.type)
 
-            val flight = flightService.sendShipsToPlanet(context.player, planet, destination, request.ships.toShips(), type)
+            val sendResult = flightService.sendShipsToPlanet(context.player, planet, destination, request.ships.toShips(), type)
 
-            return@Route Json.toJson(res, FlightResponse.fromFlight(flight))
+            return@Route Json.toJson(res, FlightResponse.fromFlight(sendResult.flight))
         }
     }
 }

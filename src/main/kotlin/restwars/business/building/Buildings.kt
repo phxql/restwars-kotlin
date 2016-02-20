@@ -97,7 +97,7 @@ class BuildingServiceImpl(
         constructionSiteRepository.insert(constructionSite)
 
         // Decrease resources
-        val updatedPlanet = planet.copy(resources = planet.resources - cost)
+        val updatedPlanet = planet.decreaseResources(cost)
         planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
 
         return BuildResult(updatedPlanet, constructionSite)
