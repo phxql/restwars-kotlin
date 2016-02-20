@@ -97,8 +97,7 @@ class FlightServiceImpl(
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
 
-        // Energy is calculated for outward and return flight, hence times 2
-        val energyCost = Resources.energy(ships.ships.map { shipFormulas.calculateFlightCostModifier(it.type) * it.amount * distance * 2 }.sum().ceil())
+        val energyCost = calculateFlightCost(distance, ships)
 
         if (!start.resources.enough(energyCost)) {
             throw NotEnoughResourcesException(energyCost, start.resources)
@@ -125,6 +124,11 @@ class FlightServiceImpl(
         flightRepository.insert(flight)
 
         return flight
+    }
+
+    private fun calculateFlightCost(distance: Long, ships: Ships): Resources {
+        // Energy is calculated for outward and return flight, hence times 2
+        return Resources.energy(ships.ships.map { shipFormulas.calculateFlightCostModifier(it.type) * it.amount * distance * 2 }.sum().ceil())
     }
 
     private fun calculateArrivalRound(currentRound: Long, distance: Long, slowestSpeed: Double): Long {
