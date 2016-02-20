@@ -125,6 +125,9 @@ class FlightServiceImpl(
         val updatedPlanet = start.decreaseResources(cost)
         planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
 
+        // Decrease ships
+        shipService.removeShips(start, ships)
+
         // TODO: Decrease ships
         val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type)
         flightRepository.insert(flight)
@@ -207,6 +210,8 @@ class ColonizeFlightHandler(
             flightService.createReturnFlight(flight, flight.ships)
             return
         }
+
+        // TODO: Land remaining ships on planet
 
         logger.debug("Player {} colonized planet at {}", flight.playerId, flight.destination)
         val newPlanet = planetService.createPlanet(flight.playerId, flight.destination)
