@@ -128,7 +128,6 @@ class FlightServiceImpl(
         // Decrease ships
         shipService.removeShips(start, ships)
 
-        // TODO: Decrease ships
         val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type)
         flightRepository.insert(flight)
 
