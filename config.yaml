@@ -12,5 +12,12 @@ starterPlanet:
     gas: 100
     energy: 800
 
+# New planet settings
+newPlanet:
+  resources:
+    crystal: 100
+    gas: 50
+    energy: 400
+
 # Round time in seconds
 roundTime: 1

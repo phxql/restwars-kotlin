@@ -28,6 +28,8 @@ data class ConstructionSite(val id: UUID, val planetId: UUID, val type: Building
 interface BuildingService {
     fun createStarterBuildings(planet: Planet): List<Building>
 
+    fun createBuilding(planet: Planet, type: BuildingType, level: Int)
+
     fun findBuildingsByPlanet(planet: Planet): List<Building>
 
     fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite>
@@ -120,5 +122,10 @@ class BuildingServiceImpl(
 
     override fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite> {
         return constructionSiteRepository.findByPlanetId(planet.id)
+    }
+
+    override fun createBuilding(planet: Planet, type: BuildingType, level: Int) {
+        val building = Building(uuidFactory.create(), planet.id, type, level)
+        buildingRepository.insert(building)
     }
 }

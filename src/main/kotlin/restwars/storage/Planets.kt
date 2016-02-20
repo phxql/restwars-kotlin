@@ -13,7 +13,7 @@ object InMemoryPlanetRepository : PlanetRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var planets: MutableList<Planet> = CopyOnWriteArrayList()
 
-    override fun findAllInhabitated(): List<Planet> {
+    override fun findAllInhabited(): List<Planet> {
         return planets.filter { it.owner != null }
     }
 

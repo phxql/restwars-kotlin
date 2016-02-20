@@ -4,11 +4,14 @@ import org.slf4j.LoggerFactory
 import restwars.business.LocationFormulas
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
+import restwars.business.building.BuildingService
+import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
 import restwars.business.config.Config
 import restwars.business.planet.InvalidLocationException
 import restwars.business.planet.Location
 import restwars.business.planet.Planet
+import restwars.business.planet.PlanetService
 import restwars.business.player.Player
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
@@ -69,6 +72,8 @@ class NoShipsException : FlightException()
 
 class NotEnoughShipsException(val type: ShipType, val needed: Int, val available: Int) : FlightException("Not enough ships of type $type available. Needed: $needed, available: $available")
 
+class ColonyShipRequiredException() : FlightException("A colony ship on this flight is required")
+
 class FlightServiceImpl(
         private val config: Config,
         private val roundService: RoundService,
@@ -89,6 +94,8 @@ class FlightServiceImpl(
         if (!destination.isValid(config.universeSize)) throw InvalidLocationException(destination)
         // Empty flights are forbidden
         if (ships.isEmpty()) throw NoShipsException()
+        // Colony flights must have a colony ship
+        if (type == FlightType.COLONIZE && ships[ShipType.COLONY] < 1) throw ColonyShipRequiredException()
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
         val shipsAvailable = shipService.findShipsByPlanet(start)
@@ -114,9 +121,13 @@ class FlightServiceImpl(
         return flight
     }
 
-    private fun calculateArrivalRound(currentRound: Long, distance: Long, slowestSpeed: Int) = currentRound + (distance.toDouble() / slowestSpeed.toDouble()).ceil()
+    private fun calculateArrivalRound(currentRound: Long, distance: Long, slowestSpeed: Double): Long {
+        return currentRound + (distance / slowestSpeed).ceil()
+    }
 
-    private fun calculateTravelSpeed(ships: Ships) = ships.ships.map { shipFormulas.calculateFlightSpeed(it.type) }.min() ?: throw AssertionError("Ships can't be empty")
+    private fun calculateTravelSpeed(ships: Ships): Double {
+        return ships.ships.map { shipFormulas.calculateFlightSpeed(it.type) }.min() ?: throw AssertionError("Ships can't be empty")
+    }
 
     override fun finishFlights() {
         val currentRound = roundService.currentRound()
@@ -165,12 +176,24 @@ class AttackFlightHandler : FlightTypeHandler {
     }
 }
 
-class ColonizeFlightHandler : FlightTypeHandler {
+class ColonizeFlightHandler(
+        private val planetService: PlanetService,
+        private val buildingService: BuildingService
+) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
     override fun handleFlight(flight: Flight, flightService: FlightService) {
         logger.debug("Handling colonize flight {}", flight)
-        // TODO: Colonize planet
-        flightService.createReturnFlight(flight, flight.ships)
+
+        val planet = planetService.findByLocation(flight.destination)
+        if (planet != null) {
+            logger.debug("Planet at {} is already colonized", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships)
+            return
+        }
+
+        logger.debug("Player {} colonized planet at {}", flight.playerId, flight.destination)
+        val newPlanet = planetService.createPlanet(flight.playerId, flight.destination)
+        buildingService.createBuilding(newPlanet, BuildingType.COMMAND_CENTER, 1)
     }
 }

@@ -36,7 +36,7 @@ class ClockImpl(
             shipService.finishShipsInConstruction()
             flightService.finishFlights()
 
-            for (planet in planetService.findAllInhabitated()) {
+            for (planet in planetService.findAllInhabited()) {
                 var updatedPlanet = planet
                 val buildings = buildingService.findBuildingsByPlanet(updatedPlanet)
                 updatedPlanet = gatherResources(buildings, updatedPlanet)

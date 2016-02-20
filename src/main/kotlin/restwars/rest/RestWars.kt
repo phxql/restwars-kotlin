@@ -8,6 +8,7 @@ import restwars.business.clock.ClockImpl
 import restwars.business.clock.RoundService
 import restwars.business.clock.RoundServiceImpl
 import restwars.business.config.Config
+import restwars.business.config.NewPlanet
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
 import restwars.business.flight.AttackFlightHandler
@@ -62,7 +63,7 @@ fun main(args: Array<String>) {
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas)
     val applicationInformationService = ApplicationInformationServiceImpl
 
-    val colonizeFlightHandler = ColonizeFlightHandler()
+    val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService)
     val attackFlightHandler = AttackFlightHandler()
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler)
 
@@ -127,7 +128,7 @@ private fun loadConfig(): Config {
     val configFile = Paths.get("config.yaml")
     if (!Files.exists(configFile)) {
         logger.warn("No config file at ${configFile.toAbsolutePath()} found, using default values")
-        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), 5)
+        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)), 5)
     }
 
     logger.info("Loading config from file ${configFile.toAbsolutePath()}")

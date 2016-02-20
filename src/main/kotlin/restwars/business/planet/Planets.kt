@@ -48,11 +48,13 @@ data class Planet(val id: UUID, val owner: UUID?, val location: Location, val re
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
 
+    fun createPlanet(playerId: UUID, location: Location): Planet
+
     fun findByOwner(owner: Player?): List<Planet>
 
     fun findByLocation(location: Location): Planet?
 
-    fun findAllInhabitated(): List<Planet>
+    fun findAllInhabited(): List<Planet>
 
     fun addResources(planet: Planet, resources: Resources): Planet
 }
@@ -66,10 +68,12 @@ interface PlanetRepository {
 
     fun findByLocation(location: Location): Planet?
 
-    fun findAllInhabitated(): List<Planet>
+    fun findAllInhabited(): List<Planet>
 
     fun addResources(planetId: UUID, resources: Resources)
 }
+
+class PlanetAlreadyExistsException(val location: Location) : Exception("Planet at location $location already exists")
 
 class PlanetServiceImpl(
         private val uuidFactory: UUIDFactory,
@@ -106,7 +110,15 @@ class PlanetServiceImpl(
         return planet
     }
 
-    override fun findAllInhabitated(): List<Planet> {
-        return planetRepository.findAllInhabitated()
+    override fun findAllInhabited(): List<Planet> {
+        return planetRepository.findAllInhabited()
+    }
+
+    override fun createPlanet(playerId: UUID, location: Location): Planet {
+        if (findByLocation(location) != null) throw PlanetAlreadyExistsException(location)
+
+        val planet = Planet(uuidFactory.create(), playerId, location, config.newPlanet.resources)
+        planetRepository.insert(planet)
+        return planet
     }
 }

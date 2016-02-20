@@ -11,7 +11,7 @@ interface BuildingFormulas {
 interface ShipFormulas {
     fun calculateBuildTime(type: ShipType): Int
 
-    fun calculateFlightSpeed(type: ShipType): Int
+    fun calculateFlightSpeed(type: ShipType): Double
 }
 
 interface LocationFormulas {
@@ -25,7 +25,6 @@ object BuildingFormulasImpl : BuildingFormulas {
             BuildingType.CRYSTAL_MINE -> 30 + (level - 1) * 10
             BuildingType.GAS_REFINERY -> 30 + (level - 1) * 10
             BuildingType.SOLAR_PANELS -> 30 + (level - 1) * 10
-        //            else -> throw IllegalArgumentException("Unknown building type: $type")
         }
     }
 }
@@ -34,12 +33,14 @@ object ShipFormulasImpl : ShipFormulas {
     override fun calculateBuildTime(type: ShipType): Int {
         return when (type) {
             ShipType.MOSQUITO -> 10
+            ShipType.COLONY -> 60
         }
     }
 
-    override fun calculateFlightSpeed(type: ShipType): Int {
+    override fun calculateFlightSpeed(type: ShipType): Double {
         return when (type) {
-            ShipType.MOSQUITO -> 1
+            ShipType.MOSQUITO -> 1.0
+            ShipType.COLONY -> 0.5
         }
     }
 }

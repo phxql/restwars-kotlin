@@ -10,7 +10,9 @@ data class UniverseSize(val maxGalaxies: Int, val maxSystems: Int, val maxPlanet
 
 data class StarterPlanet(val resources: Resources)
 
-data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val roundTime: Int) {
+data class NewPlanet(val resources: Resources)
+
+data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int) {
     data class UniverseSizeDto(var maxGalaxies: Int = 0, var maxSystems: Int = 0, var maxPlanets: Int = 0) {
         fun toUniverseSize(): UniverseSize {
             return UniverseSize(maxGalaxies, maxSystems, maxPlanets)
@@ -29,9 +31,19 @@ data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlan
         }
     }
 
-    data class ConfigDto(var universeSize: UniverseSizeDto = UniverseSizeDto(), var starterPlanet: StarterPlanetDto = StarterPlanetDto(), var roundTime: Int = 0) {
+    data class NewPlanetDto(var resources: ResourcesDto = ResourcesDto()) {
+        fun toNewPlanet(): NewPlanet {
+            return NewPlanet(resources.toResources())
+        }
+    }
+
+    data class ConfigDto(
+            var universeSize: UniverseSizeDto = UniverseSizeDto(),
+            var starterPlanet: StarterPlanetDto = StarterPlanetDto(),
+            var newPlanet: NewPlanetDto = NewPlanetDto(),
+            var roundTime: Int = 0) {
         fun toConfig(): Config {
-            return Config(universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), roundTime)
+            return Config(universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), newPlanet.toNewPlanet(), roundTime)
         }
     }
 
