@@ -30,6 +30,23 @@ data class Ships(val ships: List<Ship>) : Serializable {
         return ships.find { it.type == type }?.amount ?: 0
     }
 
+    operator fun minus(other: Ships): Ships {
+        return Ships(ships.map {
+            val otherAmount = other[it.type]
+            it.copy(amount = it.amount - otherAmount)
+        })
+    }
+
+    operator fun plus(other: Ships): Ships {
+        val shipsNotInThis = other.ships.filter { this[it.type] == 0 }
+
+        return Ships(
+                ships.map {
+                    it.copy(amount = it.amount + other[it.type])
+                } + shipsNotInThis
+        )
+    }
+
     fun with(type: ShipType, amount: Int): Ships {
         val containsShip = ships.any { it.type == type }
         if (!containsShip) {
