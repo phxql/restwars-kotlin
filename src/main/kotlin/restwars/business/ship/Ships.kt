@@ -5,6 +5,7 @@ import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import restwars.business.resource.NotEnoughResourcesException
 import java.io.Serializable
 import java.util.*
 
@@ -96,9 +97,17 @@ class ShipServiceImpl(
     override fun buildShip(planet: Planet, type: ShipType): ShipInConstruction {
         logger.debug("Building new ship of type {} on planet {}", type, planet.location)
 
+        // TODO: Check build queues
+        val cost = shipFormulas.calculateBuildCost(type)
+        if (!planet.resources.enough(cost)) {
+            throw NotEnoughResourcesException(cost, planet.resources)
+        }
+
         val currentRound = roundService.currentRound()
         val buildTime = shipFormulas.calculateBuildTime(type)
         val done = currentRound + buildTime
+
+        // TODO: Decrease resources
 
         val shipInConstruction = ShipInConstruction(uuidFactory.create(), planet.id, type, done)
         shipInConstructionRepository.insert(shipInConstruction)

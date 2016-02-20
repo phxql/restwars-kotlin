@@ -8,11 +8,9 @@ import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
 import restwars.business.config.Config
-import restwars.business.planet.InvalidLocationException
-import restwars.business.planet.Location
-import restwars.business.planet.Planet
-import restwars.business.planet.PlanetService
+import restwars.business.planet.*
 import restwars.business.player.Player
+import restwars.business.resource.NotEnoughResourcesException
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
@@ -98,6 +96,14 @@ class FlightServiceImpl(
         if (type == FlightType.COLONIZE && ships[ShipType.COLONY] < 1) throw ColonyShipRequiredException()
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
+
+        // Energy is calculated for outward and return flight, hence times 2
+        val energyCost = Resources.energy(ships.ships.map { shipFormulas.calculateFlightCostModifier(it.type) * it.amount * distance * 2 }.sum().ceil())
+
+        if (!start.resources.enough(energyCost)) {
+            throw NotEnoughResourcesException(energyCost, start.resources)
+        }
+
         val shipsAvailable = shipService.findShipsByPlanet(start)
 
         // Check that enough ships are available
@@ -113,7 +119,7 @@ class FlightServiceImpl(
         val currentRound = roundService.currentRound()
         val arrival = calculateArrivalRound(currentRound, distance, slowestSpeed)
 
-        // TODO: Check & consume resources
+        // TODO: Decrease resources
         // TODO: Decrease ships
         val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type)
         flightRepository.insert(flight)

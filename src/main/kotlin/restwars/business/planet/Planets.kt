@@ -41,6 +41,10 @@ data class Resources(val crystal: Int, val gas: Int, val energy: Int) : Serializ
     }
 
     operator fun plus(other: Resources) = Resources(crystal + other.crystal, gas + other.gas, energy + other.energy)
+
+    fun enough(cost: Resources): Boolean {
+        return crystal >= cost.crystal && gas >= cost.gas && energy >= cost.energy
+    }
 }
 
 data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources) : Serializable

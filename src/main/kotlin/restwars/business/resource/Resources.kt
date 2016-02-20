@@ -4,6 +4,8 @@ import restwars.business.building.BuildingType
 import restwars.business.planet.Resources
 import restwars.util.ceil
 
+class NotEnoughResourcesException(val needed: Resources, val available: Resources) : Exception("Not enough resources. Needed: $needed, available: $available")
+
 interface ResourceService {
     fun calculateGatheredResources(type: BuildingType, level: Int): Resources
 }

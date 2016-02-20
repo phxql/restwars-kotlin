@@ -5,6 +5,7 @@ import restwars.business.BuildingFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import restwars.business.resource.NotEnoughResourcesException
 import java.io.Serializable
 import java.util.*
 
@@ -70,7 +71,6 @@ class BuildingServiceImpl(
 
     override fun build(planet: Planet, type: BuildingType): ConstructionSite {
         val building = buildingRepository.findByPlanetIdAndType(planet.id, type)
-        // TODO: Check resources
         // TODO: Check build queues
         // TODO: Check if building type already in queue
         val level = if (building == null) {
@@ -79,9 +79,16 @@ class BuildingServiceImpl(
             building.level + 1
         }
 
+        val cost = buildingFormulas.calculateBuildCost(type, level)
+        if (!planet.resources.enough(cost)) {
+            throw NotEnoughResourcesException(cost, planet.resources)
+        }
+
         val id = uuidFactory.create()
         val buildTime = buildingFormulas.calculateBuildTime(type, level)
         val done = roundService.currentRound() + buildTime
+
+        // TODO: Decrease resources
 
         val constructionSite = ConstructionSite(id, planet.id, type, level, done)
         constructionSiteRepository.insert(constructionSite)
