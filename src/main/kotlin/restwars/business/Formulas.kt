@@ -23,6 +23,10 @@ interface ShipFormulas {
     fun calculateBuildCost(type: ShipType): Resources
 
     fun calculateFlightCostModifier(type: ShipType): Double
+
+    fun calculateAttackPoints(type: ShipType): Int
+
+    fun calculateDefendPoints(type: ShipType): Int
 }
 
 interface LocationFormulas {
@@ -98,6 +102,20 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 1.0
             ShipType.COLONY -> 2.0
+        }
+    }
+
+    override fun calculateAttackPoints(type: ShipType): Int {
+        return when (type) {
+            ShipType.MOSQUITO -> 14
+            ShipType.COLONY -> 0
+        }
+    }
+
+    override fun calculateDefendPoints(type: ShipType): Int {
+        return when (type) {
+            ShipType.MOSQUITO -> 10
+            ShipType.COLONY -> 75
         }
     }
 }
