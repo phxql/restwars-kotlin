@@ -4,8 +4,7 @@ import org.slf4j.LoggerFactory
 import restwars.business.RandomNumberGenerator
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
-import restwars.business.planet.Planet
-import restwars.business.player.Player
+import restwars.business.clock.RoundService
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
 import java.util.*
@@ -16,7 +15,30 @@ data class Fight(val id: UUID, val attackerId: UUID, val defenderId: UUID, val p
 )
 
 interface FightCalculator {
-    fun attack(attacker: Player, defender: Player, planet: Planet, attackerShips: Ships, defenderShips: Ships, round: Long): Fight
+    fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships, round: Long): Fight
+}
+
+interface FightService {
+    fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships): Fight
+}
+
+interface FightRepository {
+    fun insert(fight: Fight)
+}
+
+class FightServiceImpl(
+        private val fightCalculator: FightCalculator,
+        private val roundService: RoundService,
+        private val fightRepository: FightRepository
+) : FightService {
+    override fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships): Fight {
+        val round = roundService.currentRound()
+        val fight = fightCalculator.attack(attackerId, defenderId, planetId, attackerShips, defenderShips, round)
+
+        fightRepository.insert(fight)
+
+        return fight
+    }
 }
 
 class FightCalculatorImpl(
@@ -26,13 +48,13 @@ class FightCalculatorImpl(
 ) : FightCalculator {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun attack(attacker: Player, defender: Player, planet: Planet, attackerShips: Ships, defenderShips: Ships, round: Long): Fight {
+    override fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships, round: Long): Fight {
         logger.debug("Fight between {} and {}", attackerShips, defenderShips)
 
         val remainingDefenderShips = fight(attackerShips, defenderShips)
         val remainingAttackerShips = fight(defenderShips, attackerShips)
 
-        return Fight(uuidFactory.create(), attacker.id, defender.id, planet.id, attackerShips, defenderShips, remainingAttackerShips, remainingDefenderShips, round)
+        return Fight(uuidFactory.create(), attackerId, defenderId, planetId, attackerShips, defenderShips, remainingAttackerShips, remainingDefenderShips, round)
     }
 
     private fun fight(attackerShips: Ships, defenderShips: Ships): Ships {

@@ -11,6 +11,8 @@ import restwars.business.config.Config
 import restwars.business.config.NewPlanet
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
+import restwars.business.fight.FightCalculatorImpl
+import restwars.business.fight.FightServiceImpl
 import restwars.business.flight.AttackFlightHandler
 import restwars.business.flight.ColonizeFlightHandler
 import restwars.business.flight.FlightServiceImpl
@@ -49,6 +51,7 @@ fun main(args: Array<String>) {
     val hangarRepository = InMemoryHangarRepository
     val shipInConstructionRepository = InMemoryShipInConstructionRepository
     val flightRepository = InMemoryFlightRepository
+    val fightRepository = InMemoryFightRepository
 
     val buildingFormulas = BuildingFormulasImpl
     val shipFormulas = ShipFormulasImpl
@@ -62,9 +65,11 @@ fun main(args: Array<String>) {
     val lockService = LockServiceImpl
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, buildingFormulas, planetRepository)
     val applicationInformationService = ApplicationInformationServiceImpl
+    val fightCalculator = FightCalculatorImpl(uuidFactory, shipFormulas, randomNumberGenerator)
+    val fightService = FightServiceImpl(fightCalculator, roundService, fightRepository)
 
     val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService)
-    val attackFlightHandler = AttackFlightHandler()
+    val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService)
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, planetRepository)
 
     val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService)

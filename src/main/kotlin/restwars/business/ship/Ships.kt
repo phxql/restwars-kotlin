@@ -90,6 +90,8 @@ interface ShipService {
     fun removeShips(planet: Planet, ships: Ships)
 
     fun addShips(planet: Planet, ships: Ships)
+
+    fun setShips(planet: Planet, ships: Ships)
 }
 
 interface ShipInConstructionRepository {
@@ -207,6 +209,18 @@ class ShipServiceImpl(
             for (ship in ships.ships) {
                 val newAmount = hangar.ships[ship.type] + ship.amount
                 hangarRepository.updateShips(hangar.id, ship.type, newAmount)
+            }
+        }
+    }
+
+    override fun setShips(planet: Planet, ships: Ships) {
+        val hangar = hangarRepository.findByPlanetId(planet.id)
+        if (hangar == null) {
+            val newHangar = Hangar(uuidFactory.create(), planet.id, ships)
+            hangarRepository.insert(newHangar)
+        } else {
+            for (ship in ships.ships) {
+                hangarRepository.updateShips(hangar.id, ship.type, ship.amount)
             }
         }
     }
