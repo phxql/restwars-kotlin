@@ -1,0 +1,92 @@
+package restwars.business.flight
+
+import org.slf4j.LoggerFactory
+import restwars.business.building.BuildingService
+import restwars.business.building.BuildingType
+import restwars.business.fight.FightService
+import restwars.business.planet.PlanetService
+import restwars.business.ship.ShipService
+import restwars.business.ship.ShipType
+import restwars.business.ship.Ships
+
+class AttackFlightHandler(
+        private val planetService: PlanetService,
+        private val fightService: FightService,
+        private val shipService: ShipService
+) : FlightTypeHandler {
+    val logger = LoggerFactory.getLogger(javaClass)
+
+    override fun handleFlight(flight: Flight, flightService: FlightService) {
+        logger.debug("Handling attack flight {}", flight)
+
+        val planet = planetService.findByLocation(flight.destination)
+        if (planet == null || planet.owner == null) {
+            logger.debug("Planet ${flight.destination} is not colonized")
+            flightService.createReturnFlight(flight, flight.ships)
+            return
+        }
+
+        if (planet.owner == flight.playerId) {
+            logger.debug("Planet {} is friendly, creating return flight", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships)
+            return
+        }
+
+        val defenderShips = shipService.findShipsByPlanet(planet)
+
+        val fight = fightService.attack(flight.playerId, planet.owner, planet.id, flight.ships, defenderShips)
+        shipService.setShips(planet, fight.remainingDefenderShips)
+
+        if (fight.remainingAttackerShips.isEmpty()) {
+            logger.debug("Attacker lost all ships")
+            flightService.delete(flight)
+        } else {
+            logger.debug("Looting planet")
+            // TODO: Loot planet
+            flightService.createReturnFlight(flight, fight.remainingAttackerShips)
+        }
+    }
+}
+
+class ColonizeFlightHandler(
+        private val planetService: PlanetService,
+        private val buildingService: BuildingService,
+        private val shipService: ShipService
+) : FlightTypeHandler {
+    val logger = LoggerFactory.getLogger(javaClass)
+
+    override fun handleFlight(flight: Flight, flightService: FlightService) {
+        logger.debug("Handling colonize flight {}", flight)
+
+        val planet = planetService.findByLocation(flight.destination)
+        if (planet != null) {
+            logger.debug("Planet at {} is already colonized", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships)
+            return
+        }
+
+        logger.debug("Player {} colonized planet at {}", flight.playerId, flight.destination)
+        val newPlanet = planetService.createPlanet(flight.playerId, flight.destination)
+        buildingService.createBuilding(newPlanet, BuildingType.COMMAND_CENTER, 1)
+
+        // Colony ship gets converted into a command center, land the remaining ships
+        val shipsToLand = flight.ships - Ships.of(ShipType.COLONY, 1)
+        shipService.addShips(newPlanet, shipsToLand)
+
+        // Delete flight
+        flightService.delete(flight)
+    }
+}
+
+class TransferFlightHandler : FlightTypeHandler {
+    override fun handleFlight(flight: Flight, flightService: FlightService) {
+        // TODO: Implement!
+    }
+}
+
+class TransportFlightHandler : FlightTypeHandler {
+    override fun handleFlight(flight: Flight, flightService: FlightService) {
+        // TODO: Implement!
+    }
+
+}
