@@ -33,7 +33,9 @@ dependencies {
     // Validation
     compile 'org.hibernate:hibernate-validator:5.2.3.Final'
     // YAML parsing
-    compile 'org.yaml:snakeyaml:1.16'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1-1'
+    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.7.1-2'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.7.1'
 
     // Needed for validation
     runtime 'javax.el:javax.el-api:2.2.5'
