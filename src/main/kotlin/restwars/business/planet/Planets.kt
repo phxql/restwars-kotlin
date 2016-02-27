@@ -94,6 +94,8 @@ class PlanetServiceImpl(
         private val config: Config
 ) : PlanetService {
     override fun addResources(planet: Planet, resources: Resources): Planet {
+        if (resources.isEmpty()) return planet
+
         val updatedPlanet = planet.increaseResources(resources)
         planetRepository.updateResources(planet.id, updatedPlanet.resources)
         return updatedPlanet

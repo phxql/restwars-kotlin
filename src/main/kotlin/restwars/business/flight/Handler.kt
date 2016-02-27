@@ -76,7 +76,8 @@ class ColonizeFlightHandler(
         val shipsToLand = flight.ships - Ships.of(ShipType.COLONY, 1)
         shipService.addShips(newPlanet, shipsToLand)
 
-        // TODO: Unload cargo
+        // Unload cargo
+        planetService.addResources(newPlanet, flight.cargo)
 
         flightService.delete(flight)
     }
@@ -105,7 +106,9 @@ class TransferFlightHandler(
 
         // Land ships on planet
         shipService.addShips(planet, flight.ships)
-        // TODO: Unload cargo
+        // Unload cargo
+        planetService.addResources(planet, flight.cargo)
+
         flightService.delete(flight)
     }
 }
@@ -130,7 +133,10 @@ class TransportFlightHandler(
             return
         }
 
-        // TODO: Unload cargo
+        // Unload cargo
+        planetService.addResources(planet, flight.cargo)
+
+        // Send ships back
         flightService.createReturnFlight(flight, flight.ships, Resources.none())
     }
 }
