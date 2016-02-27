@@ -42,6 +42,7 @@ object BuildingFormulasImpl : BuildingFormulas {
             BuildingType.CRYSTAL_MINE -> 30 + (level - 1) * 10
             BuildingType.GAS_REFINERY -> 30 + (level - 1) * 10
             BuildingType.SOLAR_PANELS -> 30 + (level - 1) * 10
+            BuildingType.TELESCOPE -> 50 + (level - 1) * 10
         }
     }
 
@@ -66,6 +67,11 @@ object BuildingFormulasImpl : BuildingFormulas {
                     100 + (level - 1) * 50,
                     50 + (level - 1) * 25,
                     400 + (level - 1) * 200)
+            BuildingType.TELESCOPE -> Resources(
+                    100 + (level - 1) * 50,
+                    50 + (level - 1) * 25,
+                    400 + (level - 1) * 200
+            )
         }
     }
 
