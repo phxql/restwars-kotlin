@@ -1,13 +1,14 @@
 package restwars.rest.controller
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import spark.Request
 import spark.Response
 
 object Json {
     val contentType = "application/json"
 
-    private val gson = Gson()
+    private val mapper = ObjectMapper().registerModule(KotlinModule())
 
     fun toJson(response: Response, model: Any): String {
         response.type(contentType)
@@ -15,10 +16,10 @@ object Json {
     }
 
     fun toJson(model: Any): String {
-        return gson.toJson(model)
+        return mapper.writeValueAsString(model)
     }
 
     fun <T> fromJson(request: Request, clazz: Class<T>): T? {
-        return gson.fromJson(request.body(), clazz)
+        return mapper.readValue(request.body(), clazz)
     }
 }

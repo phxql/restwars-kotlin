@@ -28,11 +28,9 @@ dependencies {
     }
     // Logging API
     compile 'org.slf4j:slf4j-api:1.7.14'
-    // JSON
-    compile 'com.google.code.gson:gson:2.5'
     // Validation
     compile 'org.hibernate:hibernate-validator:5.2.3.Final'
-    // YAML parsing
+    // JSON & YAML
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1-1'
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.7.1-2'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.7.1'
