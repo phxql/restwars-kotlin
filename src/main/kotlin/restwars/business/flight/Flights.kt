@@ -90,7 +90,7 @@ class FlightServiceImpl(
         private val attackFlightHandler: FlightTypeHandler,
         private val transferFlightHandler: FlightTypeHandler,
         private val transportFlightHandler: FlightTypeHandler,
-        private val planetRepository: PlanetRepository
+        private val planetService: PlanetService
 ) : FlightService {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -132,8 +132,7 @@ class FlightServiceImpl(
         val arrival = calculateArrivalRound(currentRound, distance, slowestSpeed)
 
         // Decrease resources
-        val updatedPlanet = start.decreaseResources(cost)
-        planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
+        val updatedPlanet = planetService.removeResources(start, cost)
 
         // Decrease ships
         shipService.removeShips(start, ships)
@@ -172,14 +171,15 @@ class FlightServiceImpl(
     private fun finishReturnFlight(flight: Flight) {
         logger.debug("Finishing return flight {}", flight)
 
-        val planet = planetRepository.findAtLocation(flight.start)
+        val planet = planetService.findByLocation(flight.start)
         if (planet == null) {
             // TODO: What happens if the planet is no more?
             return;
         }
         // TODO: What happens if the planet changed the owner?
 
-        // TODO: Unload cargo
+        // Unload cargo
+        planetService.addResources(planet, flight.cargo)
 
         // Land ships in hangar
         shipService.addShips(planet, flight.ships)
