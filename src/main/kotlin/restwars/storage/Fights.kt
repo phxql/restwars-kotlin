@@ -15,12 +15,12 @@ object InMemoryFightRepository : FightRepository, PersistentRepository {
         fights.add(fight)
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, fights)
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, fights)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        this.fights = Persister.loadData(path) as MutableList<Fight>
+    override fun load(persister: Persister, path: Path) {
+        this.fights = persister.loadData(path) as MutableList<Fight>
     }
 }

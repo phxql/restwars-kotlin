@@ -29,13 +29,13 @@ object InMemoryBuildingRepository : BuildingRepository, PersistentRepository {
         buildings[index] = buildings[index].copy(level = newLevel)
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, buildings)
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, buildings)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        this.buildings = Persister.loadData(path) as MutableList<Building>
+    override fun load(persister: Persister, path: Path) {
+        this.buildings = persister.loadData(path) as MutableList<Building>
     }
 }
 
@@ -61,13 +61,13 @@ object InMemoryConstructionSiteRepository : ConstructionSiteRepository, Persiste
         return constructionSites.filter { it.planetId == planetId }
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, constructionSites)
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, constructionSites)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        this.constructionSites = Persister.loadData(path) as MutableList<ConstructionSite>
+    override fun load(persister: Persister, path: Path) {
+        this.constructionSites = persister.loadData(path) as MutableList<ConstructionSite>
     }
 
     override fun countByPlanetId(planetId: UUID): Int {

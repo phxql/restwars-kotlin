@@ -1,20 +1,20 @@
 package restwars.storage
 
 import org.slf4j.LoggerFactory
-import restwars.business.planet.Location
-import restwars.business.planet.Planet
-import restwars.business.planet.PlanetRepository
-import restwars.business.planet.Resources
+import restwars.business.planet.*
+import restwars.business.player.PlayerRepository
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object InMemoryPlanetRepository : PlanetRepository, PersistentRepository {
+class InMemoryPlanetRepository(
+        private val playerRepository: PlayerRepository
+) : PlanetRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var planets: MutableList<Planet> = CopyOnWriteArrayList()
 
     override fun findAllInhabited(): List<Planet> {
-        return planets.filter { it.owner != null }
+        return planets
     }
 
     override fun updateResources(planetId: UUID, resources: Resources) {
@@ -43,12 +43,22 @@ object InMemoryPlanetRepository : PlanetRepository, PersistentRepository {
         return planets.firstOrNull { it.location == location }
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, planets)
+    override fun findInRangeWithOwner(galaxyMin: Int, galaxyMax: Int, systemMin: Int, systemMax: Int, planetMin: Int, planetMax: Int): List<PlanetWithPlayer> {
+        val planets = planets.filter {
+            it.location.galaxy in galaxyMin..galaxyMax &&
+                    it.location.system in systemMin..systemMax &&
+                    it.location.planet in planetMin..planetMax
+        }
+
+        return planets.map { PlanetWithPlayer(it, playerRepository.findById(it.owner)!!) }
+    }
+
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, planets)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        planets = Persister.loadData(path) as MutableList<Planet>
+    override fun load(persister: Persister, path: Path) {
+        planets = persister.loadData(path) as MutableList<Planet>
     }
 }

@@ -104,7 +104,7 @@ class FlightServiceImpl(
         // Colony flights must have a colony ship
         if (type == FlightType.COLONIZE && ships[ShipType.COLONY] < 1) throw ColonyShipRequiredException()
         // Cargo is only allowed on transport, transfer and colonize flights
-        if (cargo.isEmpty() && !(type == FlightType.TRANSFER || type == FlightType.COLONIZE || type == FlightType.TRANSPORT)) throw CargoNotAllowedException()
+        if (!cargo.isEmpty() && !(type == FlightType.TRANSFER || type == FlightType.COLONIZE || type == FlightType.TRANSPORT)) throw CargoNotAllowedException()
         // Energy can't be put in cargo
         if (cargo.energy > 0) throw EnergyInCargoException()
 

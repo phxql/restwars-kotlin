@@ -20,6 +20,8 @@ interface PlayerRepository {
     fun insert(player: Player)
 
     fun findByUsername(username: String): Player?
+
+    fun findById(id: UUID): Player?
 }
 
 class PlayerServiceImpl(

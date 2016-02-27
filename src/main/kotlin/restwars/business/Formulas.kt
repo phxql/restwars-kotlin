@@ -13,6 +13,8 @@ interface BuildingFormulas {
     fun calculateBuildSlots(commandCenterLevel: Int): Int
 
     fun calculateShipBuildSlots(shipyardLevel: Int): Int
+
+    fun calculateScanRange(telescopeLevel: Int): Int
 }
 
 interface ShipFormulas {
@@ -36,6 +38,11 @@ interface LocationFormulas {
 }
 
 object BuildingFormulasImpl : BuildingFormulas {
+    override fun calculateScanRange(telescopeLevel: Int): Int {
+        if (telescopeLevel == 0) return 0
+        return telescopeLevel - 1
+    }
+
     override fun calculateBuildTime(type: BuildingType, level: Int): Int {
         return when (type) {
             BuildingType.COMMAND_CENTER -> 50 + (level - 1) * 25

@@ -2,6 +2,7 @@ package restwars.rest.api
 
 import restwars.business.planet.Location
 import restwars.business.planet.Planet
+import restwars.business.planet.PlanetWithPlayer
 import restwars.business.planet.Resources
 
 data class LocationResponse(val galaxy: Int, val system: Int, val planet: Int) {
@@ -28,5 +29,15 @@ data class PlanetResponse(val location: LocationResponse, val resources: Resourc
 data class PlanetsResponse(val planets: List<PlanetResponse>) {
     companion object {
         fun fromPlanets(planets: List<Planet>) = PlanetsResponse(planets.map { PlanetResponse.fromPlanet(it) })
+    }
+}
+
+data class ScannedPlanetResponse(val location: Location, val owner: String)
+
+data class ScanResponse(val planets: List<ScannedPlanetResponse>) {
+    companion object {
+        fun from(planets: List<PlanetWithPlayer>): ScanResponse {
+            return ScanResponse(planets.map { ScannedPlanetResponse(it.planet.location, it.player.username) })
+        }
     }
 }

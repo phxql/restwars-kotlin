@@ -10,12 +10,14 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 interface PersistentRepository {
-    fun persist(path: Path)
+    fun persist(persister: Persister, path: Path)
 
-    fun load(path: Path)
+    fun load(persister: Persister, path: Path)
 }
 
-object Persister {
+class Persister(
+        planetRepository: PersistentRepository
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Persister") })
     private val persistInterval = 5L
@@ -23,7 +25,7 @@ object Persister {
     private val repositories = mapOf<PersistentRepository, Path>(
             InMemoryBuildingRepository to Paths.get("data/buildings.dat"),
             InMemoryConstructionSiteRepository to Paths.get("data/construction-sites.dat"),
-            InMemoryPlanetRepository to Paths.get("data/planets.dat"),
+            planetRepository to Paths.get("data/planets.dat"),
             InMemoryPlayerRepository to Paths.get("data/players.dat"),
             InMemoryRoundRepository to Paths.get("data/round.dat"),
             InMemoryHangarRepository to Paths.get("data/hangars.dat"),
@@ -43,7 +45,7 @@ object Persister {
         try {
             for ((repo, path) in repositories) {
                 if (Files.exists(path)) {
-                    repo.load(path)
+                    repo.load(this, path)
                 }
             }
             logger.debug("Done loading repositories")
@@ -60,7 +62,7 @@ object Persister {
                     Files.createDirectories(path.parent)
                 }
 
-                repo.persist(path)
+                repo.persist(this, path)
             }
             logger.debug("Done persisting repositories")
         } catch(e: Exception) {

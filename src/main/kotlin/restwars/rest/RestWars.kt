@@ -42,7 +42,7 @@ fun main(args: Array<String>) {
     val randomNumberGenerator = RandomNumberGeneratorImpl
 
     val playerRepository = InMemoryPlayerRepository
-    val planetRepository = InMemoryPlanetRepository
+    val planetRepository = InMemoryPlanetRepository(playerRepository)
     val buildingRepository = InMemoryBuildingRepository
     val constructionSiteRepository = InMemoryConstructionSiteRepository
     val roundRepository = InMemoryRoundRepository
@@ -57,7 +57,7 @@ fun main(args: Array<String>) {
 
     val roundService = RoundServiceImpl(roundRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
-    val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config)
+    val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config, buildingFormulas)
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormulas, roundService, planetRepository)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
@@ -85,6 +85,7 @@ fun main(args: Array<String>) {
     val configurationController = ConfigurationController(config)
     val roundController = RoundController(roundService, config)
     val flightController = FlightController(validatorFactory, playerService, planetService, flightService)
+    val telescopeController = TelescopeController(validatorFactory, playerService, planetService, buildingService)
 
     configureSpark()
     addExceptionHandler()
@@ -92,13 +93,14 @@ fun main(args: Array<String>) {
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
-            roundController, flightController
+            roundController, flightController, telescopeController
     )
 
     Spark.awaitInitialization()
 
     startClock(clock, config)
-    Persister.start()
+    val persister = Persister(planetRepository)
+    persister.start()
     logger.info("RESTwars started on port {}", port)
 }
 
@@ -150,7 +152,7 @@ private fun registerRoutes(
         shipController: ShipController, shipyardController: ShipyardController,
         applicationInformationController: ApplicationInformationController,
         configurationController: ConfigurationController, roundController: RoundController,
-        flightController: FlightController
+        flightController: FlightController, telescopeController: TelescopeController
 ) {
     Spark.get("/v1/restwars", Json.contentType, route(lockService, applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(lockService, configurationController.get()))
@@ -164,6 +166,7 @@ private fun registerRoutes(
     Spark.post("/v1/planet/:location/hangar", Json.contentType, route(lockService, shipController.build()))
     Spark.get("/v1/planet/:location/shipyard", Json.contentType, route(lockService, shipyardController.listOnPlanet()))
     Spark.post("/v1/planet/:location/flight", Json.contentType, route(lockService, flightController.create()))
+    Spark.post("/v1/planet/:location/telescope/scan", Json.contentType, route(lockService, telescopeController.scan()))
 }
 
 private fun addExceptionHandler() {

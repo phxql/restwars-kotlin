@@ -32,13 +32,13 @@ object InMemoryShipInConstructionRepository : ShipInConstructionRepository, Pers
         return shipsInConstruction.count { it.planetId == planetId }
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, shipsInConstruction)
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, shipsInConstruction)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        shipsInConstruction = Persister.loadData(path) as MutableList<ShipInConstruction>
+    override fun load(persister: Persister, path: Path) {
+        shipsInConstruction = persister.loadData(path) as MutableList<ShipInConstruction>
     }
 }
 
@@ -65,12 +65,12 @@ object InMemoryHangarRepository : HangarRepository, PersistentRepository {
         hangars[index] = hangar.copy(ships = hangar.ships.with(type, newAmount))
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, hangars)
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, hangars)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        hangars = Persister.loadData(path) as MutableList<Hangar>
+    override fun load(persister: Persister, path: Path) {
+        hangars = persister.loadData(path) as MutableList<Hangar>
     }
 }

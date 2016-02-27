@@ -35,6 +35,8 @@ interface BuildingService {
 
     fun findBuildingsByPlanet(planet: Planet): List<Building>
 
+    fun findBuildingByPlanetAndType(planet: Planet, type: BuildingType): Building?
+
     fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite>
 
     fun build(planet: Planet, type: BuildingType): BuildResult
@@ -164,5 +166,9 @@ class BuildingServiceImpl(
     override fun createBuilding(planet: Planet, type: BuildingType, level: Int) {
         val building = Building(uuidFactory.create(), planet.id, type, level)
         buildingRepository.insert(building)
+    }
+
+    override fun findBuildingByPlanetAndType(planet: Planet, type: BuildingType): Building? {
+        return buildingRepository.findByPlanetIdAndType(planet.id, type)
     }
 }

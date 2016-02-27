@@ -20,13 +20,13 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
 
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, flights)
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, flights)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun load(path: Path) {
-        flights = Persister.loadData(path) as MutableList<Flight>
+    override fun load(persister: Persister, path: Path) {
+        flights = persister.loadData(path) as MutableList<Flight>
     }
 
     override fun update(id: UUID, ships: Ships, arrivalInRound: Long, direction: FlightDirection, cargo: Resources) {

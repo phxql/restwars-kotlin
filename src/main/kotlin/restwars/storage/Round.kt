@@ -22,12 +22,12 @@ object InMemoryRoundRepository : RoundRepository, PersistentRepository {
         currentRound.set(round)
     }
 
-    override fun persist(path: Path) {
-        Persister.saveData(path, currentRound.get())
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, currentRound.get())
     }
 
-    override fun load(path: Path) {
-        val round = Persister.loadData(path) as Long
+    override fun load(persister: Persister, path: Path) {
+        val round = persister.loadData(path) as Long
         currentRound.set(round)
     }
 }

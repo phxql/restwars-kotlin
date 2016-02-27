@@ -1,5 +1,6 @@
 package restwars.business.planet
 
+import restwars.business.BuildingFormulas
 import restwars.business.RandomNumberGenerator
 import restwars.business.UUIDFactory
 import restwars.business.config.Config
@@ -51,11 +52,13 @@ data class Resources(val crystal: Int, val gas: Int, val energy: Int) : Serializ
     }
 }
 
-data class Planet(val id: UUID, val owner: UUID?, val location: Location, val resources: Resources) : Serializable {
+data class Planet(val id: UUID, val owner: UUID, val location: Location, val resources: Resources) : Serializable {
     fun decreaseResources(loss: Resources): Planet = copy(resources = this.resources - loss)
 
     fun increaseResources(gain: Resources): Planet = copy(resources = this.resources + gain)
 }
+
+data class PlanetWithPlayer(val planet: Planet, val player: Player)
 
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
@@ -71,6 +74,8 @@ interface PlanetService {
     fun addResources(planet: Planet, resources: Resources): Planet
 
     fun removeResources(planet: Planet, resources: Resources): Planet
+
+    fun findInVicinity(planet: Planet, telescopeLevel: Int): List<PlanetWithPlayer>
 }
 
 interface PlanetRepository {
@@ -85,6 +90,8 @@ interface PlanetRepository {
     fun findAllInhabited(): List<Planet>
 
     fun updateResources(planetId: UUID, resources: Resources)
+
+    fun findInRangeWithOwner(galaxyMin: Int, galaxyMax: Int, systemMin: Int, systemMax: Int, planetMin: Int, planetMax: Int): List<PlanetWithPlayer>
 }
 
 class PlanetAlreadyExistsException(val location: Location) : Exception("Planet at location $location already exists")
@@ -93,7 +100,8 @@ class PlanetServiceImpl(
         private val uuidFactory: UUIDFactory,
         private val randomNumberGenerator: RandomNumberGenerator,
         private val planetRepository: PlanetRepository,
-        private val config: Config
+        private val config: Config,
+        private val buildingFormulas: BuildingFormulas
 ) : PlanetService {
     override fun addResources(planet: Planet, resources: Resources): Planet {
         if (resources.isEmpty()) return planet
@@ -144,5 +152,19 @@ class PlanetServiceImpl(
         val planet = Planet(uuidFactory.create(), playerId, location, config.newPlanet.resources)
         planetRepository.insert(planet)
         return planet
+    }
+
+    override fun findInVicinity(planet: Planet, telescopeLevel: Int): List<PlanetWithPlayer> {
+        val range = buildingFormulas.calculateScanRange(telescopeLevel)
+
+        val location = planet.location
+        val galaxyMin = location.galaxy
+        val galaxyMax = location.galaxy
+        val systemMin = Math.max(location.system - range, 1)
+        val systemMax = Math.min(location.system + range, config.universeSize.maxSystems)
+        val planetMin = 1
+        val planetMax = config.universeSize.maxPlanets
+
+        return planetRepository.findInRangeWithOwner(galaxyMin, galaxyMax, systemMin, systemMax, planetMin, planetMax)
     }
 }

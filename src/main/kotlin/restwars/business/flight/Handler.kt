@@ -24,7 +24,7 @@ class AttackFlightHandler(
         logger.debug("Handling attack flight {}", flight)
 
         val planet = planetService.findByLocation(flight.destination)
-        if (planet == null || planet.owner == null) {
+        if (planet == null) {
             logger.debug("Planet ${flight.destination} is not colonized")
             flightService.createReturnFlight(flight, flight.ships, flight.cargo)
             return
