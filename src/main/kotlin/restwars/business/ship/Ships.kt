@@ -92,6 +92,8 @@ interface ShipService {
     fun addShips(planet: Planet, ships: Ships)
 
     fun setShips(planet: Planet, ships: Ships)
+
+    fun calculateCargoSpace(ships: Ships): Int
 }
 
 interface ShipInConstructionRepository {
@@ -223,5 +225,9 @@ class ShipServiceImpl(
                 hangarRepository.updateShips(hangar.id, ship.type, ship.amount)
             }
         }
+    }
+
+    override fun calculateCargoSpace(ships: Ships): Int {
+        return ships.ships.sumBy { shipFormulas.calculateCargoSpace(it.type) * it.amount }
     }
 }

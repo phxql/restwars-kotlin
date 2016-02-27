@@ -78,6 +78,8 @@ class CargoNotAllowedException : FlightException("Cargo is not allowed")
 
 class EnergyInCargoException : FlightException("Energy can't be put in cargo")
 
+class NotEnoughCargoSpaceException(val needed: Int, val available: Int) : FlightException("Not enough cargo available: Needed: $needed, available: $available")
+
 class FlightServiceImpl(
         private val config: Config,
         private val roundService: RoundService,
@@ -107,6 +109,11 @@ class FlightServiceImpl(
         if (!cargo.isEmpty() && !(type == FlightType.TRANSFER || type == FlightType.COLONIZE || type == FlightType.TRANSPORT)) throw CargoNotAllowedException()
         // Energy can't be put in cargo
         if (cargo.energy > 0) throw EnergyInCargoException()
+
+        // Check cargo size
+        val cargoNeeded = cargo.crystal + cargo.gas
+        val cargoAvailable = shipService.calculateCargoSpace(ships)
+        if (cargoNeeded > cargoAvailable) throw NotEnoughCargoSpaceException(cargoNeeded, cargoAvailable)
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
 
