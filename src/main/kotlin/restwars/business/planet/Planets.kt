@@ -69,6 +69,8 @@ interface PlanetService {
     fun findAllInhabited(): List<Planet>
 
     fun addResources(planet: Planet, resources: Resources): Planet
+
+    fun removeResources(planet: Planet, resources: Resources): Planet
 }
 
 interface PlanetRepository {
@@ -97,6 +99,14 @@ class PlanetServiceImpl(
         if (resources.isEmpty()) return planet
 
         val updatedPlanet = planet.increaseResources(resources)
+        planetRepository.updateResources(planet.id, updatedPlanet.resources)
+        return updatedPlanet
+    }
+
+    override fun removeResources(planet: Planet, resources: Resources): Planet {
+        if (resources.isEmpty()) return planet
+
+        val updatedPlanet = planet.decreaseResources(resources)
         planetRepository.updateResources(planet.id, updatedPlanet.resources)
         return updatedPlanet
     }

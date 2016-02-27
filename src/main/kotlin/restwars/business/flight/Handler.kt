@@ -1,9 +1,11 @@
 package restwars.business.flight
 
 import org.slf4j.LoggerFactory
+import restwars.business.ShipFormulas
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.fight.FightService
+import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
 import restwars.business.ship.ShipService
@@ -13,7 +15,8 @@ import restwars.business.ship.Ships
 class AttackFlightHandler(
         private val planetService: PlanetService,
         private val fightService: FightService,
-        private val shipService: ShipService
+        private val shipService: ShipService,
+        private val shipFormulas: ShipFormulas
 ) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -43,11 +46,22 @@ class AttackFlightHandler(
             flightService.delete(flight)
         } else {
             logger.debug("Looting planet")
-            // TODO: Loot planet
-            val loot = Resources.none()
+            val loot = calculateLoot(planet, flight.ships)
+            logger.debug("Looting {}", loot)
+
+            // Loot planet
+            planetService.removeResources(planet, loot)
 
             flightService.createReturnFlight(flight, fight.remainingAttackerShips, loot)
         }
+    }
+
+    private fun calculateLoot(planet: Planet, ships: Ships): Resources {
+        val cargoSpace = ships.ships.sumBy { shipFormulas.calculateCargoSpace(it.type) * it.amount }
+        val lootCrystals = Math.min(planet.resources.crystal, cargoSpace / 2)
+        val lootGas = Math.min(planet.resources.gas, cargoSpace - lootCrystals)
+
+        return Resources(lootCrystals, lootGas, 0)
     }
 }
 

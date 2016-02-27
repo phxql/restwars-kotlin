@@ -27,6 +27,8 @@ interface ShipFormulas {
     fun calculateAttackPoints(type: ShipType): Int
 
     fun calculateDefendPoints(type: ShipType): Int
+
+    fun calculateCargoSpace(type: ShipType): Int
 }
 
 interface LocationFormulas {
@@ -116,6 +118,13 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 10
             ShipType.COLONY -> 75
+        }
+    }
+
+    override fun calculateCargoSpace(type: ShipType): Int {
+        return when (type) {
+            ShipType.MOSQUITO -> 10
+            ShipType.COLONY -> 500
         }
     }
 }
