@@ -33,17 +33,17 @@ enum class FlightType {
 data class Flight(
         val id: UUID, val playerId: UUID, val start: Location, val destination: Location,
         val startedInRound: Long, val arrivalInRound: Long, val ships: Ships, val direction: FlightDirection,
-        val type: FlightType
+        val type: FlightType, val cargo: Resources
 ) : Serializable
 
 data class SendResult(val planet: Planet, val flight: Flight)
 
 interface FlightService {
-    fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType): SendResult
+    fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType, cargo: Resources): SendResult
 
     fun finishFlights()
 
-    fun createReturnFlight(flight: Flight, ships: Ships)
+    fun createReturnFlight(flight: Flight, ships: Ships, cargo: Resources)
 
     fun delete(flight: Flight)
 }
@@ -51,7 +51,7 @@ interface FlightService {
 interface FlightRepository {
     fun insert(flight: Flight)
 
-    fun update(id: UUID, ships: Ships, arrivalInRound: Long, direction: FlightDirection)
+    fun update(id: UUID, ships: Ships, arrivalInRound: Long, direction: FlightDirection, cargo: Resources)
 
     fun delete(id: UUID)
 
@@ -72,7 +72,11 @@ class NoShipsException : FlightException()
 
 class NotEnoughShipsException(val type: ShipType, val needed: Int, val available: Int) : FlightException("Not enough ships of type $type available. Needed: $needed, available: $available")
 
-class ColonyShipRequiredException() : FlightException("A colony ship on this flight is required")
+class ColonyShipRequiredException : FlightException("A colony ship on this flight is required")
+
+class CargoNotAllowedException : FlightException("Cargo is not allowed")
+
+class EnergyInCargoException : FlightException("Energy can't be put in cargo")
 
 class FlightServiceImpl(
         private val config: Config,
@@ -90,7 +94,7 @@ class FlightServiceImpl(
 ) : FlightService {
     val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType): SendResult {
+    override fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType, cargo: Resources): SendResult {
         // Flights which where start = location are forbidden
         if (start.location == destination) throw SameStartAndDestinationException()
         // Check that the location is contained in the universe
@@ -99,6 +103,10 @@ class FlightServiceImpl(
         if (ships.isEmpty()) throw NoShipsException()
         // Colony flights must have a colony ship
         if (type == FlightType.COLONIZE && ships[ShipType.COLONY] < 1) throw ColonyShipRequiredException()
+        // Cargo is only allowed on transport, transfer and colonize flights
+        if (cargo.isEmpty() && !(type == FlightType.TRANSFER || type == FlightType.COLONIZE || type == FlightType.TRANSPORT)) throw CargoNotAllowedException()
+        // Energy can't be put in cargo
+        if (cargo.energy > 0) throw EnergyInCargoException()
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
 
@@ -130,7 +138,7 @@ class FlightServiceImpl(
         // Decrease ships
         shipService.removeShips(start, ships)
 
-        val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type)
+        val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type, cargo)
         flightRepository.insert(flight)
 
         return SendResult(updatedPlanet, flight)
@@ -171,6 +179,8 @@ class FlightServiceImpl(
         }
         // TODO: What happens if the planet changed the owner?
 
+        // TODO: Unload cargo
+
         // Land ships in hangar
         shipService.addShips(planet, flight.ships)
         flightRepository.delete(flight.id)
@@ -186,13 +196,13 @@ class FlightServiceImpl(
         }
     }
 
-    override fun createReturnFlight(flight: Flight, ships: Ships) {
+    override fun createReturnFlight(flight: Flight, ships: Ships, cargo: Resources) {
         val distance = locationFormulas.calculateDistance(flight.start, flight.destination)
         val speed = calculateTravelSpeed(ships)
 
         val currentRound = roundService.currentRound()
         val arrival = calculateArrivalRound(currentRound, distance, speed)
-        flightRepository.update(flight.id, ships, arrival, FlightDirection.RETURN)
+        flightRepository.update(flight.id, ships, arrival, FlightDirection.RETURN, cargo)
     }
 
     override fun delete(flight: Flight) {

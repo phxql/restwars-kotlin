@@ -5,6 +5,7 @@ import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.fight.FightService
 import restwars.business.planet.PlanetService
+import restwars.business.planet.Resources
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
@@ -22,13 +23,13 @@ class AttackFlightHandler(
         val planet = planetService.findByLocation(flight.destination)
         if (planet == null || planet.owner == null) {
             logger.debug("Planet ${flight.destination} is not colonized")
-            flightService.createReturnFlight(flight, flight.ships)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
             return
         }
 
         if (planet.owner == flight.playerId) {
             logger.debug("Planet {} is friendly, creating return flight", flight.destination)
-            flightService.createReturnFlight(flight, flight.ships)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
             return
         }
 
@@ -43,7 +44,9 @@ class AttackFlightHandler(
         } else {
             logger.debug("Looting planet")
             // TODO: Loot planet
-            flightService.createReturnFlight(flight, fight.remainingAttackerShips)
+            val loot = Resources.none()
+
+            flightService.createReturnFlight(flight, fight.remainingAttackerShips, loot)
         }
     }
 }
@@ -61,7 +64,7 @@ class ColonizeFlightHandler(
         val planet = planetService.findByLocation(flight.destination)
         if (planet != null) {
             logger.debug("Planet at {} is already colonized", flight.destination)
-            flightService.createReturnFlight(flight, flight.ships)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
             return
         }
 
@@ -73,20 +76,61 @@ class ColonizeFlightHandler(
         val shipsToLand = flight.ships - Ships.of(ShipType.COLONY, 1)
         shipService.addShips(newPlanet, shipsToLand)
 
-        // Delete flight
+        // TODO: Unload cargo
+
         flightService.delete(flight)
     }
 }
 
-class TransferFlightHandler : FlightTypeHandler {
+class TransferFlightHandler(
+        private val planetService: PlanetService,
+        private val shipService: ShipService
+) : FlightTypeHandler {
+    val logger = LoggerFactory.getLogger(javaClass)
+
     override fun handleFlight(flight: Flight, flightService: FlightService) {
-        // TODO: Implement!
+        logger.debug("Handling transfer flight {}", flight)
+        val planet = planetService.findByLocation(flight.destination)
+        if (planet == null) {
+            logger.debug("Planet at {} it not colonized", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
+            return
+        }
+
+        if (planet.owner != flight.playerId) {
+            logger.debug("Planet at {} is hostile", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
+            return
+        }
+
+        // Land ships on planet
+        shipService.addShips(planet, flight.ships)
+        // TODO: Unload cargo
+        flightService.delete(flight)
     }
 }
 
-class TransportFlightHandler : FlightTypeHandler {
-    override fun handleFlight(flight: Flight, flightService: FlightService) {
-        // TODO: Implement!
-    }
+class TransportFlightHandler(
+        private val planetService: PlanetService
+) : FlightTypeHandler {
+    val logger = LoggerFactory.getLogger(javaClass)
 
+    override fun handleFlight(flight: Flight, flightService: FlightService) {
+        logger.debug("Handling transport flight {}", flight)
+        val planet = planetService.findByLocation(flight.destination)
+        if (planet == null) {
+            logger.debug("Planet at {} it not colonized", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
+            return
+        }
+
+        if (planet.owner != flight.playerId) {
+            logger.debug("Planet at {} is hostile", flight.destination)
+            flightService.createReturnFlight(flight, flight.ships, flight.cargo)
+            return
+        }
+
+        // TODO: Unload cargo
+        flightService.createReturnFlight(flight, flight.ships, Resources.none())
+    }
 }

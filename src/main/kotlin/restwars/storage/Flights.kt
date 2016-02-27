@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import restwars.business.flight.Flight
 import restwars.business.flight.FlightDirection
 import restwars.business.flight.FlightRepository
+import restwars.business.planet.Resources
 import restwars.business.ship.Ships
 import java.nio.file.Path
 import java.util.*
@@ -28,11 +29,11 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
         flights = Persister.loadData(path) as MutableList<Flight>
     }
 
-    override fun update(id: UUID, ships: Ships, arrivalInRound: Long, direction: FlightDirection) {
+    override fun update(id: UUID, ships: Ships, arrivalInRound: Long, direction: FlightDirection, cargo: Resources) {
         val index = flights.indexOfFirst { it.id == id }
 
         val flight = flights[index]
-        flights[index] = flight.copy(ships = ships, arrivalInRound = arrivalInRound, direction = direction)
+        flights[index] = flight.copy(ships = ships, arrivalInRound = arrivalInRound, direction = direction, cargo = cargo)
 
     }
 

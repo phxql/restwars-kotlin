@@ -1,6 +1,7 @@
 package restwars.rest.api
 
 import restwars.business.flight.Flight
+import restwars.business.planet.Resources
 import restwars.business.ship.Ship
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
@@ -15,13 +16,23 @@ data class ShipsRequest(
     }
 }
 
+data class CargoRequest(
+        @get:javax.validation.constraints.Min(0)
+        val crystal: Int,
+        @get:javax.validation.constraints.Min(0)
+        val gas: Int
+) {
+    fun toResources(): Resources = Resources(crystal, gas, 0)
+}
+
 data class CreateFlightRequest(
         @get:org.hibernate.validator.constraints.NotBlank
         val destination: String,
         @get:javax.validation.constraints.NotNull
         val ships: ShipsRequest,
         @get:org.hibernate.validator.constraints.NotBlank
-        val type: String
+        val type: String,
+        val cargo: CargoRequest?
 )
 
 data class FlightResponse(

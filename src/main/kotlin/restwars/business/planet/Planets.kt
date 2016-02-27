@@ -44,6 +44,8 @@ data class Resources(val crystal: Int, val gas: Int, val energy: Int) : Serializ
 
     operator fun minus(other: Resources) = Resources(crystal - other.crystal, gas - other.gas, energy - other.energy)
 
+    fun isEmpty(): Boolean = crystal == 0 && gas == 0 && energy == 0
+
     fun enough(cost: Resources): Boolean {
         return crystal >= cost.crystal && gas >= cost.gas && energy >= cost.energy
     }

@@ -68,8 +68,8 @@ fun main(args: Array<String>) {
 
     val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService)
     val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService)
-    val transferFlightHandler = TransferFlightHandler()
-    val transportFlightHandler = TransportFlightHandler()
+    val transferFlightHandler = TransferFlightHandler(planetService, shipService)
+    val transportFlightHandler = TransportFlightHandler(planetService)
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetRepository)
 
     val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService)
