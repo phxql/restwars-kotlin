@@ -1,0 +1,44 @@
+RESTWars
+========
+
+Introduction
+------------
+
+RESTwars is a game like the good old browser games. But instead of blocking bots from playing this game,
+the game has a fully documented REST API to encourage people to write bots which play the game for them.
+
+RESTwars takes place in a Sci-Fi themed world. Players start with planet somewhere in the galaxy. They then
+need to build some buildings to harvest resources. They then can build ships to attack other players, defend
+themself or settle other planets.
+
+Universe
+--------
+
+The universe consists of galaxy, which in turn consists of systems, which in turn consists of planets. A location
+in the universe is written as x.y.z, where x is the galaxy number, y the system number inside the galaxy and z
+the planet number inside the system.
+
+Resources
+---------
+
+* Crystal: Needed for buildings and ships. Crystals can be stolen from other playees.
+* Gas: Needed for advanced technology. Gas can be stolen from other players.
+* Energy: Needed for buildings and ships. Energy is also consumed when traveling with ships through the universe.
+  Energy can't be stolen from attackers and can't be transfered to other planets.
+
+Buildings
+---------
+
+* Command center: Builds other buildings. Upgrading it reduces the construction time of buildings.
+* Crystal mine: Gathers crystals. Upgrading it increases the gather rate.
+* Gas refinery: Gathers gas. Upgrading it increases the gather rate.
+* Solar panels: Gathers energy. Upgrdading it increases the gather rate.
+* Shipyard: Constructs ships. Upgrading it reduces the construction time of ships.
+* Telescope: Scans the area around a planet and detects incoming flights. Upgrading it increases its scan range.
+
+Ships
+-----
+
+* Mosquito: Basic attack fighter.
+* Colony: Colonizes other planets. After landing on a planet, it transforms itself into a command center.
+* Mule: Transport ship with a lot of cargo space.

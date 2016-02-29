@@ -1,0 +1,28 @@
+{
+  "planets": [
+    {
+      "location": {
+        "galaxy": 2,
+        "system": 1,
+        "planet": 3
+      },
+      "resources": {
+        "crystal": 3725,
+        "gas": 1950,
+        "energy": 14756
+      }
+    },
+    {
+      "location": {
+        "galaxy": 1,
+        "system": 1,
+        "planet": 1
+      },
+      "resources": {
+        "crystal": 130,
+        "gas": 50,
+        "energy": 400
+      }
+    }
+  ]
+}

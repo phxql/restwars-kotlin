@@ -1,0 +1,35 @@
+RESTwars webservice documentation
+=================================
+
+Authentication
+--------------
+
+Some endpoints need authentication. Authentication is done via HTTP Basic Auth.
+
+Create a new player
+-------------------
+
+Creates a new player.
+
+URL: `POST /v1/player`
+
+Request:
+
+[source,json]
+include::requests/create-player.json[]
+
+Response:
+
+`201 Created` if the player has been created.
+
+List planets
+------------
+
+Lists all planets of the player. Needs authorization.
+
+URL: `GET /v1/planet`
+
+Response:
+
+[source,json]
+include::responses/list-planets.json[]
