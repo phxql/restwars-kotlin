@@ -33,3 +33,63 @@ Response:
 
 [source,json]
 include::responses/list-planets.json[]
+
+Application information
+-----------------------
+
+TODO
+
+RESTwars configuration
+----------------------
+
+TODO
+
+Round information
+-----------------
+
+TODO
+
+Round websocket
+---------------
+
+TODO
+
+List buildings
+--------------
+
+TODO
+
+Construct building
+------------------
+
+TODO
+
+List construction sites
+-----------------------
+
+TODO
+
+List ships in hangar
+--------------------
+
+TODO
+
+Construct ship
+--------------
+
+TODO
+
+List ships in construction
+--------------------------
+
+TODO
+
+Start a flight
+--------------
+
+TODO
+
+Scan with telescope
+-------------------
+
+TODO
