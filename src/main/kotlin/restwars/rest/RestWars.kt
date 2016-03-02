@@ -49,7 +49,7 @@ fun main(args: Array<String>) {
     val hangarRepository = InMemoryHangarRepository
     val shipInConstructionRepository = InMemoryShipInConstructionRepository
     val flightRepository = InMemoryFlightRepository
-    val fightRepository = InMemoryFightRepository
+    val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
 
     val buildingFormulas = BuildingFormulasImpl
     val shipFormulas = ShipFormulasImpl
@@ -86,6 +86,7 @@ fun main(args: Array<String>) {
     val roundController = RoundController(roundService, config)
     val flightController = FlightController(validatorFactory, playerService, planetService, flightService)
     val telescopeController = TelescopeController(validatorFactory, playerService, planetService, buildingService)
+    val fightController = FightController(validatorFactory, playerService, planetService, fightService)
 
     configureSpark()
     addExceptionHandler()
@@ -93,13 +94,16 @@ fun main(args: Array<String>) {
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
-            roundController, flightController, telescopeController
+            roundController, flightController, telescopeController, fightController
     )
 
     Spark.awaitInitialization()
 
     startClock(clock, config)
-    val persister = Persister(planetRepository)
+    val persister = Persister(
+            buildingRepository, constructionSiteRepository, playerRepository, roundRepository, hangarRepository,
+            shipInConstructionRepository, flightRepository, planetRepository, fightRepository
+    )
     persister.start()
     logger.info("RESTwars started on port {}", port)
 }
@@ -152,12 +156,14 @@ private fun registerRoutes(
         shipController: ShipController, shipyardController: ShipyardController,
         applicationInformationController: ApplicationInformationController,
         configurationController: ConfigurationController, roundController: RoundController,
-        flightController: FlightController, telescopeController: TelescopeController
+        flightController: FlightController, telescopeController: TelescopeController,
+        fightController: FightController
 ) {
     Spark.get("/v1/restwars", Json.contentType, route(lockService, applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(lockService, configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(lockService, roundController.get()))
     Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
+    Spark.get("/v1/player/fight", Json.contentType, route(lockService, fightController.byPlayer()))
     Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.listOnPlanet()))
     Spark.post("/v1/planet/:location/building", Json.contentType, route(lockService, buildingController.build()))
@@ -167,6 +173,7 @@ private fun registerRoutes(
     Spark.get("/v1/planet/:location/shipyard", Json.contentType, route(lockService, shipyardController.listOnPlanet()))
     Spark.post("/v1/planet/:location/flight", Json.contentType, route(lockService, flightController.create()))
     Spark.post("/v1/planet/:location/telescope/scan", Json.contentType, route(lockService, telescopeController.scan()))
+    Spark.get("/v1/planet/:location/fight", Json.contentType, route(lockService, fightController.byPlanet()))
 }
 
 private fun addExceptionHandler() {

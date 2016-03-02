@@ -3,16 +3,45 @@ package restwars.storage
 import org.slf4j.LoggerFactory
 import restwars.business.fight.Fight
 import restwars.business.fight.FightRepository
+import restwars.business.fight.FightWithPlayersAndPlanet
+import restwars.business.planet.PlanetRepository
+import restwars.business.player.PlayerRepository
 import java.nio.file.Path
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object InMemoryFightRepository : FightRepository, PersistentRepository {
+class InMemoryFightRepository(
+        private val playerRepository: PlayerRepository,
+        private val planetRepository: PlanetRepository
+) : FightRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var fights: MutableList<Fight> = CopyOnWriteArrayList()
 
     override fun insert(fight: Fight) {
         logger.debug("Inserting fight {}", fight)
         fights.add(fight)
+    }
+
+    override fun findWithPlayer(playerId: UUID): List<FightWithPlayersAndPlanet> {
+        return fights
+                .filter { it.attackerId == playerId || it.defenderId == playerId }
+                .map {
+                    FightWithPlayersAndPlanet(
+                            it, playerRepository.findById(it.attackerId)!!, playerRepository.findById(it.defenderId)!!,
+                            planetRepository.findById(it.planetId)!!
+                    )
+                }
+    }
+
+    override fun findWithPlayerAndPlanet(playerId: UUID, planetId: UUID): List<FightWithPlayersAndPlanet> {
+        return fights
+                .filter { it.attackerId == playerId || it.defenderId == playerId || it.planetId == planetId }
+                .map {
+                    FightWithPlayersAndPlanet(
+                            it, playerRepository.findById(it.attackerId)!!, playerRepository.findById(it.defenderId)!!,
+                            planetRepository.findById(it.planetId)!!
+                    )
+                }
     }
 
     override fun persist(persister: Persister, path: Path) {

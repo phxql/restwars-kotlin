@@ -5,6 +5,8 @@ import restwars.business.RandomNumberGenerator
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
+import restwars.business.planet.Planet
+import restwars.business.player.Player
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
 import java.util.*
@@ -18,12 +20,22 @@ interface FightCalculator {
     fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships, round: Long): Fight
 }
 
+data class FightWithPlayersAndPlanet(val fight: Fight, val attacker: Player, val defender: Player, val planet: Planet)
+
 interface FightService {
     fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships): Fight
+
+    fun findWithPlayer(player: Player): List<FightWithPlayersAndPlanet>
+
+    fun findWithPlayerAndPlanet(player: Player, planet: Planet): List<FightWithPlayersAndPlanet>
 }
 
 interface FightRepository {
     fun insert(fight: Fight)
+
+    fun findWithPlayer(playerId: UUID): List<FightWithPlayersAndPlanet>
+
+    fun findWithPlayerAndPlanet(playerId: UUID, planetId: UUID): List<FightWithPlayersAndPlanet>
 }
 
 class FightServiceImpl(
@@ -38,6 +50,14 @@ class FightServiceImpl(
         fightRepository.insert(fight)
 
         return fight
+    }
+
+    override fun findWithPlayer(player: Player): List<FightWithPlayersAndPlanet> {
+        return fightRepository.findWithPlayer(player.id)
+    }
+
+    override fun findWithPlayerAndPlanet(player: Player, planet: Planet): List<FightWithPlayersAndPlanet> {
+        return fightRepository.findWithPlayerAndPlanet(player.id, planet.id)
     }
 }
 

@@ -1,0 +1,42 @@
+{
+  "fights" : [ {
+    "id" : "d5694ae1-a035-4561-a6f8-d0d82f5aa8a9",
+    "attacker" : "player1",
+    "defender" : "player2",
+    "location" : {
+      "galaxy" : 1,
+      "system" : 2,
+      "planet" : 3
+    },
+    "attackerShips" : {
+      "ships" : [ {
+        "type" : "MOSQUITO",
+        "amount" : 3
+      }, {
+        "type" : "MULE",
+        "amount" : 2
+      } ]
+    },
+    "defenderShips" : {
+      "ships" : [ {
+        "type" : "MOSQUITO",
+        "amount" : 5
+      }, {
+        "type" : "COLONY",
+        "amount" : 1
+      } ]
+    },
+    "remainingAttackerShips" : {
+      "ships" : [ ]
+    },
+    "remainingDefenderShips" : {
+      "ships" : [ {
+        "type" : "MOSQUITO",
+        "amount" : 1
+      }, {
+        "type" : "COLONY",
+        "amount" : 1
+      } ]
+    }
+  } ]
+}

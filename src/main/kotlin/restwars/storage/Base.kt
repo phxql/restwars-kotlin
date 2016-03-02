@@ -16,21 +16,30 @@ interface PersistentRepository {
 }
 
 class Persister(
-        planetRepository: PersistentRepository
+        buildingRepository: PersistentRepository,
+        constructionSiteRepository: PersistentRepository,
+        playerRepository: PersistentRepository,
+        roundRepository: PersistentRepository,
+        hangarRepository: PersistentRepository,
+        shipInConstructionRepository: PersistentRepository,
+        flightRepository: PersistentRepository,
+        planetRepository: PersistentRepository,
+        fightRepository: PersistentRepository
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Persister") })
     private val persistInterval = 5L
 
     private val repositories = mapOf<PersistentRepository, Path>(
-            InMemoryBuildingRepository to Paths.get("data/buildings.dat"),
-            InMemoryConstructionSiteRepository to Paths.get("data/construction-sites.dat"),
+            buildingRepository to Paths.get("data/buildings.dat"),
+            constructionSiteRepository to Paths.get("data/construction-sites.dat"),
             planetRepository to Paths.get("data/planets.dat"),
-            InMemoryPlayerRepository to Paths.get("data/players.dat"),
-            InMemoryRoundRepository to Paths.get("data/round.dat"),
-            InMemoryHangarRepository to Paths.get("data/hangars.dat"),
-            InMemoryShipInConstructionRepository to Paths.get("data/ships-in-construction.dat"),
-            InMemoryFlightRepository to Paths.get("data/flights.dat")
+            playerRepository to Paths.get("data/players.dat"),
+            roundRepository to Paths.get("data/round.dat"),
+            hangarRepository to Paths.get("data/hangars.dat"),
+            shipInConstructionRepository to Paths.get("data/ships-in-construction.dat"),
+            flightRepository to Paths.get("data/flights.dat"),
+            fightRepository to Paths.get("data/fights.dat")
     )
 
     fun start() {

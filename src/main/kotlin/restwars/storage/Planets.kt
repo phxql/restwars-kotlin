@@ -53,6 +53,10 @@ class InMemoryPlanetRepository(
         return planets.map { PlanetWithPlayer(it, playerRepository.findById(it.owner)!!) }
     }
 
+    override fun findById(id: UUID): Planet? {
+        return planets.firstOrNull { it.id == id }
+    }
+
     override fun persist(persister: Persister, path: Path) {
         persister.saveData(path, planets)
     }

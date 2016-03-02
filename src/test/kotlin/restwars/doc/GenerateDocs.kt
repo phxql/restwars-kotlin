@@ -72,6 +72,19 @@ object GenerateDocs {
                 ScannedPlanetResponse(LocationResponse(1, 1, 2), "player2"),
                 ScannedPlanetResponse(LocationResponse(1, 1, 3), "player1")
         )))
+        writeToFile(Type.RESPONSE, "fights.json", FightsResponse(listOf(
+                FightResponse(UUID.fromString("d5694ae1-a035-4561-a6f8-d0d82f5aa8a9"), "player1", "player2", LocationResponse(1, 2, 3), ShipsResponse(listOf(
+                        ShipResponse(ShipType.MOSQUITO.name, 3),
+                        ShipResponse(ShipType.MULE.name, 2)
+                )), ShipsResponse(listOf(
+                        ShipResponse(ShipType.MOSQUITO.name, 5),
+                        ShipResponse(ShipType.COLONY.name, 1)
+                )), ShipsResponse(listOf()), ShipsResponse(listOf(
+                        ShipResponse(ShipType.MOSQUITO.name, 1),
+                        ShipResponse(ShipType.COLONY.name, 1)
+                ))
+                ))
+        ))
     }
 }
 

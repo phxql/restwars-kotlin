@@ -28,6 +28,20 @@ Response:
 * `201 Created` if the player has been created.
 * `409 Conflict` if the username is already taken.
 
+List fights
+~~~~~~~~~~~
+
+Lists all fights where the player is either attacker or defender. Needs authentication.
+
+URL: `GET /v1/player/fight`
+
+Response:
+
+[source,json]
+include::responses/fights.json[]
+
+Fight on planet 1.2.3 between "player1" and "player2". "player1" sent 3 mosquitos and 2 mules, but all were destroyed. "player2" defendend with 5 mosquitos and 1 colony ship, from which 1 mosquito and 1 colony ship survived.
+
 Planets
 -------
 
@@ -58,6 +72,20 @@ Response:
 include::responses/telescope-scan.json[]
 
 Planet 1.1.1 and 1.1.3 is owned by "player1", planet 1.1.2 is owned by "player2".
+
+List fights with a planet
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists all fights with a planet. Needs authentication.
+
+URL: `GET /v1/planet/:location/fight`
+
+Response:
+
+[source,json]
+include::responses/fights.json[]
+
+Fight on planet 1.2.3 between "player1" and "player2". "player1" sent 3 mosquitos and 2 mules, but all were destroyed. "player2" defendend with 5 mosquitos and 1 colony ship, from which 1 mosquito and 1 colony ship survived.
 
 General information
 -------------------

@@ -79,6 +79,8 @@ interface PlanetService {
 }
 
 interface PlanetRepository {
+    fun findById(id: UUID): Planet?
+
     fun findAtLocation(location: Location): Planet?
 
     fun findByOwnerId(ownerId: UUID?): List<Planet>
