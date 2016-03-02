@@ -96,6 +96,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 10
             ShipType.COLONY -> 60
+            ShipType.MULE -> 20
         }
     }
 
@@ -103,6 +104,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 1.0
             ShipType.COLONY -> 0.5
+            ShipType.MULE -> 1.0
         }
     }
 
@@ -110,6 +112,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> Resources(100, 20, 270)
             ShipType.COLONY -> Resources(350, 150, 1750)
+            ShipType.MULE -> Resources(200, 100, 1225)
         }
     }
 
@@ -117,6 +120,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 1.0
             ShipType.COLONY -> 2.0
+            ShipType.MULE -> 1.5
         }
     }
 
@@ -124,6 +128,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 14
             ShipType.COLONY -> 0
+            ShipType.MULE -> 0
         }
     }
 
@@ -131,6 +136,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 10
             ShipType.COLONY -> 75
+            ShipType.MULE -> 20
         }
     }
 
@@ -138,6 +144,7 @@ object ShipFormulasImpl : ShipFormulas {
         return when (type) {
             ShipType.MOSQUITO -> 10
             ShipType.COLONY -> 500
+            ShipType.MULE -> 750
         }
     }
 }

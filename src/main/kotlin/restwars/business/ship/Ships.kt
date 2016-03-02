@@ -12,7 +12,7 @@ import java.io.Serializable
 import java.util.*
 
 enum class ShipType {
-    MOSQUITO, COLONY;
+    MOSQUITO, COLONY, MULE;
 
     companion object {
         fun parse(value: String): ShipType {
