@@ -1,25 +1,22 @@
 {
-  "start": {
-    "galaxy": 1,
-    "system": 2,
-    "planet": 3
+  "start" : {
+    "galaxy" : 1,
+    "system" : 2,
+    "planet" : 3
   },
-  "destination": {
-    "galaxy": 4,
-    "system": 5,
-    "planet": 6
+  "destination" : {
+    "galaxy" : 4,
+    "system" : 5,
+    "planet" : 6
   },
-  "arrivalInRound": 112,
-  "ships": {
-    "ships": [
-      {
-        "type": "MOSQUITO",
-        "amount": 3
-      },
-      {
-        "type": "COLONY",
-        "amount": 2
-      }
-    ]
+  "arrivalInRound" : 112,
+  "ships" : {
+    "ships" : [ {
+      "type" : "MOSQUITO",
+      "amount" : 3
+    }, {
+      "type" : "COLONY",
+      "amount" : 2
+    } ]
   }
 }

@@ -1,9 +1,7 @@
 {
-  "shipsInConstruction": [
-    {
-      "id": "a675a15c-aeec-47d8-8fc8-4bc0fd452800",
-      "type": "COLONY",
-      "done": 55
-    }
-  ]
+  "shipsInConstruction" : [ {
+    "id" : "a675a15c-aeec-47d8-8fc8-4bc0fd452800",
+    "type" : "COLONY",
+    "done" : 55
+  } ]
 }

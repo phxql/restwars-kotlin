@@ -1,12 +1,9 @@
 {
-  "ships": [
-    {
-      "type": "MOSQUITO",
-      "amount": 3
-    },
-    {
-      "type": "COLONY",
-      "amount": 2
-    }
-  ]
+  "ships" : [ {
+    "type" : "MOSQUITO",
+    "amount" : 3
+  }, {
+    "type" : "COLONY",
+    "amount" : 2
+  } ]
 }

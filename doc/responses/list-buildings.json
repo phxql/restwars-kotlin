@@ -1,12 +1,9 @@
 {
-  "buildings": [
-    {
-      "type": "COMMAND_CENTER",
-      "level": 2
-    },
-    {
-      "type": "CRYSTAL_MINE",
-      "level": 3
-    }
-  ]
+  "buildings" : [ {
+    "type" : "COMMAND_CENTER",
+    "level" : 2
+  }, {
+    "type" : "CRYSTAL_MINE",
+    "level" : 3
+  } ]
 }
