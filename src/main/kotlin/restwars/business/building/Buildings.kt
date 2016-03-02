@@ -28,6 +28,12 @@ data class Building(val id: UUID, val planetId: UUID, val type: BuildingType, va
 
 data class ConstructionSite(val id: UUID, val planetId: UUID, val type: BuildingType, val level: Int, val done: Long) : Serializable
 
+abstract class BuildBuildingException(message: String) : Exception(message)
+
+class NotEnoughBuildSlotsException() : BuildBuildingException("Not enough build slots available")
+
+class BuildingAlreadyInProgress(val type: BuildingType) : BuildBuildingException("Building $type is already in progress")
+
 interface BuildingService {
     fun createStarterBuildings(planet: Planet): List<Building>
 
@@ -39,6 +45,13 @@ interface BuildingService {
 
     fun findConstructionSitesByPlanet(planet: Planet): List<ConstructionSite>
 
+    /**
+     * Creates a new building of type [type] on planet [planet].
+     *
+     * @throws NotEnoughBuildSlotsException If not enough build slots are available.
+     * @throws BuildingAlreadyInProgress If a building of the same type is already in progress.
+     * @throws NotEnoughResourcesException If not enough resources are available.
+     */
     fun build(planet: Planet, type: BuildingType): BuildResult
 
     fun finishConstructionSites()
@@ -69,12 +82,6 @@ interface ConstructionSiteRepository {
 }
 
 data class BuildResult(val planet: Planet, val constructionSite: ConstructionSite)
-
-abstract class BuildBuildingException(message: String) : Exception(message)
-
-class NotEnoughBuildSlotsException() : BuildBuildingException("Not enough build slots available")
-
-class BuildingAlreadyInProgress(val type: BuildingType) : BuildBuildingException("Building $type is already in progress")
 
 class BuildingServiceImpl(
         private val uuidFactory: UUIDFactory,

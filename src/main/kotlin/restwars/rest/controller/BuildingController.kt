@@ -1,12 +1,16 @@
 package restwars.rest.controller
 
+import restwars.business.building.BuildBuildingException
+import restwars.business.building.BuildResult
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
+import restwars.business.resource.NotEnoughResourcesException
 import restwars.rest.api.BuildBuildingRequest
 import restwars.rest.api.BuildingsResponse
 import restwars.rest.api.ConstructionSiteResponse
+import restwars.rest.api.ErrorResponse
 import restwars.rest.http.StatusCode
 import spark.Route
 import javax.validation.ValidatorFactory
@@ -37,7 +41,16 @@ class BuildingController(
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
-            val buildResult = buildingService.build(planet, type)
+            val buildResult: BuildResult
+            try {
+                buildResult = buildingService.build(planet, type)
+            } catch(ex: BuildBuildingException) {
+                res.status(StatusCode.BAD_REQUEST)
+                return@Route Json.toJson(res, ErrorResponse(ex.message ?: ""))
+            } catch(ex: NotEnoughResourcesException) {
+                res.status(StatusCode.BAD_REQUEST)
+                return@Route Json.toJson(res, ErrorResponse(ex.message ?: ""))
+            }
 
             res.status(StatusCode.CREATED)
             return@Route Json.toJson(res, ConstructionSiteResponse.fromConstructionSite(buildResult.constructionSite))

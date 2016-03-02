@@ -182,10 +182,15 @@ Constructs a new command center.
 
 Response:
 
+* `200 OK`
 [source,json]
 include::responses/construct-building.json[]
 
 The new command center will have level 2 and is done in round 102.
+
+* `400 Bad Request` if not enough build slots are available
+* `400 Bad Request` if not enough resources are available
+* `400 Bad Request` if a building of the same type is already under construction
 
 List construction sites
 ~~~~~~~~~~~~~~~~~~~~~~~
