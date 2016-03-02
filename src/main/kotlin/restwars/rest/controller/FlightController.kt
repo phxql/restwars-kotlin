@@ -28,8 +28,8 @@ class FlightController(
             val context = RequestContext.build(req, playerService)
             val location = parseLocation(req)
             val planet = getOwnPlanet(planetService, context.player, location)
-            val destination = Location.parse(request.destination)
-            val type = FlightType.parse(request.type)
+            val destination = Location.parse(request.destination) // TODO: Exception handling
+            val type = FlightType.parse(request.type) // TODO: Exception handling
 
             val cargo = request.cargo?.toResources() ?: Resources.none()
             val sendResult = try {
