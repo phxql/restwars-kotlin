@@ -37,7 +37,9 @@ include::responses/list-planets.json[]
 Application information
 -----------------------
 
-URL: TODO
+Returns information about the RESTwars application.
+
+URL: `GET /v1/restwars`
 
 Response:
 
@@ -48,7 +50,9 @@ include::responses/application-information.json[]
 RESTwars configuration
 ----------------------
 
-URL: TODO
+Returns information about the RESTwars configuration.
+
+URL: `GET /v1/configuration`
 
 Response:
 
@@ -59,7 +63,9 @@ include::responses/configuration.json[]
 Round information
 -----------------
 
-URL: TODO
+Returns information about the round.
+
+URL: `GET /v1/round`
 
 Response:
 
@@ -70,7 +76,9 @@ include::responses/round-information.json[]
 Round websocket
 ---------------
 
-URL: TODO
+Provides a websocket which notifies the client when a new round starts.
+
+URL: `/v1/round/websocket`
 
 Response:
 
@@ -80,7 +88,9 @@ include::responses/round-websocket.json[]
 List buildings
 --------------
 
-URL: TODO
+Lists buildings on a planet. Needs authentication.
+
+URL: `GET /v1/planet/:location/building`
 
 Response:
 
@@ -90,7 +100,9 @@ include::responses/list-buildings.json[]
 Construct building
 ------------------
 
-URL: TODO
+Builds a new building on a planet. Needs authentication.
+
+URL: `POST /v1/planet/:location/building`
 
 Request:
 
@@ -105,7 +117,9 @@ include::responses/construct-building.json[]
 List construction sites
 -----------------------
 
-URL: TODO
+Lists construction sites on a planet. Needs authentication.
+
+URL: `GET /v1/planet/:location/construction-site`
 
 Response:
 
@@ -115,7 +129,9 @@ include::responses/list-construction-sites.json[]
 List ships in hangar
 --------------------
 
-URL: TODO
+Lists ships in the hangar on a planet. Needs authentication.
+
+URL: `GET /v1/planet/:location/hangar`
 
 Response:
 
@@ -125,7 +141,9 @@ include::responses/ships-in-hangar.json[]
 Construct ship
 --------------
 
-URL: TODO
+Constructs a new ship on a planet. Needs authentication.
+
+URL: `POST /v1/planet/:location/hangar`
 
 Request:
 
@@ -140,7 +158,9 @@ include::responses/construct-ship.json[]
 List ships in construction
 --------------------------
 
-URL: TODO
+Lists all ships in construction on a planet. Needs authentication.
+
+URL: `GET /v1/planet/:location/shipyard`
 
 Response:
 
@@ -150,7 +170,9 @@ include::responses/ships-in-construction.json[]
 Start a flight
 --------------
 
-URL: TODO
+Starts a new flight from a planet. Needs authentication.
+
+URL: `POST /v1/planet/:location/flight`
 
 Request:
 
@@ -165,7 +187,9 @@ include::responses/start-flight.json[]
 Scan with telescope
 -------------------
 
-URL: TODO
+Returns a list of all planets and their owners in the vicinity.
+
+URL: `GET /v1/planet/:location/telescope/scan`
 
 Response:
 
