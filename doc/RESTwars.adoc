@@ -11,6 +11,8 @@ RESTwars takes place in a Sci-Fi themed world. Players start with planet somewhe
 need to build some buildings to harvest resources. They then can build ships to attack other players, defend
 themself or settle other planets.
 
+The game takes place in rounds.
+
 Universe
 --------
 
@@ -42,3 +44,11 @@ Ships
 * Mosquito: Basic attack fighter.
 * Colony: Colonizes other planets. After landing on a planet, it transforms itself into a command center.
 * Mule: Transport ship with a lot of cargo space.
+
+Flights
+-------
+
+* Attack: Attacks another planet. If ships are on the hostile planet a fight is started. If the fight is won, the hostile planet is looted. An attack flight can't have cargo.
+* Transport: Transports resources from a planet to another friendly planets. After the resources have been delivered, the ships make their way back.
+* Transfer: Transfers ships from a planet to another friendly planet. A transfer flight can also transfer resources.
+* Colonize: Colonizes an empty planet. If the destination location isn't empty, the ships make their way back. A colonize flight must have at least one colony ship.
