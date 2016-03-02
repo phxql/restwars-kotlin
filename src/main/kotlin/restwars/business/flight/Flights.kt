@@ -130,13 +130,11 @@ class FlightServiceImpl(
 
         val distance = locationFormulas.calculateDistance(start.location, destination)
 
-        val cost = calculateFlightCost(distance, ships)
+        val resourcesNeeded = calculateFlightCost(distance, ships) + cargo
 
-        if (!start.resources.enough(cost)) {
-            throw NotEnoughResourcesException(cost, start.resources)
+        if (!start.resources.enough(resourcesNeeded)) {
+            throw NotEnoughResourcesException(resourcesNeeded, start.resources)
         }
-
-        // TODO: Check if planet has enough resources for cargo!
 
         val shipsAvailable = shipService.findShipsByPlanet(start)
 
@@ -154,7 +152,7 @@ class FlightServiceImpl(
         val arrival = calculateArrivalRound(currentRound, distance, slowestSpeed)
 
         // Decrease resources
-        val updatedPlanet = planetService.removeResources(start, cost)
+        val updatedPlanet = planetService.removeResources(start, resourcesNeeded)
 
         // Decrease ships
         shipService.removeShips(start, ships)
