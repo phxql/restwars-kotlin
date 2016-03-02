@@ -10,7 +10,16 @@ data class Player(
         val password: String
 ) : Serializable
 
+abstract class CreatePlayerException(message: String) : Exception(message)
+
+class UsernameNotUniqueException(username: String) : CreatePlayerException("User with username '$username' already exists")
+
 interface PlayerService {
+    /**
+     * Creates a new player.
+     *
+     * @throws UsernameNotUniqueException If the username is already taken.
+     */
     fun create(username: String, password: String): Player
 
     fun login(username: String, password: String): Player?
@@ -37,7 +46,8 @@ class PlayerServiceImpl(
     override fun create(username: String, password: String): Player {
         val id = uuidFactory.create()
 
-        // TODO: Deny duplicate usernames
+        if (playerRepository.findByUsername(username) != null) throw UsernameNotUniqueException(username)
+
         val player = Player(id, username, password) // TODO: Hash password
         playerRepository.insert(player)
         return player
