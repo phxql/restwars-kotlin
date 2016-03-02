@@ -17,12 +17,12 @@
         "galaxy": 2,
         "system": 3,
         "planet": 4
-      },
+    },
       "resources": {
         "crystal": 200,
         "gas": 100,
         "energy": 800
-      }
+    }
     }
   ]
 }
