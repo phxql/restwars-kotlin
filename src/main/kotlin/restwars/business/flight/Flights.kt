@@ -38,7 +38,38 @@ data class Flight(
 
 data class SendResult(val planet: Planet, val flight: Flight)
 
+abstract class FlightException(message: String?) : Exception(message) {
+    constructor() : this(null)
+}
+
+class SameStartAndDestinationException : FlightException("Start and destination are the same")
+
+class NoShipsException : FlightException("No ships on the flight")
+
+class NotEnoughShipsException(val type: ShipType, val needed: Int, val available: Int) : FlightException("Not enough ships of type $type available. Needed: $needed, available: $available")
+
+class ColonyShipRequiredException : FlightException("A colony ship on this flight is required")
+
+class CargoNotAllowedException : FlightException("Cargo is not allowed")
+
+class EnergyInCargoException : FlightException("Energy can't be put in cargo")
+
+class NotEnoughCargoSpaceException(val needed: Int, val available: Int) : FlightException("Not enough cargo available: Needed: $needed, available: $available")
+
 interface FlightService {
+    /**
+     * Sends ships on the flight to another planet.
+     *
+     * @throws SameStartAndDestinationException If [start] and [destination] are the same.
+     * @throws InvalidLocationException If the location is invalid (e.g. not in the universe).
+     * @throws NoShipsException If no ships are on the flight.
+     * @throws ColonyShipRequiredException If the flight is a colonize flight and no colony ship is on the flight.
+     * @throws CargoNotAllowedException If the flight is an attack flight and resources are in the cargo.
+     * @throws EnergyInCargoException If energy is in the cargo.
+     * @throws NotEnoughCargoSpaceException If not enough cargo space is available.
+     * @throws NotEnoughResourcesException If not enough resources are available to start the flight.
+     * @throws NotEnoughShipsException If not enough ships are available.
+     */
     fun sendShipsToPlanet(player: Player, start: Planet, destination: Location, ships: Ships, type: FlightType, cargo: Resources): SendResult
 
     fun finishFlights()
@@ -61,24 +92,6 @@ interface FlightRepository {
 interface FlightTypeHandler {
     fun handleFlight(flight: Flight, flightService: FlightService)
 }
-
-abstract class FlightException(message: String?) : Exception(message) {
-    constructor() : this(null)
-}
-
-class SameStartAndDestinationException : FlightException()
-
-class NoShipsException : FlightException()
-
-class NotEnoughShipsException(val type: ShipType, val needed: Int, val available: Int) : FlightException("Not enough ships of type $type available. Needed: $needed, available: $available")
-
-class ColonyShipRequiredException : FlightException("A colony ship on this flight is required")
-
-class CargoNotAllowedException : FlightException("Cargo is not allowed")
-
-class EnergyInCargoException : FlightException("Energy can't be put in cargo")
-
-class NotEnoughCargoSpaceException(val needed: Int, val available: Int) : FlightException("Not enough cargo available: Needed: $needed, available: $available")
 
 class FlightServiceImpl(
         private val config: Config,
@@ -122,6 +135,8 @@ class FlightServiceImpl(
         if (!start.resources.enough(cost)) {
             throw NotEnoughResourcesException(cost, start.resources)
         }
+
+        // TODO: Check if planet has enough resources for cargo!
 
         val shipsAvailable = shipService.findShipsByPlanet(start)
 

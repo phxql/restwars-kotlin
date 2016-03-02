@@ -277,7 +277,19 @@ Starts a colonize flight to planet 1.2.3 with 5 mosquitos and 1 colony ship. Car
 
 Response:
 
+* `200 OK`
+
 [source,json]
 include::responses/start-flight.json[]
 
 The flight started from 1.2.3 and is a colonize flight to 4.5.6. The flight will arrive in round 112 and consists of 3 mosquitos and 2 colony ships.
+
+* `400 Bad Request` if start and destination are the same.
+* `400 Bad Request` if the location is invalid (e.g. not in the universe).
+* `400 Bad Request` if no ships are on the flight.
+* `400 Bad Request` if the flight is a colonize flight and no colony ship is on the flight.
+* `400 Bad Request` if the flight is an attack flight and resources are in the cargo.
+* `400 Bad Request` if energy is in the cargo.
+* `400 Bad Request` if not enough cargo space is available.
+* `400 Bad Request` if not enough resources are available to start the flight.
+* `400 Bad Request` if not enough ships are available.
