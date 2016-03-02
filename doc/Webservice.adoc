@@ -239,10 +239,15 @@ Builds a new mosquito.
 
 Response:
 
+* `200 OK`
+
 [source,json]
 include::responses/construct-ship.json[]
 
 The new mosquito is done in round 73.
+
+* `400 Bad Request` if not enough build slots are available.
+* `400 Bad Request` if not enough build resources are available.
 
 List ships in construction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

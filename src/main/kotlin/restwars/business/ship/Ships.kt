@@ -78,7 +78,16 @@ data class Ships(val ships: List<Ship>) : Serializable {
 data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) : Serializable {
 }
 
+abstract class BuildShipException(message: String) : Exception(message)
+class NotEnoughBuildSlotsException() : BuildShipException("Not enough build slots available")
+
 interface ShipService {
+    /**
+     * Builds a ship on the [planet].
+     *
+     * @throws NotEnoughBuildSlotsException If not enough build slots available.
+     * @throws NotEnoughResourcesException If not enough resources are available.
+     */
     fun buildShip(planet: Planet, type: ShipType): BuildResult
 
     fun findShipsInConstructionByPlanet(planet: Planet): List<ShipInConstruction>
@@ -117,9 +126,6 @@ interface HangarRepository {
 }
 
 data class BuildResult(val planet: Planet, val shipInConstruction: ShipInConstruction)
-
-abstract class BuildShipException(message: String) : Exception(message)
-class NotEnoughBuildSlotsException() : BuildShipException("Not enough build slots available")
 
 class ShipServiceImpl(
         private val uuidFactory: UUIDFactory,

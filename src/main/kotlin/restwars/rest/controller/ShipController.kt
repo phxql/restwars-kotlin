@@ -2,9 +2,12 @@ package restwars.rest.controller
 
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
+import restwars.business.resource.NotEnoughResourcesException
+import restwars.business.ship.BuildShipException
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.rest.api.BuildShipRequest
+import restwars.rest.api.ErrorResponse
 import restwars.rest.api.ShipInConstructionResponse
 import restwars.rest.api.ShipsResponse
 import restwars.rest.http.StatusCode
@@ -37,7 +40,15 @@ class ShipController(
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
-            val buildResult = shipService.buildShip(planet, type)
+            val buildResult = try {
+                shipService.buildShip(planet, type)
+            } catch(ex: BuildShipException) {
+                res.status(StatusCode.BAD_REQUEST)
+                return@Route Json.toJson(res, ErrorResponse(ex.message ?: ""))
+            } catch(ex: NotEnoughResourcesException) {
+                res.status(StatusCode.BAD_REQUEST)
+                return@Route Json.toJson(res, ErrorResponse(ex.message ?: ""))
+            }
 
             res.status(StatusCode.CREATED)
             return@Route Json.toJson(res, ShipInConstructionResponse.fromShipInConstruction(buildResult.shipInConstruction))
