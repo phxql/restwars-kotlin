@@ -57,7 +57,7 @@ object GenerateDocs {
         writeToFile(Type.RESPONSE, "round-information.json", RoundResponse(13, 30))
         writeToFile(Type.RESPONSE, "round-websocket.json", RoundWebsocketResponse(17))
         writeToFile(Type.RESPONSE, "ships-in-construction.json", ShipsInConstructionResponse(listOf(
-                ShipInConstructionResponse(UUID.randomUUID(), ShipType.COLONY.name, 55))
+                ShipInConstructionResponse(UUID.fromString("a675a15c-aeec-47d8-8fc8-4bc0fd452800"), ShipType.COLONY.name, 55))
         ))
         writeToFile(Type.RESPONSE, "ships-in-hangar.json", ShipsResponse(listOf(
                 ShipResponse(ShipType.MOSQUITO.name, 3),

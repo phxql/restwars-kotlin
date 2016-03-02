@@ -6,8 +6,11 @@ Authentication
 
 Some endpoints need authentication. Authentication is done via HTTP Basic Auth.
 
+Players
+-------
+
 Create a new player
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Creates a new player.
 
@@ -24,8 +27,11 @@ Response:
 
 `201 Created` if the player has been created.
 
+Planets
+-------
+
 List planets
-------------
+~~~~~~~~~~~~
 
 Lists all planets of the player. Needs authentication.
 
@@ -38,8 +44,25 @@ include::responses/list-planets.json[]
 
 The player has a planet at 1.2.3 with 100 crystals, 50 gas and 400 energy. Another planet of the player is at 2.3.4, with 200 crystals, 100 gas and 800 energy.
 
+Scan with telescope
+~~~~~~~~~~~~~~~~~~~
+
+Returns a list of all planets and their owners in the vicinity. Needs authentication.
+
+URL: `GET /v1/planet/:location/telescope/scan`
+
+Response:
+
+[source,json]
+include::responses/telescope-scan.json[]
+
+Planet 1.1.1 and 1.1.3 is owned by "player1", planet 1.1.2 is owned by "player2".
+
+General information
+-------------------
+
 Application information
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns information about the RESTwars application.
 
@@ -53,7 +76,7 @@ include::responses/application-information.json[]
 RESTwars is running in version 1.0.0 and has been built from the commit hash "e1d9d75d436a4adaca8d0fd56f5c13550e95e797".
 
 RESTwars configuration
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Returns information about the RESTwars configuration.
 
@@ -66,9 +89,11 @@ include::responses/configuration.json[]
 
 A round lasts 30 seconds.
 
-
 Round information
 -----------------
+
+Round information
+~~~~~~~~~~~~~~~~~
 
 Returns information about the round.
 
@@ -82,7 +107,7 @@ include::responses/round-information.json[]
 The game is currently in round 13 and each round lasts 30 seconds.
 
 Round websocket
----------------
+~~~~~~~~~~~~~~~
 
 Provides a websocket which notifies the client when a new round starts.
 
@@ -95,8 +120,11 @@ include::responses/round-websocket.json[]
 
 The game is currently in round 17.
 
+Buildings
+---------
+
 List buildings
---------------
+~~~~~~~~~~~~~~
 
 Lists buildings on a planet. Needs authentication.
 
@@ -110,7 +138,7 @@ include::responses/list-buildings.json[]
 A command center level 2 and a crystal mine level 3 exists on the planet.
 
 Construct building
-------------------
+~~~~~~~~~~~~~~~~~~
 
 Builds a new building on a planet. Needs authentication.
 
@@ -131,7 +159,7 @@ include::responses/construct-building.json[]
 The new command center will have level 2 and is done in round 102.
 
 List construction sites
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Lists construction sites on a planet. Needs authentication.
 
@@ -144,8 +172,11 @@ include::responses/list-construction-sites.json[]
 
 A command center level 2 is being built. It's done in round 102.
 
+Ships
+-----
+
 List ships in hangar
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 Lists ships in the hangar on a planet. Needs authentication.
 
@@ -159,7 +190,7 @@ include::responses/ships-in-hangar.json[]
 The hangar contains 3 mosquitos and 2 colony ships.
 
 Construct ship
---------------
+~~~~~~~~~~~~~~
 
 Constructs a new ship on a planet. Needs authentication.
 
@@ -180,7 +211,7 @@ include::responses/construct-ship.json[]
 The new mosquito is done in round 73.
 
 List ships in construction
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Lists all ships in construction on a planet. Needs authentication.
 
@@ -193,8 +224,11 @@ include::responses/ships-in-construction.json[]
 
 A colony ship is done in round 55.
 
+Flights
+-------
+
 Start a flight
---------------
+~~~~~~~~~~~~~~
 
 Starts a new flight from a planet. Needs authentication.
 
@@ -213,17 +247,3 @@ Response:
 include::responses/start-flight.json[]
 
 The flight started from 1.2.3 and is a colonize flight to 4.5.6. The flight will arrive in round 112, consists of 3 mosquitos and 2 colony ships.
-
-Scan with telescope
--------------------
-
-Returns a list of all planets and their owners in the vicinity.
-
-URL: `GET /v1/planet/:location/telescope/scan`
-
-Response:
-
-[source,json]
-include::responses/telescope-scan.json[]
-
-Planet 1.1.1 and 1.1.3 is owned by "player1", planet 1.1.2 is owned by "player2".
