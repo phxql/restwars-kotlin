@@ -1,0 +1,12 @@
+{
+  "ships": [
+    {
+      "type": "MOSQUITO",
+      "amount": 3
+    },
+    {
+      "type": "COLONY",
+      "amount": 2
+    }
+  ]
+}

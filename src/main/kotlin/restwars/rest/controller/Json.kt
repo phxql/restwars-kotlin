@@ -1,6 +1,7 @@
 package restwars.rest.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import spark.Request
 import spark.Response
@@ -8,7 +9,7 @@ import spark.Response
 object Json {
     val contentType = "application/json"
 
-    private val mapper = ObjectMapper().registerModule(KotlinModule())
+    private val mapper = ObjectMapper().registerModule(KotlinModule()).enable(SerializationFeature.INDENT_OUTPUT)
 
     fun toJson(response: Response, model: Any): String {
         response.type(contentType)

@@ -37,59 +37,137 @@ include::responses/list-planets.json[]
 Application information
 -----------------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/application-information.json[]
+
 
 RESTwars configuration
 ----------------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/configuration.json[]
+
 
 Round information
 -----------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/round-information.json[]
+
 
 Round websocket
 ---------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/round-websocket.json[]
 
 List buildings
 --------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/list-buildings.json[]
 
 Construct building
 ------------------
 
-TODO
+URL: TODO
+
+Request:
+
+[source,json]
+include::requests/construct-building.json[]
+
+Response:
+
+[source,json]
+include::responses/construct-building.json[]
 
 List construction sites
 -----------------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/list-construction-sites.json[]
 
 List ships in hangar
 --------------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/ships-in-hangar.json[]
 
 Construct ship
 --------------
 
-TODO
+URL: TODO
+
+Request:
+
+[source,json]
+include::requests/construct-ship.json[]
+
+Response:
+
+[source,json]
+include::responses/construct-ship.json[]
 
 List ships in construction
 --------------------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/ships-in-construction.json[]
 
 Start a flight
 --------------
 
-TODO
+URL: TODO
+
+Request:
+
+[source,json]
+include::requests/start-flight.json[]
+
+Response:
+
+[source,json]
+include::responses/start-flight.json[]
 
 Scan with telescope
 -------------------
 
-TODO
+URL: TODO
+
+Response:
+
+[source,json]
+include::responses/telescope-scan.json[]

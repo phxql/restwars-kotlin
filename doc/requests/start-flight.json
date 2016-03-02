@@ -1,0 +1,14 @@
+{
+  "destination": "1.2.3",
+  "ships": {
+    "ships": {
+      "MOSQUITO": 5,
+      "COLONY": 1
+    }
+  },
+  "type": "COLONIZE",
+  "cargo": {
+    "crystal": 100,
+    "gas": 50
+  }
+}

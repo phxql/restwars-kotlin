@@ -1,0 +1,28 @@
+{
+  "planets": [
+    {
+      "location": {
+        "galaxy": 1,
+        "system": 1,
+        "planet": 1
+      },
+      "owner": "player1"
+    },
+    {
+      "location": {
+        "galaxy": 1,
+        "system": 1,
+        "planet": 2
+      },
+      "owner": "player2"
+    },
+    {
+      "location": {
+        "galaxy": 1,
+        "system": 1,
+        "planet": 3
+      },
+      "owner": "player1"
+    }
+  ]
+}

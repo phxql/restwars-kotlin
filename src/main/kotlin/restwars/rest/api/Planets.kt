@@ -32,12 +32,12 @@ data class PlanetsResponse(val planets: List<PlanetResponse>) {
     }
 }
 
-data class ScannedPlanetResponse(val location: Location, val owner: String)
+data class ScannedPlanetResponse(val location: LocationResponse, val owner: String)
 
 data class ScanResponse(val planets: List<ScannedPlanetResponse>) {
     companion object {
         fun from(planets: List<PlanetWithPlayer>): ScanResponse {
-            return ScanResponse(planets.map { ScannedPlanetResponse(it.planet.location, it.player.username) })
+            return ScanResponse(planets.map { ScannedPlanetResponse(LocationResponse.fromLocation(it.planet.location), it.player.username) })
         }
     }
 }
