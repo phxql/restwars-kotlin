@@ -25,7 +25,8 @@ This creates a new player with username "player1" and password "s3cret".
 
 Response:
 
-`201 Created` if the player has been created.
+* `201 Created` if the player has been created.
+* `409 Conflict` if the username is already taken.
 
 Planets
 -------

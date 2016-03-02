@@ -8,4 +8,6 @@ object StatusCode {
     val UNAUTHORIZED = 401
 
     val NOT_FOUND = 404
+
+    val CONFLICT = 409
 }
