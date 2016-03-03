@@ -10,16 +10,23 @@ import restwars.business.clock.RoundService
 import restwars.business.config.Config
 import restwars.rest.api.RoundResponse
 import restwars.rest.api.RoundWebsocketResponse
-import spark.Route
+import restwars.rest.base.ControllerHelper
+import restwars.rest.base.Json
+import restwars.rest.base.Method
+import restwars.rest.base.Result
+import spark.Request
+import spark.Response
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class RoundController(
         val roundService: RoundService, val config: Config
 ) : ControllerHelper {
-    fun get(): Route {
-        return Route { request, response ->
-            val currentRound = roundService.currentRound()
-            return@Route Json.toJson(response, RoundResponse(currentRound, config.roundTime))
+    fun get(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val currentRound = roundService.currentRound()
+                return RoundResponse(currentRound, config.roundTime)
+            }
         }
     }
 }

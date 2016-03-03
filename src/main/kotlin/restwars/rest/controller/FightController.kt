@@ -7,7 +7,12 @@ import restwars.rest.api.FightResponse
 import restwars.rest.api.FightsResponse
 import restwars.rest.api.LocationResponse
 import restwars.rest.api.ShipsResponse
-import spark.Route
+import restwars.rest.base.ControllerHelper
+import restwars.rest.base.Method
+import restwars.rest.base.RequestContext
+import restwars.rest.base.Result
+import spark.Request
+import spark.Response
 import javax.validation.ValidatorFactory
 
 class FightController(
@@ -16,40 +21,43 @@ class FightController(
         val planetService: PlanetService,
         val fightService: FightService
 ) : ControllerHelper {
-    fun byPlayer(): Route {
-        return Route { req, res ->
-            val context = RequestContext.build(req, playerService)
+    fun byPlayer(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val context = RequestContext.build(req, playerService)
 
-            val fights = fightService.findWithPlayer(context.player)
+                val fights = fightService.findWithPlayer(context.player)
 
-            return@Route Json.toJson(res, FightsResponse(fights.map {
-                val fight = it.fight
-                FightResponse(
-                        fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
-                        ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
-                        ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
-                )
-            }))
+                return FightsResponse(fights.map {
+                    val fight = it.fight
+                    FightResponse(
+                            fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
+                            ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
+                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
+                    )
+                })
+            }
         }
     }
 
-    fun byPlanet(): Route {
-        return Route { req, res ->
-            val context = RequestContext.build(req, playerService)
-            val location = parseLocation(req)
+    fun byPlanet(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val context = RequestContext.build(req, playerService)
+                val location = parseLocation(req)
 
-            val planet = planetService.findByLocation(location) ?: return@Route Json.toJson(res, FightsResponse(listOf()))
-            val fights = fightService.findWithPlayerAndPlanet(context.player, planet)
+                val planet = planetService.findByLocation(location) ?: return FightsResponse(listOf())
+                val fights = fightService.findWithPlayerAndPlanet(context.player, planet)
 
-            return@Route Json.toJson(res, FightsResponse(fights.map {
-                val fight = it.fight
-                FightResponse(
-                        fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
-                        ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
-                        ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
-                )
-            }))
+                return FightsResponse(fights.map {
+                    val fight = it.fight
+                    FightResponse(
+                            fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
+                            ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
+                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
+                    )
+                })
+            }
         }
-
     }
 }

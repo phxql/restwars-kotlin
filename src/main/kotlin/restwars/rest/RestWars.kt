@@ -20,6 +20,7 @@ import restwars.business.player.PlayerServiceImpl
 import restwars.business.resource.ResourceServiceImpl
 import restwars.business.ship.ShipServiceImpl
 import restwars.rest.api.ErrorResponse
+import restwars.rest.base.*
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
@@ -117,11 +118,11 @@ fun registerWebsockets(roundService: RoundService) {
  * Function to create a route which acquires a lock before the request and reliably releases the lock afterwards.
  */
 // May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
-private fun route(lockService: LockService, route: Route): Route {
+private fun route(lockService: LockService, method: Method): Route {
     return Route { request, response ->
         lockService.beforeRequest()
         try {
-            return@Route route.handle(request, response)
+            return@Route Json.toJson(response, method.invoke(request, response))
         } finally {
             lockService.afterRequest()
         }

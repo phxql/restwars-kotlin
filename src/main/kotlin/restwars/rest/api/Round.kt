@@ -1,5 +1,7 @@
 package restwars.rest.api
 
-data class RoundResponse(val currentRound: Long, val roundTime: Int)
+import restwars.rest.base.Result
 
-data class RoundWebsocketResponse(val currentRound: Long)
+data class RoundResponse(val currentRound: Long, val roundTime: Int) : Result
+
+data class RoundWebsocketResponse(val currentRound: Long) : Result

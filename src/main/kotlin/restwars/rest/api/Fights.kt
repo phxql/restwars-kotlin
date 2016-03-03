@@ -1,5 +1,6 @@
 package restwars.rest.api
 
+import restwars.rest.base.Result
 import java.util.*
 
 data class FightResponse(
@@ -11,6 +12,6 @@ data class FightResponse(
         val defenderShips: ShipsResponse,
         val remainingAttackerShips: ShipsResponse,
         val remainingDefenderShips: ShipsResponse
-)
+) : Result
 
-data class FightsResponse(val fights: List<FightResponse>)
+data class FightsResponse(val fights: List<FightResponse>) : Result

@@ -5,7 +5,12 @@ import restwars.business.building.BuildingType
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.ScanResponse
-import spark.Route
+import restwars.rest.base.ControllerHelper
+import restwars.rest.base.Method
+import restwars.rest.base.RequestContext
+import restwars.rest.base.Result
+import spark.Request
+import spark.Response
 import javax.validation.ValidatorFactory
 
 class TelescopeController(
@@ -14,17 +19,19 @@ class TelescopeController(
         val planetService: PlanetService,
         val buildingService: BuildingService
 ) : ControllerHelper {
-    fun scan(): Route {
-        return Route { req, res ->
-            val context = RequestContext.build(req, playerService)
-            val location = parseLocation(req)
+    fun scan(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val context = RequestContext.build(req, playerService)
+                val location = parseLocation(req)
 
-            val planet = getOwnPlanet(planetService, context.player, location)
-            val telescopeLevel = buildingService.findBuildingByPlanetAndType(planet, BuildingType.TELESCOPE)?.level ?: 0
-            // TODO: Prohibit scan if level is 0
-            val planets = planetService.findInVicinity(planet, telescopeLevel)
+                val planet = getOwnPlanet(planetService, context.player, location)
+                val telescopeLevel = buildingService.findBuildingByPlanetAndType(planet, BuildingType.TELESCOPE)?.level ?: 0
+                // TODO: Prohibit scan if level is 0
+                val planets = planetService.findInVicinity(planet, telescopeLevel)
 
-            return@Route Json.toJson(res, ScanResponse.from(planets))
+                return ScanResponse.from(planets)
+            }
         }
     }
 }

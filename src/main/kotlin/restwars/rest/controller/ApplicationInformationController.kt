@@ -2,14 +2,20 @@ package restwars.rest.controller
 
 import restwars.business.ApplicationInformationService
 import restwars.rest.api.ApplicationInformationResponse
-import spark.Route
+import restwars.rest.base.ControllerHelper
+import restwars.rest.base.Method
+import restwars.rest.base.Result
+import spark.Request
+import spark.Response
 
 class ApplicationInformationController(val applicationInformationService: ApplicationInformationService) : ControllerHelper {
-    fun get(): Route {
-        return Route { req, res ->
-            val information = applicationInformationService.getInformation()
+    fun get(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val information = applicationInformationService.getInformation()
 
-            return@Route Json.toJson(res, ApplicationInformationResponse.fromApplicationInformation(information))
+                return ApplicationInformationResponse.fromApplicationInformation(information)
+            }
         }
     }
 }

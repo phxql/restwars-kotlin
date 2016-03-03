@@ -4,7 +4,12 @@ import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.business.ship.ShipService
 import restwars.rest.api.ShipsInConstructionResponse
-import spark.Route
+import restwars.rest.base.ControllerHelper
+import restwars.rest.base.Method
+import restwars.rest.base.RequestContext
+import restwars.rest.base.Result
+import spark.Request
+import spark.Response
 import javax.validation.ValidatorFactory
 
 class ShipyardController(
@@ -13,15 +18,17 @@ class ShipyardController(
         val planetService: PlanetService,
         val shipService: ShipService
 ) : ControllerHelper {
-    fun listOnPlanet(): Route {
-        return Route { req, res ->
-            val context = RequestContext.build(req, playerService)
-            val location = parseLocation(req)
+    fun listOnPlanet(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val context = RequestContext.build(req, playerService)
+                val location = parseLocation(req)
 
-            val planet = getOwnPlanet(planetService, context.player, location)
-            val shipsInConstruction = shipService.findShipsInConstructionByPlanet(planet)
+                val planet = getOwnPlanet(planetService, context.player, location)
+                val shipsInConstruction = shipService.findShipsInConstructionByPlanet(planet)
 
-            return@Route Json.toJson(res, ShipsInConstructionResponse.fromShipsInConstruction(shipsInConstruction))
+                return ShipsInConstructionResponse.fromShipsInConstruction(shipsInConstruction)
+            }
         }
     }
 }

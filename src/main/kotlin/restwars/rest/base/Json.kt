@@ -1,4 +1,4 @@
-package restwars.rest.controller
+package restwars.rest.base
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature

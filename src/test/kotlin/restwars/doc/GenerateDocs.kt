@@ -4,7 +4,7 @@ import restwars.business.building.BuildingType
 import restwars.business.flight.FlightType
 import restwars.business.ship.ShipType
 import restwars.rest.api.*
-import restwars.rest.controller.Json
+import restwars.rest.base.Json
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths

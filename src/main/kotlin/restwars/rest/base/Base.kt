@@ -1,4 +1,4 @@
-package restwars.rest.controller
+package restwars.rest.base
 
 import restwars.business.planet.Location
 import restwars.business.planet.Planet
@@ -7,6 +7,7 @@ import restwars.business.player.Player
 import restwars.business.player.PlayerService
 import restwars.rest.api.ErrorResponse
 import spark.Request
+import spark.Response
 import java.util.*
 import javax.validation.ValidatorFactory
 
@@ -17,6 +18,27 @@ class AuthenticationException(message: String) : Exception(message)
 class BadRequestException(val response: Any) : Exception("Bad request")
 
 class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet at $location found")
+
+/**
+ * Tagging interface for controller method results.
+ */
+interface Result {
+
+}
+
+/**
+ * A controller method.
+ */
+interface Method {
+    /**
+     * Invokes the method.
+     *
+     * @param req Request.
+     * @param res Response.
+     * @return Result.
+     */
+    fun invoke(req: Request, res: Response): Result
+}
 
 interface ControllerHelper {
     fun <T> validate(validatorFactory: ValidatorFactory, obj: T?): T {

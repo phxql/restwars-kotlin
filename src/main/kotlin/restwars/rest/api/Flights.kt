@@ -5,6 +5,7 @@ import restwars.business.planet.Resources
 import restwars.business.ship.Ship
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
+import restwars.rest.base.Result
 
 data class ShipsRequest(
         @get:org.hibernate.validator.constraints.NotEmpty
@@ -35,7 +36,7 @@ data class CreateFlightRequest(
         val cargo: CargoRequest?
 )
 
-data class FlightsResponse(val flights: List<FlightResponse>) {
+data class FlightsResponse(val flights: List<FlightResponse>) : Result {
     companion object {
         fun from(flights: List<Flight>) = FlightsResponse(flights.map { FlightResponse.fromFlight(it) })
     }
@@ -46,7 +47,7 @@ data class FlightResponse(
         val destination: LocationResponse,
         val arrivalInRound: Long,
         val ships: ShipsResponse
-) {
+) : Result {
     companion object {
         fun fromFlight(flight: Flight) = FlightResponse(
                 LocationResponse.fromLocation(flight.start), LocationResponse.fromLocation(flight.destination),
