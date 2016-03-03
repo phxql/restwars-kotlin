@@ -12,6 +12,7 @@ import restwars.business.resource.NotEnoughResourcesException
 import restwars.rest.api.CreateFlightRequest
 import restwars.rest.api.ErrorResponse
 import restwars.rest.api.FlightResponse
+import restwars.rest.api.FlightsResponse
 import restwars.rest.http.StatusCode
 import spark.Route
 import javax.validation.ValidatorFactory
@@ -46,6 +47,26 @@ class FlightController(
             }
 
             return@Route Json.toJson(res, FlightResponse.fromFlight(sendResult.flight))
+        }
+    }
+
+    fun listFrom(): Route {
+        return Route { req, res ->
+            val context = RequestContext.build(req, playerService)
+            val location = parseLocation(req)
+
+            val flights = flightService.findWithPlayerAndStart(context.player, location)
+            return@Route Json.toJson(FlightsResponse.from(flights))
+        }
+    }
+
+    fun listTo(): Route {
+        return Route { req, res ->
+            val context = RequestContext.build(req, playerService)
+            val location = parseLocation(req)
+
+            val flights = flightService.findWithPlayerAndDestination(context.player, location)
+            return@Route Json.toJson(FlightsResponse.from(flights))
         }
     }
 }

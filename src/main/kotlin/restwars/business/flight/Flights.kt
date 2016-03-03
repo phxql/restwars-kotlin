@@ -77,6 +77,10 @@ interface FlightService {
     fun createReturnFlight(flight: Flight, ships: Ships, cargo: Resources)
 
     fun delete(flight: Flight)
+
+    fun findWithPlayerAndDestination(player: Player, destination: Location): List<Flight>
+
+    fun findWithPlayerAndStart(player: Player, start: Location): List<Flight>
 }
 
 interface FlightRepository {
@@ -87,6 +91,10 @@ interface FlightRepository {
     fun delete(id: UUID)
 
     fun findByArrivalInRound(arrivalInRound: Long): List<Flight>
+
+    fun findWithPlayerAndDestination(playerId: UUID, destination: Location): List<Flight>
+
+    fun findWithPlayerAndStart(playerId: UUID, start: Location): List<Flight>
 }
 
 interface FlightTypeHandler {
@@ -161,6 +169,14 @@ class FlightServiceImpl(
         flightRepository.insert(flight)
 
         return SendResult(updatedPlanet, flight)
+    }
+
+    override fun findWithPlayerAndDestination(player: Player, destination: Location): List<Flight> {
+        return flightRepository.findWithPlayerAndDestination(player.id, destination)
+    }
+
+    override fun findWithPlayerAndStart(player: Player, start: Location): List<Flight> {
+        return flightRepository.findWithPlayerAndStart(player.id, start)
     }
 
     private fun calculateFlightCost(distance: Long, ships: Ships): Resources {

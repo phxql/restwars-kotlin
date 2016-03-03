@@ -85,6 +85,16 @@ object GenerateDocs {
                 ))
                 ))
         ))
+        writeToFile(Type.RESPONSE, "flights.json", FlightsResponse(listOf(
+                FlightResponse(LocationResponse(1, 2, 3), LocationResponse(4, 5, 6), 112, ShipsResponse(listOf(
+                        ShipResponse(ShipType.MOSQUITO.name, 3),
+                        ShipResponse(ShipType.COLONY.name, 2))
+                )),
+                FlightResponse(LocationResponse(1, 2, 3), LocationResponse(7, 8, 9), 144, ShipsResponse(listOf(
+                        ShipResponse(ShipType.MOSQUITO.name, 1),
+                        ShipResponse(ShipType.MULE.name, 1))
+                ))
+        )))
     }
 }
 

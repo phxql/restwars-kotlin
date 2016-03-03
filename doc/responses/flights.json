@@ -1,0 +1,45 @@
+{
+  "flights" : [ {
+    "start" : {
+      "galaxy" : 1,
+      "system" : 2,
+      "planet" : 3
+    },
+    "destination" : {
+      "galaxy" : 4,
+      "system" : 5,
+      "planet" : 6
+    },
+    "arrivalInRound" : 112,
+    "ships" : {
+      "ships" : [ {
+        "type" : "MOSQUITO",
+        "amount" : 3
+      }, {
+        "type" : "COLONY",
+        "amount" : 2
+      } ]
+    }
+  }, {
+    "start" : {
+      "galaxy" : 1,
+      "system" : 2,
+      "planet" : 3
+    },
+    "destination" : {
+      "galaxy" : 7,
+      "system" : 8,
+      "planet" : 9
+    },
+    "arrivalInRound" : 144,
+    "ships" : {
+      "ships" : [ {
+        "type" : "MOSQUITO",
+        "amount" : 1
+      }, {
+        "type" : "MULE",
+        "amount" : 1
+      } ]
+    }
+  } ]
+}

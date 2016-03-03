@@ -174,6 +174,8 @@ private fun registerRoutes(
     Spark.post("/v1/planet/:location/flight", Json.contentType, route(lockService, flightController.create()))
     Spark.post("/v1/planet/:location/telescope/scan", Json.contentType, route(lockService, telescopeController.scan()))
     Spark.get("/v1/planet/:location/fight", Json.contentType, route(lockService, fightController.byPlanet()))
+    Spark.get("/v1/flight/from/:location", Json.contentType, route(lockService, flightController.listFrom()))
+    Spark.get("/v1/flight/to/:location", Json.contentType, route(lockService, flightController.listTo()))
 }
 
 private fun addExceptionHandler() {

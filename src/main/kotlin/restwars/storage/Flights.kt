@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import restwars.business.flight.Flight
 import restwars.business.flight.FlightDirection
 import restwars.business.flight.FlightRepository
+import restwars.business.planet.Location
 import restwars.business.planet.Resources
 import restwars.business.ship.Ships
 import java.nio.file.Path
@@ -35,6 +36,14 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
         val flight = flights[index]
         flights[index] = flight.copy(ships = ships, arrivalInRound = arrivalInRound, direction = direction, cargo = cargo)
 
+    }
+
+    override fun findWithPlayerAndDestination(playerId: UUID, destination: Location): List<Flight> {
+        return flights.filter { it.playerId == playerId && it.destination == destination }
+    }
+
+    override fun findWithPlayerAndStart(playerId: UUID, start: Location): List<Flight> {
+        return flights.filter { it.playerId == playerId && it.start == start }
     }
 
     override fun delete(id: UUID) {

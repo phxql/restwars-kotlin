@@ -35,6 +35,12 @@ data class CreateFlightRequest(
         val cargo: CargoRequest?
 )
 
+data class FlightsResponse(val flights: List<FlightResponse>) {
+    companion object {
+        fun from(flights: List<Flight>) = FlightsResponse(flights.map { FlightResponse.fromFlight(it) })
+    }
+}
+
 data class FlightResponse(
         val start: LocationResponse,
         val destination: LocationResponse,
