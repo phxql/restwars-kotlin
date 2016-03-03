@@ -22,14 +22,14 @@ class FightController(
 
             val fights = fightService.findWithPlayer(context.player)
 
-            return@Route FightsResponse(fights.map {
+            return@Route Json.toJson(res, FightsResponse(fights.map {
                 val fight = it.fight
                 FightResponse(
                         fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
                         ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
                         ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
                 )
-            })
+            }))
         }
     }
 
@@ -41,14 +41,14 @@ class FightController(
             val planet = planetService.findByLocation(location) ?: return@Route Json.toJson(res, FightsResponse(listOf()))
             val fights = fightService.findWithPlayerAndPlanet(context.player, planet)
 
-            return@Route FightsResponse(fights.map {
+            return@Route Json.toJson(res, FightsResponse(fights.map {
                 val fight = it.fight
                 FightResponse(
                         fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
                         ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
                         ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
                 )
-            })
+            }))
         }
 
     }

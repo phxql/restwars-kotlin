@@ -46,6 +46,10 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
         return flights.filter { it.playerId == playerId && it.start == start }
     }
 
+    override fun findWithPlayer(playerId: UUID): List<Flight> {
+        return flights.filter { it.playerId == playerId }
+    }
+
     override fun delete(id: UUID) {
         flights.removeAll { it.id == id }
     }

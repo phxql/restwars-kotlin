@@ -81,6 +81,8 @@ interface FlightService {
     fun findWithPlayerAndDestination(player: Player, destination: Location): List<Flight>
 
     fun findWithPlayerAndStart(player: Player, start: Location): List<Flight>
+
+    fun findWithPlayer(player: Player): List<Flight>
 }
 
 interface FlightRepository {
@@ -95,6 +97,8 @@ interface FlightRepository {
     fun findWithPlayerAndDestination(playerId: UUID, destination: Location): List<Flight>
 
     fun findWithPlayerAndStart(playerId: UUID, start: Location): List<Flight>
+
+    fun findWithPlayer(playerId: UUID): List<Flight>
 }
 
 interface FlightTypeHandler {
@@ -177,6 +181,10 @@ class FlightServiceImpl(
 
     override fun findWithPlayerAndStart(player: Player, start: Location): List<Flight> {
         return flightRepository.findWithPlayerAndStart(player.id, start)
+    }
+
+    override fun findWithPlayer(player: Player): List<Flight> {
+        return flightRepository.findWithPlayer(player.id)
     }
 
     private fun calculateFlightCost(distance: Long, ships: Ships): Resources {

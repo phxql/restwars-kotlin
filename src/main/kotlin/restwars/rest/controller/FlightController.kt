@@ -69,6 +69,15 @@ class FlightController(
             return@Route Json.toJson(FlightsResponse.from(flights))
         }
     }
+
+    fun list(): Route {
+        return Route { req, res ->
+            val context = RequestContext.build(req, playerService)
+
+            val flights = flightService.findWithPlayer(context.player)
+            return@Route Json.toJson(FlightsResponse.from(flights))
+        }
+    }
 }
 
 

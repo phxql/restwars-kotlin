@@ -9,12 +9,13 @@ import restwars.business.planet.Planet
 import restwars.business.player.Player
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
+import java.io.Serializable
 import java.util.*
 
 data class Fight(val id: UUID, val attackerId: UUID, val defenderId: UUID, val planetId: UUID,
                  val attackerShips: Ships, val defenderShips: Ships, val remainingAttackerShips: Ships,
                  val remainingDefenderShips: Ships, val round: Long
-)
+) : Serializable
 
 interface FightCalculator {
     fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships, round: Long): Fight
