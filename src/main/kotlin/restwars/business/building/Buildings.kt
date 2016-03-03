@@ -7,6 +7,7 @@ import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
+import restwars.util.ceil
 import java.io.Serializable
 import java.util.*
 
@@ -120,7 +121,8 @@ class BuildingServiceImpl(
         }
 
         val id = uuidFactory.create()
-        val buildTime = buildingFormulas.calculateBuildTime(type, level)
+
+        val buildTime = calculateBuildTime(commandCenter.level, level, type)
         val done = roundService.currentRound() + buildTime
 
         // Create construction site
@@ -132,6 +134,12 @@ class BuildingServiceImpl(
         planetRepository.updateResources(updatedPlanet.id, updatedPlanet.resources)
 
         return BuildResult(updatedPlanet, constructionSite)
+    }
+
+    private fun calculateBuildTime(commandCenterLevel: Int, level: Int, type: BuildingType): Int {
+        val buildTimeModifier = buildingFormulas.calculateBuildingBuildTimeModifier(commandCenterLevel)
+
+        return Math.max(1, (buildingFormulas.calculateBuildTime(type, level) * buildTimeModifier).ceil())
     }
 
     override fun findBuildingsByPlanet(planet: Planet): List<Building> {
