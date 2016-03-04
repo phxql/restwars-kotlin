@@ -134,7 +134,7 @@ class TransportFlightHandler(
         logger.debug("Handling transport flight {}", flight)
         val planet = planetService.findByLocation(flight.destination)
         if (planet == null) {
-            logger.debug("Planet at {} it not colonized", flight.destination)
+            logger.debug("Planet at {} is not colonized", flight.destination)
             flightService.createReturnFlight(flight, flight.ships, flight.cargo)
             return
         }
