@@ -160,6 +160,7 @@ object ShipFormulasImpl : ShipFormulas {
 
 object LocationFormulasImpl : LocationFormulas {
     override fun calculateDistance(start: Location, destination: Location): Long {
+        // TODO: Add factors: (planet1 - planet2) + (system2 - system2) * x + (galaxy - galaxy) * y
         return Math.abs(start.planet - destination.planet).toLong() + Math.abs(start.system - destination.system) + Math.abs(start.galaxy - destination.galaxy)
     }
 }
