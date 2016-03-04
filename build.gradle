@@ -12,7 +12,7 @@ buildscript {
     }
 }
 
-allprojects {
+subprojects {
     apply plugin: 'kotlin'
 
     dependencies {
@@ -22,49 +22,6 @@ allprojects {
     repositories {
         mavenCentral()
     }
-}
-
-apply plugin: 'application'
-
-// Git helper functions
-apply from: 'gradle/git.gradle'
-
-mainClassName = 'restwars.rest.RestWarsKt'
-
-dependencies {
-    compile project('api')
-
-    // REST layer
-    compile('com.sparkjava:spark-core:2.3') {
-        exclude module: 'slf4j-simple'
-    }
-    // Validation
-    compile 'org.hibernate:hibernate-validator:5.2.3.Final'
-    // Logging API
-    compile 'org.slf4j:slf4j-api:1.7.14'
-    // JSON & YAML
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1-1'
-    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.7.1-2'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.7.1'
-
-    // Needed for validation
-    runtime 'javax.el:javax.el-api:2.2.5'
-    runtime 'org.glassfish.web:javax.el:2.2.6'
-
-    // Logging backend
-    runtime 'ch.qos.logback:logback-classic:1.1.3'
-
-    // Testing
-    testCompile('junit:junit:4.12')
-}
-
-import org.apache.tools.ant.filters.ReplaceTokens
-
-processResources {
-    filter ReplaceTokens, tokens: [
-            "project.version": project.version,
-            "git.hash"       : getCheckedOutGitCommitHash()
-    ]
 }
 
 task wrapper(type: Wrapper) {

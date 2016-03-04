@@ -2,7 +2,7 @@ gradle.allprojects {
     ext.getCheckedOutGitCommitHash = {
         // See https://gist.github.com/JonasGroeger/7620911
 
-        def gitFolder = "$projectDir/.git/"
+        def gitFolder = "$rootProject.projectDir/.git/"
         def takeFromHash = 12
         /*
          * '.git/HEAD' contains either
