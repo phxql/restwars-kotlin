@@ -6,11 +6,11 @@ import restwars.business.player.PlayerService
 import restwars.business.player.UsernameNotUniqueException
 import restwars.rest.api.CreatePlayerRequest
 import restwars.rest.api.ErrorResponse
+import restwars.rest.api.Result
 import restwars.rest.api.SuccessResponse
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.Json
 import restwars.rest.base.Method
-import restwars.rest.base.Result
 import restwars.rest.http.StatusCode
 import spark.Request
 import spark.Response

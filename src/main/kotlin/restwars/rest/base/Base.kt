@@ -6,6 +6,7 @@ import restwars.business.planet.PlanetService
 import restwars.business.player.Player
 import restwars.business.player.PlayerService
 import restwars.rest.api.ErrorResponse
+import restwars.rest.api.Result
 import spark.Request
 import spark.Response
 import java.util.*
@@ -18,13 +19,6 @@ class AuthenticationException(message: String) : Exception(message)
 class BadRequestException(val response: Any) : Exception("Bad request")
 
 class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet at $location found")
-
-/**
- * Tagging interface for controller method results.
- */
-interface Result {
-
-}
 
 /**
  * A controller method.

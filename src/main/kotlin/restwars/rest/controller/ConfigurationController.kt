@@ -2,8 +2,9 @@ package restwars.rest.controller
 
 import restwars.business.config.Config
 import restwars.rest.api.ConfigResponse
+import restwars.rest.api.Result
+import restwars.rest.api.fromConfig
 import restwars.rest.base.Method
-import restwars.rest.base.Result
 import spark.Request
 import spark.Response
 

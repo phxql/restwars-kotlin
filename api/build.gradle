@@ -1,0 +1,4 @@
+dependencies {
+    // Validation
+    compile 'org.hibernate:hibernate-validator:5.2.3.Final'
+}

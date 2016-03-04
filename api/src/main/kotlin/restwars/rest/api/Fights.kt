@@ -1,6 +1,5 @@
 package restwars.rest.api
 
-import restwars.rest.base.Result
 import java.util.*
 
 data class FightResponse(

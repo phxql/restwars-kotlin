@@ -1,6 +1,11 @@
 package restwars.rest.api
 
-import restwars.rest.base.Result
+/**
+ * Tagging interface for controller method results.
+ */
+interface Result {
+
+}
 
 data class ErrorResponse(val reason: String) : Result
 

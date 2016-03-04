@@ -3,14 +3,10 @@ package restwars.rest.controller
 import restwars.business.fight.FightService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
-import restwars.rest.api.FightResponse
-import restwars.rest.api.FightsResponse
-import restwars.rest.api.LocationResponse
-import restwars.rest.api.ShipsResponse
+import restwars.rest.api.*
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.Method
 import restwars.rest.base.RequestContext
-import restwars.rest.base.Result
 import spark.Request
 import spark.Response
 import javax.validation.ValidatorFactory

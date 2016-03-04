@@ -2,9 +2,10 @@ package restwars.rest.controller
 
 import restwars.business.ApplicationInformationService
 import restwars.rest.api.ApplicationInformationResponse
+import restwars.rest.api.Result
+import restwars.rest.api.fromApplicationInformation
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.Method
-import restwars.rest.base.Result
 import spark.Request
 import spark.Response
 

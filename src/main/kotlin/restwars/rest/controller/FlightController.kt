@@ -9,11 +9,11 @@ import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
 import restwars.business.player.PlayerService
 import restwars.business.resource.NotEnoughResourcesException
-import restwars.rest.api.CreateFlightRequest
-import restwars.rest.api.ErrorResponse
-import restwars.rest.api.FlightResponse
-import restwars.rest.api.FlightsResponse
-import restwars.rest.base.*
+import restwars.rest.api.*
+import restwars.rest.base.ControllerHelper
+import restwars.rest.base.Json
+import restwars.rest.base.Method
+import restwars.rest.base.RequestContext
 import restwars.rest.http.StatusCode
 import spark.Request
 import spark.Response
