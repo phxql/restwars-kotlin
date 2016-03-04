@@ -2,6 +2,8 @@ package restwars.rest.api
 
 data class LocationResponse(val galaxy: Int, val system: Int, val planet: Int) : Result {
     companion object {}
+
+    override fun toString() = "$galaxy.$system.$planet"
 }
 
 data class ResourcesResponse(val crystal: Int, val gas: Int, val energy: Int) : Result {

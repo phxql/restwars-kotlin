@@ -10,7 +10,11 @@ data class CargoRequest(
         val crystal: Int,
         @get:javax.validation.constraints.Min(0)
         val gas: Int
-)
+) {
+    companion object {
+        fun none() = CargoRequest(0, 0)
+    }
+}
 
 data class CreateFlightRequest(
         @get:org.hibernate.validator.constraints.NotBlank
