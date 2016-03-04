@@ -85,8 +85,8 @@ open class RestWarsClient(val baseUrl: String) {
 
     fun roundInformation(): RoundResponse = client.roundInformation()
 
-    fun withCredentials(username: String, password: String): AuthorizedRestWarsClient {
-        return AuthorizedRestWarsClient(baseUrl, username, password)
+    fun withCredentials(username: String, password: String): AuthenticatingRestWarsClient {
+        return AuthenticatingRestWarsClient(baseUrl, username, password)
     }
 
     protected fun feignBuilder(): Feign.Builder {
@@ -97,7 +97,7 @@ open class RestWarsClient(val baseUrl: String) {
     }
 }
 
-class AuthorizedRestWarsClient(baseUrl: String, val username: String, val password: String) : RestWarsClient(baseUrl) {
+class AuthenticatingRestWarsClient(baseUrl: String, val username: String, val password: String) : RestWarsClient(baseUrl) {
     private val client: Restwars = feignBuilder()
             .requestInterceptor(BasicAuthRequestInterceptor(username, password))
             .target(Restwars::class.java, baseUrl)
