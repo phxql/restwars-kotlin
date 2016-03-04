@@ -247,7 +247,7 @@ Ships available for construction are:
 |Ship     |Attack|Defense|Cargo Space|Speed|Flight Cost Modifier|Build Time (Rounds)|Build Cost (Crystal/Gas/Energy)
 |MOSQUITO |14    |10     |10         |1    |1                   |10                 |100/20/270
 |COLONY   |0     |75     |500        |0.5  |2                   |60                 |350/150/1750
-|MULE     |0     |50     |750        |1    |1.5                 |20                 |350/150/1750
+|MULE     |0     |50     |750        |1    |1.5                 |20                 |200/100/1225
 |================
 
 Response:
