@@ -15,7 +15,7 @@ object GenerateDocs {
         RESPONSE, REQUEST;
 
         fun getPath(name: String): Path {
-            val base = Paths.get("doc")
+            val base = Paths.get("../doc")
 
             return when (this) {
                 RESPONSE -> base.resolve("responses").resolve(name)
