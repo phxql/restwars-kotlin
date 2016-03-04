@@ -9,5 +9,5 @@ build/
 # Data
 data/
 
-# Rendered asciidoc
+# Rendered documentation
 doc/*.html

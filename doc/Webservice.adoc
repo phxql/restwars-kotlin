@@ -28,6 +28,9 @@ Response:
 * `201 Created` if the player has been created.
 * `409 Conflict` if the username is already taken.
 
+Fights
+------
+
 List fights
 ~~~~~~~~~~~
 
@@ -40,7 +43,21 @@ Response:
 [source,json]
 include::responses/fights.json[]
 
-Fight on planet 1.2.3 between "player1" and "player2". "player1" sent 3 mosquitos and 2 mules, but all were destroyed. "player2" defendend with 5 mosquitos and 1 colony ship, from which 1 mosquito and 1 colony ship survived.
+Fight on planet 1.2.3 between "player1" and "player2". "player1" sent 3 mosquitoes and 2 mules, but all were destroyed. "player2" defended with 5 mosquitoes and 1 colony ship, from which 1 mosquito and 1 colony ship survived.
+
+List fights with a planet
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists all fights with a planet. Needs authentication.
+
+URL: `GET /v1/planet/:location/fight`
+
+Response:
+
+[source,json]
+include::responses/fights.json[]
+
+Fight on planet 1.2.3 between "player1" and "player2". "player1" sent 3 mosquitoes and 2 mules, but all were destroyed. "player2" defended with 5 mosquitoes and 1 colony ship, from which 1 mosquito and 1 colony ship survived.
 
 Planets
 -------
@@ -72,20 +89,6 @@ Response:
 include::responses/telescope-scan.json[]
 
 Planet 1.1.1 and 1.1.3 is owned by "player1", planet 1.1.2 is owned by "player2".
-
-List fights with a planet
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Lists all fights with a planet. Needs authentication.
-
-URL: `GET /v1/planet/:location/fight`
-
-Response:
-
-[source,json]
-include::responses/fights.json[]
-
-Fight on planet 1.2.3 between "player1" and "player2". "player1" sent 3 mosquitos and 2 mules, but all were destroyed. "player2" defendend with 5 mosquitos and 1 colony ship, from which 1 mosquito and 1 colony ship survived.
 
 General information
 -------------------
@@ -221,7 +224,7 @@ Response:
 [source,json]
 include::responses/ships-in-hangar.json[]
 
-The hangar contains 3 mosquitos and 2 colony ships.
+The hangar contains 3 mosquitoes and 2 colony ships.
 
 Construct ship
 ~~~~~~~~~~~~~~
@@ -253,10 +256,10 @@ Response:
 [source,json]
 include::responses/construct-ship.json[]
 
+The new mosquito is done in round 73.
+
 * `400 Bad Request` if not enough build slots are available
 * `400 Bad Request` if not enough resources are available
-
-The new mosquito is done in round 73.
 
 List ships in construction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -287,7 +290,7 @@ Request:
 [source,json]
 include::requests/start-flight.json[]
 
-Starts a colonize flight to planet 1.2.3 with 5 mosquitos and 1 colony ship. Cargo consists of 100 crystals and 50 gas.
+Starts a colonize flight to planet 1.2.3 with 5 mosquitoes and 1 colony ship. Cargo consists of 100 crystals and 50 gas.
 
 You can specify the following flight types:
 
@@ -296,16 +299,64 @@ You can specify the following flight types:
 * `TRANSFER`: Transfer the ships to another planet (must be owned). The ships will remain at the target planet.
 * `TRANSPORT`: Transport cargo to another planet (must be owned). After the cargo has been unloaded, the sent ships will return. Only crystal and gas can be transported. Energy cannot be transported.
 
-Flights of the types `COLONIZE`, `TRANSFER` and `TRANSPORT` can carry a specified amount of cargo as shown in the example above. The cargo will be available on the target planet at the beginning of the round in which the ships arrive.
+The flight started from 1.2.3 and is a colonize flight to 4.5.6. The flight will arrive in round 112 and consists of 3 mosquitoes and 2 colony ships.
 
 If ships in a flight order have different speed values, all ships flight with the speed of the slowest ship.
 
 Response:
 
+* `200 OK`
+
 [source,json]
 include::responses/start-flight.json[]
 
-The flight started from 1.2.3 and is a colonize flight to 4.5.6. The flight will arrive in round 112 and consists of 3 mosquitos and 2 colony ships.
+The flight started from 1.2.3 and is a colonize flight to 4.5.6. The flight will arrive in round 112 and consists of 3 mosquitoes and 2 colony ships.
+
+* `400 Bad Request` if start and destination are the same.
+* `400 Bad Request` if the location is invalid (e.g. not in the universe).
+* `400 Bad Request` if no ships are on the flight.
+* `400 Bad Request` if the flight is a colonize flight and no colony ship is on the flight.
+* `400 Bad Request` if the flight is an attack flight and resources are in the cargo.
+* `400 Bad Request` if energy is in the cargo.
+* `400 Bad Request` if not enough cargo space is available.
+* `400 Bad Request` if not enough resources are available to start the flight.
+* `400 Bad Request` if not enough ships are available.
+
+List all flights
+~~~~~~~~~~~~~~~~
+
+Lists all flights for the player. Needs authentication.
+
+URL: `GET v1/flight`
+
+Response:
+
+[source,json]
+include::responses/flights.json[]
+
+List all flights with destination
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists all flights with a given destination. Needs authentication.
+
+URL: `GET v1/flight/to/:location`
+
+Response:
+
+[source,json]
+include::responses/flights.json[]
+
+List all flights with start
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists all flights with a given start. Needs authentication.
+
+URL: `GET v1/flight/from/:location`
+
+Response:
+
+[source,json]
+include::responses/flights.json[]
 
 Attack mechanics
 ~~~~~~~~~~~~~~~~

@@ -1,0 +1,6 @@
+package restwars.rest.api
+
+import restwars.business.ApplicationInformation
+
+fun ApplicationInformationResponse.Companion.fromApplicationInformation(applicationInformation: ApplicationInformation) = ApplicationInformationResponse(applicationInformation.version, applicationInformation.hash)
+
