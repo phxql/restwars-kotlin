@@ -10,13 +10,31 @@ import feign.auth.BasicAuthRequestInterceptor
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import feign.slf4j.Slf4jLogger
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage
+import org.eclipse.jetty.websocket.api.annotations.WebSocket
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest
+import org.eclipse.jetty.websocket.client.WebSocketClient
 import restwars.rest.api.*
+import java.net.URI
+import java.util.concurrent.ConcurrentSkipListSet
 
-open class RestWarsClient(val baseUrl: String) {
+interface RoundCallback {
+    fun callback(response: RoundWebsocketResponse)
+}
+
+open class RestWarsClient(val hostname: String, val port: Int) {
+    protected val httpBaseUrl = "http://$hostname:$port/"
+    private val websocketBaseUrl = "ws://$hostname:$port/"
+
     private val mapper = ObjectMapper().registerModule(KotlinModule())
 
     private val client: Restwars = feignBuilder()
-            .target(Restwars::class.java, baseUrl)
+            .target(Restwars::class.java, httpBaseUrl)
+
+    private val roundCallbacks: MutableSet<RoundCallback> = ConcurrentSkipListSet()
+
+    private var websocketClient: WebSocketClient? = null
+    private val websocketClientLock = Object()
 
     @Headers("Content-Type: application/json", "Accept: application/json")
     interface Restwars {
@@ -86,7 +104,51 @@ open class RestWarsClient(val baseUrl: String) {
     fun roundInformation(): RoundResponse = client.roundInformation()
 
     fun withCredentials(username: String, password: String): AuthenticatingRestWarsClient {
-        return AuthenticatingRestWarsClient(baseUrl, username, password)
+        return AuthenticatingRestWarsClient(hostname, port, username, password)
+    }
+
+    /**
+     * Adds a [callback] which is called on the start of a new round.
+     */
+    fun addRoundCallback(callback: RoundCallback) {
+        roundCallbacks.add(callback)
+
+        synchronized(websocketClientLock) {
+            if (websocketClient == null) {
+                startWebsocketListener()
+            }
+        }
+    }
+
+    /**
+     * Removes a round [callback].
+     */
+    fun removeRoundCallback(callback: RoundCallback) {
+        roundCallbacks.remove(callback)
+
+        if (roundCallbacks.isEmpty()) {
+            synchronized(websocketClientLock) {
+                stopWebsocketListener()
+            }
+        }
+    }
+
+    private fun startWebsocketListener() {
+        val newWebsocketClient = WebSocketClient()
+        newWebsocketClient.start()
+        val request = ClientUpgradeRequest()
+        val socket = WebsocketHandler(mapper, roundCallbacks)
+
+        assert(websocketBaseUrl.endsWith('/'))
+
+        newWebsocketClient.connect(socket, URI.create(websocketBaseUrl + "v1/round/websocket"), request)
+        websocketClient = newWebsocketClient
+    }
+
+    private fun stopWebsocketListener() {
+        websocketClient?.stop()
+        websocketClient?.destroy()
+        websocketClient = null
     }
 
     protected fun feignBuilder(): Feign.Builder {
@@ -95,12 +157,26 @@ open class RestWarsClient(val baseUrl: String) {
                 .decoder(JacksonDecoder(mapper))
                 .logger(Slf4jLogger())
     }
+
+    @WebSocket
+    class WebsocketHandler(
+            private val mapper: ObjectMapper,
+            private val callbacks: Iterable<RoundCallback>
+    ) {
+        @OnWebSocketMessage
+        fun onMessage(message: String) {
+            val response = mapper.readValue(message, RoundWebsocketResponse::class.java)
+            for (callback in callbacks) {
+                callback.callback(response)
+            }
+        }
+    }
 }
 
-class AuthenticatingRestWarsClient(baseUrl: String, val username: String, val password: String) : RestWarsClient(baseUrl) {
+class AuthenticatingRestWarsClient(hostname: String, port: Int, val username: String, val password: String) : RestWarsClient(hostname, port) {
     private val client: Restwars = feignBuilder()
             .requestInterceptor(BasicAuthRequestInterceptor(username, password))
-            .target(Restwars::class.java, baseUrl)
+            .target(Restwars::class.java, httpBaseUrl)
 
     fun listPlanets(): PlanetsResponse = client.listPlanets()
 

@@ -1,7 +1,9 @@
 package restwars.client
 
+import restwars.rest.api.RoundWebsocketResponse
+
 fun main(args: Array<String>) {
-    val client = RestWarsClient("http://localhost:7777")
+    val client = RestWarsClient("localhost", 7777)
     val applicationInformation = client.applicationInformation()
     println(applicationInformation)
 
@@ -10,6 +12,12 @@ fun main(args: Array<String>) {
 
     val roundInformation = client.roundInformation()
     println(roundInformation)
+
+    client.addRoundCallback(object : RoundCallback {
+        override fun callback(response: RoundWebsocketResponse) {
+            println(response)
+        }
+    })
 
     // client.createPlayer("moe", "moe")
     val client2 = client.withCredentials("moe", "moe")

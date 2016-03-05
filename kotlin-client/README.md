@@ -5,7 +5,7 @@ This is a client written in Kotlin for RESTwars.
 ## Usage
 
 ```kotlin
-val client = RestWarsClient("http://localhost:7777")
+val client = RestWarsClient("localhost", 7777)
 
 // Retrieve application information
 val applicationInformation = client.applicationInformation()
