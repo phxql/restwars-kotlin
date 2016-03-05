@@ -4,6 +4,43 @@ This is a client written in Kotlin for RESTwars.
 
 ## Usage
 
+### Maven
+```xml
+<repositories>
+    <repository>
+        <id>bintray-phxql-maven</id>
+        <name>bintray</name>
+        <url>https://dl.bintray.com/phxql/maven</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>de.mkammerer.restwars</groupId>
+        <artifactId>kotlin-client</artifactId>
+        <version>0.0.1</version>
+    </dependency>
+</dependencies>
+```
+
+### Gradle
+
+```groovy
+repositories {
+    // ... your other repositories ...
+
+    maven {
+        url  "https://dl.bintray.com/phxql/maven"
+    }
+}
+
+dependencies {
+    compile 'de.mkammerer.restwars:kotlin-client:0.0.1'
+}
+```
+
+### Code
+
 ```kotlin
 val client = RestWarsClient("localhost", 7777)
 
