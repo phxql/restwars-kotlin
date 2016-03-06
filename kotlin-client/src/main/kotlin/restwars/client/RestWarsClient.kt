@@ -83,13 +83,13 @@ open class RestWarsClient(val hostname: String, val port: Int) {
         @RequestLine("POST /v1/planet/{location}/flight")
         fun startFlight(@Param("location") location: String, request: CreateFlightRequest): FlightResponse
 
-        @RequestLine("GET v1/flight")
+        @RequestLine("GET /v1/flight")
         fun listFlights(): FlightsResponse
 
-        @RequestLine("GET v1/flight/to/:location")
+        @RequestLine("GET /v1/flight/to/:location")
         fun listFlightsWithDestination(@Param("location") location: String): FlightsResponse
 
-        @RequestLine("GET v1/flight/from/:location")
+        @RequestLine("GET /v1/flight/from/:location")
         fun listFlightsWithStart(@Param("location") location: String): FlightsResponse
     }
 
