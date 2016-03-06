@@ -50,7 +50,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
         @RequestLine("GET /v1/planet/{location}/fight")
         fun listFightsWithPlanet(@Param("location") location: String): FightsResponse
 
-        @RequestLine("GET /v1/planet/{location}/telescope/scan")
+        @RequestLine("POST /v1/planet/{location}/telescope/scan")
         fun telescopeScan(@Param("location") location: String): ScanResponse
 
         @RequestLine("GET /v1/restwars")
