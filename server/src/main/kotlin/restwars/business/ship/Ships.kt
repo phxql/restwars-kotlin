@@ -4,6 +4,8 @@ import org.slf4j.LoggerFactory
 import restwars.business.BuildingFormulas
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
+import restwars.business.building.BuildingService
+import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
@@ -93,6 +95,7 @@ data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) : Serializ
 
 abstract class BuildShipException(message: String) : Exception(message)
 class NotEnoughBuildSlotsException() : BuildShipException("Not enough build slots available")
+class NoShipyardException() : BuildShipException("No shipyard on planet")
 
 interface ShipService {
     /**
@@ -100,6 +103,7 @@ interface ShipService {
      *
      * @throws NotEnoughBuildSlotsException If not enough build slots available.
      * @throws NotEnoughResourcesException If not enough resources are available.
+     * @throws NoShipyardException If the planet has not shipyard.
      */
     fun buildShip(planet: Planet, type: ShipType): BuildResult
 
@@ -147,15 +151,19 @@ class ShipServiceImpl(
         private val shipInConstructionRepository: ShipInConstructionRepository,
         private val shipFormulas: ShipFormulas,
         private val buildingFormulas: BuildingFormulas,
-        private val planetRepository: PlanetRepository
+        private val planetRepository: PlanetRepository,
+        private val buildingService: BuildingService
 ) : ShipService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun buildShip(planet: Planet, type: ShipType): BuildResult {
         logger.debug("Building new ship of type {} on planet {}", type, planet.location)
 
+        val shipyardLevel = buildingService.findBuildingByPlanetAndType(planet, BuildingType.SHIPYARD)?.level ?: 0
+        if (shipyardLevel < 1) throw NoShipyardException()
+
         // Check build slots
-        val slots = buildingFormulas.calculateShipBuildSlots(1) // TODO: Use real shipyard level
+        val slots = buildingFormulas.calculateShipBuildSlots(shipyardLevel)
         val shipsInConstruction = shipInConstructionRepository.countByPlanetId(planet.id)
         if (shipsInConstruction >= slots) {
             throw NotEnoughBuildSlotsException()
