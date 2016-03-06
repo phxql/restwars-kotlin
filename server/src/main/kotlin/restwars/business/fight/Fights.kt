@@ -105,6 +105,6 @@ class FightCalculatorImpl(
      * Returns a list of ship types which can be destroyed with the given [attackPoints].
      */
     private fun findDestroyableShips(ships: Ships, attackPoints: Int): List<ShipType> {
-        return ships.ships.filter { shipFormulas.calculateDefendPoints(it.type) <= attackPoints }.map { it.type }
+        return ships.ships.filter { it.amount > 0 && shipFormulas.calculateDefendPoints(it.type) <= attackPoints }.map { it.type }
     }
 }
