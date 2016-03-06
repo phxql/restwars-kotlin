@@ -16,7 +16,8 @@ enum class BuildingType {
     CRYSTAL_MINE,
     GAS_REFINERY,
     SOLAR_PANELS,
-    TELESCOPE;
+    TELESCOPE,
+    SHIPYARD;
 
     companion object {
         fun parse(value: String): BuildingType {
