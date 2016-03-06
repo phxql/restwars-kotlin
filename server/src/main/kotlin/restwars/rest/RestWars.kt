@@ -1,5 +1,6 @@
 package restwars.rest
 
+import com.fasterxml.jackson.core.JsonParseException
 import org.slf4j.LoggerFactory
 import restwars.business.*
 import restwars.business.building.BuildingServiceImpl
@@ -202,4 +203,8 @@ private fun addExceptionHandler() {
         res.body(Json.toJson(res, e.response))
     })
 
+    Spark.exception(JsonParseException::class.java, fun(e, req, res) {
+        res.status(StatusCode.BAD_REQUEST)
+        res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
+    })
 }
