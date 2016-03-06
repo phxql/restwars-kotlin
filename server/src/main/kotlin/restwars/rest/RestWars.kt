@@ -62,7 +62,7 @@ fun main(args: Array<String>) {
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormulas, roundService, planetRepository)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
-    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, buildingFormulas, planetRepository)
+    val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, buildingFormulas, planetRepository, buildingService)
     val applicationInformationService = ApplicationInformationServiceImpl
     val fightCalculator = FightCalculatorImpl(uuidFactory, shipFormulas, randomNumberGenerator)
     val fightService = FightServiceImpl(fightCalculator, roundService, fightRepository)

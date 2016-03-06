@@ -10,6 +10,7 @@ import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
+import restwars.util.ceil
 import java.io.Serializable
 import java.util.*
 
@@ -175,7 +176,7 @@ class ShipServiceImpl(
         }
 
         val currentRound = roundService.currentRound()
-        val buildTime = shipFormulas.calculateBuildTime(type)
+        val buildTime = calculateBuildTime(shipyardLevel, type)
         val done = currentRound + buildTime
 
         // Decrease resources
@@ -187,6 +188,12 @@ class ShipServiceImpl(
         shipInConstructionRepository.insert(shipInConstruction)
 
         return BuildResult(updatedPlanet, shipInConstruction)
+    }
+
+    private fun calculateBuildTime(shipyardLevel: Int, type: ShipType): Int {
+        val buildTimeModifier = buildingFormulas.calculateShipBuildTimeModifier(shipyardLevel)
+
+        return Math.max(1, (shipFormulas.calculateBuildTime(type) * buildTimeModifier).ceil())
     }
 
     override fun finishShipsInConstruction() {
