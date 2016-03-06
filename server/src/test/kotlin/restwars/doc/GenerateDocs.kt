@@ -43,7 +43,7 @@ object GenerateDocs {
         )), FlightType.COLONIZE.name, CargoRequest(100, 50)))
 
         writeToFile(Type.RESPONSE, "application-information.json", ApplicationInformationResponse("1.0.0", "e1d9d75d436a4adaca8d0fd56f5c13550e95e797"))
-        writeToFile(Type.RESPONSE, "configuration.json", ConfigResponse(30))
+        writeToFile(Type.RESPONSE, "configuration.json", ConfigResponse(30, UniverseSizeResponse(1, 3, 1, 3, 1, 3)))
         writeToFile(Type.RESPONSE, "construct-building.json", ConstructionSiteResponse(UUID.fromString("f1596555-2039-42a4-9a95-2db312871b6a"), BuildingType.COMMAND_CENTER.name, 2, 102))
         writeToFile(Type.RESPONSE, "construct-ship.json", ShipInConstructionResponse(UUID.fromString("873bbd47-8a03-4407-a1d8-5665bd6b150b"), ShipType.MOSQUITO.name, 73))
         writeToFile(Type.RESPONSE, "list-buildings.json", BuildingsResponse(listOf(

@@ -1,3 +1,11 @@
 {
-  "roundTime" : 30
+  "roundTime" : 30,
+  "universeSize" : {
+    "minGalaxy" : 1,
+    "maxGalaxy" : 3,
+    "minSystem" : 1,
+    "maxSystem" : 3,
+    "minPLanet" : 1,
+    "maxPlanet" : 3
+  }
 }
