@@ -22,7 +22,11 @@ enum class ShipType {
 
 }
 
-data class Ship(val type: ShipType, val amount: Int) : Serializable
+data class Ship(val type: ShipType, val amount: Int) : Serializable {
+    init {
+        if (amount < 0) throw IllegalArgumentException("amount must be >= 0")
+    }
+}
 
 data class ShipInConstruction(val id: UUID, val planetId: UUID, val type: ShipType, val done: Long) : Serializable
 
@@ -34,7 +38,7 @@ data class Ships(val ships: List<Ship>) : Serializable {
     operator fun minus(other: Ships): Ships {
         return Ships(ships.map {
             val otherAmount = other[it.type]
-            it.copy(amount = it.amount - otherAmount)
+            it.copy(amount = Math.max(0, it.amount - otherAmount))
         })
     }
 
@@ -49,6 +53,8 @@ data class Ships(val ships: List<Ship>) : Serializable {
     }
 
     fun with(type: ShipType, amount: Int): Ships {
+        if (amount < 0) throw IllegalArgumentException("amount must be >= 0")
+
         val containsShip = ships.any { it.type == type }
         if (!containsShip) {
             return copy(ships = ships + Ship(type, amount))
@@ -71,7 +77,10 @@ data class Ships(val ships: List<Ship>) : Serializable {
     companion object {
         fun none(): Ships = Ships(listOf())
 
-        fun of(type: ShipType, amount: Int) = Ships(listOf(Ship(type, amount)))
+        fun of(type: ShipType, amount: Int): Ships {
+            if (amount < 0) throw IllegalArgumentException("amount must be >= 0")
+            return Ships(listOf(Ship(type, amount)))
+        }
     }
 }
 
