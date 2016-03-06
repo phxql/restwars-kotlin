@@ -6,6 +6,7 @@ import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
+import restwars.business.planet.Resources
 import restwars.business.player.Player
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
@@ -14,7 +15,7 @@ import java.util.*
 
 data class Fight(val id: UUID, val attackerId: UUID, val defenderId: UUID, val planetId: UUID,
                  val attackerShips: Ships, val defenderShips: Ships, val remainingAttackerShips: Ships,
-                 val remainingDefenderShips: Ships, val round: Long
+                 val remainingDefenderShips: Ships, val round: Long, val loot: Resources
 ) : Serializable
 
 interface FightCalculator {
@@ -26,6 +27,8 @@ data class FightWithPlayersAndPlanet(val fight: Fight, val attacker: Player, val
 interface FightService {
     fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships): Fight
 
+    fun updateLoot(fight: Fight, loot: Resources): Fight
+
     fun findWithPlayer(player: Player): List<FightWithPlayersAndPlanet>
 
     fun findWithPlayerAndPlanet(player: Player, planet: Planet): List<FightWithPlayersAndPlanet>
@@ -33,6 +36,8 @@ interface FightService {
 
 interface FightRepository {
     fun insert(fight: Fight)
+
+    fun updateLoot(fightId: UUID, loot: Resources)
 
     fun findWithPlayer(playerId: UUID): List<FightWithPlayersAndPlanet>
 
@@ -51,6 +56,12 @@ class FightServiceImpl(
         fightRepository.insert(fight)
 
         return fight
+    }
+
+    override fun updateLoot(fight: Fight, loot: Resources): Fight {
+        fightRepository.updateLoot(fight.id, loot)
+
+        return fight.copy(loot = loot)
     }
 
     override fun findWithPlayer(player: Player): List<FightWithPlayersAndPlanet> {
@@ -75,7 +86,7 @@ class FightCalculatorImpl(
         val remainingDefenderShips = fight(attackerShips, defenderShips)
         val remainingAttackerShips = fight(defenderShips, attackerShips)
 
-        return Fight(uuidFactory.create(), attackerId, defenderId, planetId, attackerShips, defenderShips, remainingAttackerShips, remainingDefenderShips, round)
+        return Fight(uuidFactory.create(), attackerId, defenderId, planetId, attackerShips, defenderShips, remainingAttackerShips, remainingDefenderShips, round, Resources.none())
     }
 
     private fun fight(attackerShips: Ships, defenderShips: Ships): Ships {

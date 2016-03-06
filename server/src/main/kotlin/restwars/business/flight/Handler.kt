@@ -44,8 +44,11 @@ class AttackFlightHandler(
             flightService.delete(flight)
         } else {
             logger.debug("Looting planet")
-            val loot = calculateLoot(planet, flight.ships)
+            val loot = calculateLoot(planet, fight.remainingAttackerShips)
             logger.debug("Looting {}", loot)
+
+            // Store in fight
+            fightService.updateLoot(fight, loot)
 
             // Loot planet
             planetService.removeResources(planet, loot)

@@ -5,6 +5,7 @@ import restwars.business.fight.Fight
 import restwars.business.fight.FightRepository
 import restwars.business.fight.FightWithPlayersAndPlanet
 import restwars.business.planet.PlanetRepository
+import restwars.business.planet.Resources
 import restwars.business.player.PlayerRepository
 import java.nio.file.Path
 import java.util.*
@@ -20,6 +21,13 @@ class InMemoryFightRepository(
     override fun insert(fight: Fight) {
         logger.debug("Inserting fight {}", fight)
         fights.add(fight)
+    }
+
+    override fun updateLoot(fightId: UUID, loot: Resources) {
+        val index = fights.indexOfFirst { it.id == fightId }
+
+        val fight = fights[index]
+        fights[index] = fight.copy(loot = loot)
     }
 
     override fun findWithPlayer(playerId: UUID): List<FightWithPlayersAndPlanet> {

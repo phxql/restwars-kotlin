@@ -35,7 +35,6 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
 
         val flight = flights[index]
         flights[index] = flight.copy(ships = ships, arrivalInRound = arrivalInRound, direction = direction, cargo = cargo)
-
     }
 
     override fun findWithPlayerAndDestination(playerId: UUID, destination: Location): List<Flight> {

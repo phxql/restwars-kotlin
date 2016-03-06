@@ -29,7 +29,8 @@ class FightController(
                     FightResponse(
                             fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
                             ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
-                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
+                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips),
+                            ResourcesResponse.fromResources(fight.loot)
                     )
                 })
             }
@@ -50,7 +51,8 @@ class FightController(
                     FightResponse(
                             fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
                             ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
-                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips)
+                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips),
+                            ResourcesResponse.fromResources(fight.loot)
                     )
                 })
             }

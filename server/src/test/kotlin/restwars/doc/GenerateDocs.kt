@@ -15,7 +15,7 @@ object GenerateDocs {
         RESPONSE, REQUEST;
 
         fun getPath(name: String): Path {
-            val base = Paths.get("../doc")
+            val base = Paths.get("doc")
 
             return when (this) {
                 RESPONSE -> base.resolve("responses").resolve(name)
@@ -25,7 +25,10 @@ object GenerateDocs {
     }
 
     private fun writeToFile(type: Type, filename: String, obj: Any) {
-        Files.newBufferedWriter(type.getPath(filename), Charsets.UTF_8).use {
+        val path = type.getPath(filename)
+        println("Writing to ${path.toAbsolutePath()}")
+
+        Files.newBufferedWriter(path, Charsets.UTF_8).use {
             it.write(Json.toJson(obj))
         }
     }
@@ -82,7 +85,7 @@ object GenerateDocs {
                 )), ShipsResponse(listOf()), ShipsResponse(listOf(
                         ShipResponse(ShipType.MOSQUITO.name, 1),
                         ShipResponse(ShipType.COLONY.name, 1)
-                ))
+                )), ResourcesResponse(100, 500, 0)
                 ))
         ))
         writeToFile(Type.RESPONSE, "flights.json", FlightsResponse(listOf(

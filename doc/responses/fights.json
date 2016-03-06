@@ -37,6 +37,11 @@
         "type" : "COLONY",
         "amount" : 1
       } ]
+    },
+    "loot" : {
+      "crystal" : 100,
+      "gas" : 500,
+      "energy" : 0
     }
   } ]
 }
