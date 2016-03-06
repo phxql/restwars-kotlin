@@ -10,4 +10,6 @@ object StatusCode {
     val NOT_FOUND = 404
 
     val CONFLICT = 409
+
+    val UNPROCESSABLE_ENTITY = 422
 }

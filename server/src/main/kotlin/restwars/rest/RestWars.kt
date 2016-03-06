@@ -161,6 +161,7 @@ private fun registerRoutes(
         flightController: FlightController, telescopeController: TelescopeController,
         fightController: FightController
 ) {
+    Spark.get("/", Json.contentType, route(lockService, RootController.get()))
     Spark.get("/v1/restwars", Json.contentType, route(lockService, applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(lockService, configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(lockService, roundController.get()))
@@ -204,7 +205,7 @@ private fun addExceptionHandler() {
     })
 
     Spark.exception(JsonParseException::class.java, fun(e, req, res) {
-        res.status(StatusCode.BAD_REQUEST)
+        res.status(StatusCode.UNPROCESSABLE_ENTITY)
         res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
     })
 }
