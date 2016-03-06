@@ -21,8 +21,9 @@ class FightController(
         return object : Method {
             override fun invoke(req: Request, res: Response): Result {
                 val context = RequestContext.build(req, playerService)
+                val since = req.queryParams("since")?.toLong()
 
-                val fights = fightService.findWithPlayer(context.player)
+                val fights = fightService.findWithPlayer(context.player, since)
 
                 return FightsResponse(fights.map {
                     val fight = it.fight
@@ -42,9 +43,10 @@ class FightController(
             override fun invoke(req: Request, res: Response): Result {
                 val context = RequestContext.build(req, playerService)
                 val location = parseLocation(req)
+                val since = req.queryParams("since")?.toLong()
 
                 val planet = planetService.findByLocation(location) ?: return FightsResponse(listOf())
-                val fights = fightService.findWithPlayerAndPlanet(context.player, planet)
+                val fights = fightService.findWithPlayerAndPlanet(context.player, planet, since)
 
                 return FightsResponse(fights.map {
                     val fight = it.fight

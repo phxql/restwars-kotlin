@@ -41,9 +41,31 @@ class InMemoryFightRepository(
                 }
     }
 
+    override fun findWithPlayerSince(playerId: UUID, since: Long): List<FightWithPlayersAndPlanet> {
+        return fights
+                .filter { (it.attackerId == playerId || it.defenderId == playerId) && it.round >= since }
+                .map {
+                    FightWithPlayersAndPlanet(
+                            it, playerRepository.findById(it.attackerId)!!, playerRepository.findById(it.defenderId)!!,
+                            planetRepository.findById(it.planetId)!!
+                    )
+                }
+    }
+
     override fun findWithPlayerAndPlanet(playerId: UUID, planetId: UUID): List<FightWithPlayersAndPlanet> {
         return fights
                 .filter { it.attackerId == playerId || it.defenderId == playerId || it.planetId == planetId }
+                .map {
+                    FightWithPlayersAndPlanet(
+                            it, playerRepository.findById(it.attackerId)!!, playerRepository.findById(it.defenderId)!!,
+                            planetRepository.findById(it.planetId)!!
+                    )
+                }
+    }
+
+    override fun findWithPlayerAndPlanetSince(playerId: UUID, planetId: UUID, since: Long): List<FightWithPlayersAndPlanet> {
+        return fights
+                .filter { (it.attackerId == playerId || it.defenderId == playerId) && it.planetId == planetId && it.round >= since }
                 .map {
                     FightWithPlayersAndPlanet(
                             it, playerRepository.findById(it.attackerId)!!, playerRepository.findById(it.defenderId)!!,

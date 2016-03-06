@@ -29,9 +29,9 @@ interface FightService {
 
     fun updateLoot(fight: Fight, loot: Resources): Fight
 
-    fun findWithPlayer(player: Player): List<FightWithPlayersAndPlanet>
+    fun findWithPlayer(player: Player, since: Long?): List<FightWithPlayersAndPlanet>
 
-    fun findWithPlayerAndPlanet(player: Player, planet: Planet): List<FightWithPlayersAndPlanet>
+    fun findWithPlayerAndPlanet(player: Player, planet: Planet, since: Long?): List<FightWithPlayersAndPlanet>
 }
 
 interface FightRepository {
@@ -41,7 +41,11 @@ interface FightRepository {
 
     fun findWithPlayer(playerId: UUID): List<FightWithPlayersAndPlanet>
 
+    fun findWithPlayerSince(playerId: UUID, since: Long): List<FightWithPlayersAndPlanet>
+
     fun findWithPlayerAndPlanet(playerId: UUID, planetId: UUID): List<FightWithPlayersAndPlanet>
+
+    fun findWithPlayerAndPlanetSince(playerId: UUID, planetId: UUID, since: Long): List<FightWithPlayersAndPlanet>
 }
 
 class FightServiceImpl(
@@ -64,12 +68,22 @@ class FightServiceImpl(
         return fight.copy(loot = loot)
     }
 
-    override fun findWithPlayer(player: Player): List<FightWithPlayersAndPlanet> {
-        return fightRepository.findWithPlayer(player.id)
+    override fun findWithPlayer(player: Player, since: Long?): List<FightWithPlayersAndPlanet> {
+        return if (since == null) {
+            fightRepository.findWithPlayer(player.id)
+        } else {
+            val round = if (since < 0) roundService.currentRound() + since else since
+            fightRepository.findWithPlayerSince(player.id, round)
+        }
     }
 
-    override fun findWithPlayerAndPlanet(player: Player, planet: Planet): List<FightWithPlayersAndPlanet> {
-        return fightRepository.findWithPlayerAndPlanet(player.id, planet.id)
+    override fun findWithPlayerAndPlanet(player: Player, planet: Planet, since: Long?): List<FightWithPlayersAndPlanet> {
+        return if (since == null) {
+            fightRepository.findWithPlayerAndPlanet(player.id, planet.id)
+        } else {
+            val round = if (since < 0) roundService.currentRound() + since else since
+            fightRepository.findWithPlayerAndPlanetSince(player.id, planet.id, round)
+        }
     }
 }
 

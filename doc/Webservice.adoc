@@ -38,6 +38,10 @@ Lists all fights where the player is either attacker or defender. Needs authenti
 
 URL: `GET /v1/player/fight`
 
+Optional query parameters:
+
+* `since` Only lists fights since the given round. If negative, the last X rounds are returned.
+
 Response:
 
 [source,json]
@@ -51,6 +55,10 @@ List fights with a planet
 Lists all fights with a planet. Needs authentication.
 
 URL: `GET /v1/planet/:location/fight`
+
+Optional query parameters:
+
+* `since` Only lists fights since the given round. If negative, the last X rounds are returned.
 
 Response:
 
