@@ -5,7 +5,7 @@
     "maxGalaxy" : 3,
     "minSystem" : 1,
     "maxSystem" : 3,
-    "minPLanet" : 1,
+    "minPlanet" : 1,
     "maxPlanet" : 3
   }
 }
