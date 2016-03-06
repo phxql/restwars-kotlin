@@ -2,14 +2,17 @@ package restwars.rest.controller
 
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
+import restwars.business.planet.NoTelescopeException
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
+import restwars.rest.api.ErrorResponse
 import restwars.rest.api.Result
 import restwars.rest.api.ScanResponse
 import restwars.rest.api.from
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.Method
 import restwars.rest.base.RequestContext
+import restwars.rest.http.StatusCode
 import spark.Request
 import spark.Response
 import javax.validation.ValidatorFactory
@@ -28,10 +31,13 @@ class TelescopeController(
 
                 val planet = getOwnPlanet(planetService, context.player, location)
                 val telescopeLevel = buildingService.findBuildingByPlanetAndType(planet, BuildingType.TELESCOPE)?.level ?: 0
-                // TODO: Prohibit scan if level is 0
-                val planets = planetService.findInVicinity(planet, telescopeLevel)
-
-                return ScanResponse.from(planets)
+                try {
+                    val planets = planetService.findInVicinity(planet, telescopeLevel)
+                    return ScanResponse.from(planets)
+                } catch(ex: NoTelescopeException) {
+                    res.status(StatusCode.BAD_REQUEST)
+                    return ErrorResponse(ex.message ?: "")
+                }
             }
         }
     }

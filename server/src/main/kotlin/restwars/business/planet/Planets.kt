@@ -60,6 +60,8 @@ data class Planet(val id: UUID, val owner: UUID, val location: Location, val res
 
 data class PlanetWithPlayer(val planet: Planet, val player: Player)
 
+class NoTelescopeException: Exception("No telescope on planet")
+
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
 
@@ -75,6 +77,9 @@ interface PlanetService {
 
     fun removeResources(planet: Planet, resources: Resources): Planet
 
+    /**
+     * @throws NoTelescopeException If the planet has no telescope.
+     */
     fun findInVicinity(planet: Planet, telescopeLevel: Int): List<PlanetWithPlayer>
 }
 
@@ -157,6 +162,8 @@ class PlanetServiceImpl(
     }
 
     override fun findInVicinity(planet: Planet, telescopeLevel: Int): List<PlanetWithPlayer> {
+        if (telescopeLevel < 1) throw NoTelescopeException()
+
         val range = buildingFormulas.calculateScanRange(telescopeLevel)
 
         val location = planet.location
