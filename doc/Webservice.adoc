@@ -307,7 +307,7 @@ Starts a colonize flight to planet 1.2.3 with 5 mosquitoes and 1 colony ship. Ca
 
 You can specify the following flight types:
 
-* `ATTACK`: Attack (and loot) an enemy planet. Ships not lost in the fight will return with stolen ressources.
+* `ATTACK`: Attack (and loot) an enemy planet. Ships not lost in the fight will return with stolen resources.
 * `COLONIZE`: Colonize an empty planet. The colony ship will be converted to a command center, the other ships will remain at the target planet. The ships for the flight must contain at least one colony ship.
 * `TRANSFER`: Transfer the ships to another planet (must be owned). The ships will remain at the target planet.
 * `TRANSPORT`: Transport cargo to another planet (must be owned). After the cargo has been unloaded, the sent ships will return. Only crystal and gas can be transported. Energy cannot be transported.

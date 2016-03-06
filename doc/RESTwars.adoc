@@ -23,7 +23,7 @@ the planet number inside the system.
 Resources
 ---------
 
-* Crystal: Needed for buildings and ships. Crystals can be stolen from other playees.
+* Crystal: Needed for buildings and ships. Crystals can be stolen from other players.
 * Gas: Needed for advanced technology. Gas can be stolen from other players.
 * Energy: Needed for buildings and ships. Energy is also consumed when traveling with ships through the universe.
   Energy can't be stolen from attackers and can't be transfered to other planets.
