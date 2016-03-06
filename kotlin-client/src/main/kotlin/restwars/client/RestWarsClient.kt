@@ -1,5 +1,6 @@
 package restwars.client
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import feign.Feign
@@ -26,7 +27,9 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     protected val httpBaseUrl = "http://$hostname:$port/"
     private val websocketBaseUrl = "ws://$hostname:$port/"
 
-    private val mapper = ObjectMapper().registerModule(KotlinModule())
+    private val mapper = ObjectMapper()
+            .registerModule(KotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
 
     private val client: Restwars = feignBuilder()
             .target(Restwars::class.java, httpBaseUrl)
