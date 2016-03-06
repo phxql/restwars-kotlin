@@ -74,6 +74,10 @@ data class Ships(val ships: List<Ship>) : Serializable {
         return amount <= 0
     }
 
+    fun compact(): Ships {
+        return Ships(ships.filter { it.amount > 0 })
+    }
+
     companion object {
         fun none(): Ships = Ships(listOf())
 

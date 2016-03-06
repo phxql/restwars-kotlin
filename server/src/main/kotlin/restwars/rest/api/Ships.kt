@@ -10,4 +10,4 @@ fun ShipsInConstructionResponse.Companion.fromShipsInConstruction(shipsInConstru
 
 fun ShipResponse.Companion.fromShip(ship: Ship) = ShipResponse(ship.type.name, ship.amount)
 
-fun ShipsResponse.Companion.fromShips(ships: Ships) = ShipsResponse(ships.ships.map { ShipResponse.fromShip(it) })
+fun ShipsResponse.Companion.fromShips(ships: Ships) = ShipsResponse(ships.compact().ships.map { ShipResponse.fromShip(it) })
