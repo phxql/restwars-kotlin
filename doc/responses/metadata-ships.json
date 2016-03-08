@@ -1,0 +1,29 @@
+{
+  "data" : [ {
+    "type" : "MOSQUITO",
+    "buildTime" : 12,
+    "flightSpeed" : 1.0,
+    "buildCost" : {
+      "crystal" : 10,
+      "gas" : 5,
+      "energy" : 40
+    },
+    "flightCostModifier" : 1.0,
+    "attackPoint" : 14,
+    "defensePoints" : 1,
+    "cargoSpace" : 50
+  }, {
+    "type" : "MULE",
+    "buildTime" : 24,
+    "flightSpeed" : 0.5,
+    "buildCost" : {
+      "crystal" : 20,
+      "gas" : 10,
+      "energy" : 80
+    },
+    "flightCostModifier" : 1.2,
+    "attackPoint" : 1,
+    "defensePoints" : 30,
+    "cargoSpace" : 500
+  } ]
+}

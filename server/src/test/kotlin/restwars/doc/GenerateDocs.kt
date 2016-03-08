@@ -98,6 +98,10 @@ object GenerateDocs {
                         ShipResponse(ShipType.MULE.name, 1))
                 ))
         )))
+        writeToFile(Type.RESPONSE, "metadata-ships.json", ShipsMetadata(listOf(
+                ShipMetadata("MOSQUITO", 12, 1.0, ResourcesResponse(10, 5, 40), 1.0, 14, 1, 50),
+                ShipMetadata("MULE", 24, 0.5, ResourcesResponse(20, 10, 80), 1.2, 1, 30, 500)
+        )))
     }
 }
 
