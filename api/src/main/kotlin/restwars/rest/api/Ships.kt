@@ -22,3 +22,14 @@ data class BuildShipRequest(
         @get:org.hibernate.validator.constraints.NotBlank
         val type: String
 )
+
+data class ShipsMetadata(val data: List<ShipMetadata>) : Result {
+    companion object {}
+}
+
+data class ShipMetadata(
+        val type: String, val buildTime: Int, val flightSpeed: Double, val buildCost: ResourcesResponse,
+        val flightCostModifier: Double, val attackPoint: Int, val defensePoints: Int, val cargoSpace: Int
+) : Result {
+    companion object {}
+}
