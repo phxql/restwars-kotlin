@@ -98,7 +98,7 @@ fun main(args: Array<String>) {
 
     configureSpark()
     addExceptionHandler()
-    registerWebsockets(roundService)
+    registerWebsockets(roundService, tournamentService)
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
@@ -143,9 +143,12 @@ data class CommandLine(val startRound: Long?) {
     }
 }
 
-fun registerWebsockets(roundService: RoundService) {
+fun registerWebsockets(roundService: RoundService, tournamentService: TournamentService) {
     RoundWebsocketController.roundService = roundService
     Spark.webSocket("/v1/round/websocket", RoundWebsocketController::class.java)
+
+    TournamentWebsocketController.tournamentService = tournamentService
+    Spark.webSocket("/v1/tournament/websocket", TournamentWebsocketController::class.java)
 }
 
 /**

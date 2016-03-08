@@ -3,9 +3,14 @@ package restwars.business.tournament
 import org.slf4j.LoggerFactory
 import restwars.business.clock.RoundListener
 import restwars.business.clock.RoundService
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 
 class TournamentNotStartedException : Exception("Tournament has not started yet")
+
+interface TournamentStartListener {
+    fun onStart()
+}
 
 interface TournamentService {
     fun hasStarted(): Boolean
@@ -13,10 +18,15 @@ interface TournamentService {
     fun start()
 
     fun blockUntilStart()
+
+    fun addStartListener(listener: TournamentStartListener)
+
+    fun removeStartListener(listener: TournamentStartListener)
 }
 
 object TournamentServiceImpl : TournamentService {
     val logger = LoggerFactory.getLogger(javaClass)
+    val listeners = ConcurrentLinkedQueue<TournamentStartListener>()
 
     private val latch = CountDownLatch(1)
 
@@ -27,10 +37,25 @@ object TournamentServiceImpl : TournamentService {
 
         logger.info("Starting tournament")
         latch.countDown()
+        notifyListeners()
     }
 
     override fun blockUntilStart() {
         latch.await()
+    }
+
+    private fun notifyListeners() {
+        for (listener in listeners) {
+            listener.onStart()
+        }
+    }
+
+    override fun addStartListener(listener: TournamentStartListener) {
+        listeners.add(listener)
+    }
+
+    override fun removeStartListener(listener: TournamentStartListener) {
+        listeners.remove(listener)
     }
 }
 
@@ -40,6 +65,12 @@ object NoopTournamentService : TournamentService {
     }
 
     override fun blockUntilStart() {
+    }
+
+    override fun addStartListener(listener: TournamentStartListener) {
+    }
+
+    override fun removeStartListener(listener: TournamentStartListener) {
     }
 }
 
