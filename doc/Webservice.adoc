@@ -40,7 +40,7 @@ URL: `GET /v1/player/fight`
 
 Optional query parameters:
 
-* `since` Only lists fights since the given round. If negative, the last X rounds are returned.
+* `since`: Only lists fights since the given round. If negative, the last X rounds are returned.
 
 Response:
 
@@ -406,3 +406,19 @@ Response:
 
 [source,json]
 include::responses/metadata-ships.json[]
+
+Buildings
+~~~~~
+
+Returns metadata about buildings.
+
+URL: `GET /v1/metadata/building`
+
+Optional query parameters:
+
+* `level`: Returns metadata about the buildings with the given level.
+
+Response:
+
+[source,json]
+include::responses/metadata-buildings.json[]

@@ -1,6 +1,7 @@
 {
   "data" : [ {
     "type" : "COMMAND_CENTER",
+    "level" : 1,
     "buildTime" : 50,
     "buildCost" : {
       "crystal" : 100,
@@ -9,6 +10,7 @@
     }
   }, {
     "type" : "CRYSTAL_MINE",
+    "level" : 1,
     "buildTime" : 25,
     "buildCost" : {
       "crystal" : 50,
