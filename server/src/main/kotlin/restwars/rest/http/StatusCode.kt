@@ -12,4 +12,6 @@ object StatusCode {
     val CONFLICT = 409
 
     val UNPROCESSABLE_ENTITY = 422
+
+    val SERVICE_UNAVAILABLE = 503
 }

@@ -260,7 +260,7 @@ private fun addExceptionHandler() {
     })
 
     Spark.exception(TournamentNotStartedException::class.java, fun(e, req, res) {
-        res.status(StatusCode.BAD_REQUEST)
+        res.status(StatusCode.SERVICE_UNAVAILABLE)
         res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
     })
 }

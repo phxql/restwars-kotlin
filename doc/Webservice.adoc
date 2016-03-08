@@ -6,6 +6,13 @@ Authentication
 
 Some endpoints need authentication. Authentication is done via HTTP Basic Auth.
 
+General exceptions
+------------------
+
+* `401 Unauthorized`: If the client tried to access an endpoint which needs authentication but sent no or invalid credentials.
+* `422 Unprocessable Entity`: If the client sent invalid JSON.
+* `503 Service Unavailable`: If the tournament hasn't been started yet.
+
 Players
 -------
 
@@ -408,7 +415,7 @@ Response:
 include::responses/metadata-ships.json[]
 
 Buildings
-~~~~~
+~~~~~~~~~
 
 Returns metadata about buildings.
 
@@ -422,3 +429,30 @@ Response:
 
 [source,json]
 include::responses/metadata-buildings.json[]
+
+Tournament
+----------
+
+Wait for tournament start
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Request blocks until tournament has started.
+
+URL: `GET /v1/tournament/wait`
+
+Response:
+
+[source,json]
+include::responses/tournament-started.json[]
+
+Tournament websocket
+~~~~~~~~~~~~~~~~~~~~
+
+Provides a websocket which notifies the client when the tournament starts.
+
+URL: `/v1/tournament/websocket`
+
+Response:
+
+[source,json]
+include::responses/tournament-started.json[]

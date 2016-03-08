@@ -106,6 +106,7 @@ object GenerateDocs {
                 BuildingMetadata("COMMAND_CENTER", 1, 50, ResourcesResponse(100, 50, 400)),
                 BuildingMetadata("CRYSTAL_MINE", 1, 25, ResourcesResponse(50, 25, 200))
         )))
+        writeToFile(Type.RESPONSE, "tournament-started.json", SuccessResponse("Tournament has started"))
     }
 }
 
