@@ -1,7 +1,11 @@
 package restwars.business.tournament
 
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.locks.ReentrantLock
+import org.slf4j.LoggerFactory
+import restwars.business.clock.RoundListener
+import restwars.business.clock.RoundService
+import java.util.concurrent.CountDownLatch
+
+class TournamentNotStartedException : Exception("Tournament has not started yet")
 
 interface TournamentService {
     fun hasStarted(): Boolean
@@ -12,23 +16,21 @@ interface TournamentService {
 }
 
 object TournamentServiceImpl : TournamentService {
-    private val started = AtomicBoolean(false)
-    private val startedLock = ReentrantLock()
+    val logger = LoggerFactory.getLogger(javaClass)
 
-    init {
-        startedLock.lock()
-    }
+    private val latch = CountDownLatch(1)
 
-    override fun hasStarted(): Boolean = started.get()
+    override fun hasStarted(): Boolean = latch.count == 0L
 
     override fun start() {
-        started.set(true)
-        startedLock.unlock()
+        if (hasStarted()) return
+
+        logger.info("Starting tournament")
+        latch.countDown()
     }
 
     override fun blockUntilStart() {
-        startedLock.lock()
-        startedLock.unlock()
+        latch.await()
     }
 }
 
@@ -38,5 +40,15 @@ object NoopTournamentService : TournamentService {
     }
 
     override fun blockUntilStart() {
+    }
+}
+
+class TournamentRoundListener(private val roundService: RoundService, private val tournamentService: TournamentService, val tournamentStartRound: Long) : RoundListener {
+    override fun onNewRound(newRound: Long) {
+        if (newRound >= tournamentStartRound) {
+            // Statt the tournament and remove this listener from the round service
+            tournamentService.start()
+            roundService.removeRoundListener(this)
+        }
     }
 }
