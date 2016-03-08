@@ -25,4 +25,4 @@ data class BuildBuildingRequest(
 
 data class BuildingsMetadata(val data: List<BuildingMetadata>): Result
 
-data class BuildingMetadata(val type: String, val buildTime: Int, val buildCost: ResourcesResponse): Result
+data class BuildingMetadata(val type: String, val level: Int, val buildTime: Int, val buildCost: ResourcesResponse) : Result

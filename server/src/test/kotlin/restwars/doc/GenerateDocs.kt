@@ -103,8 +103,8 @@ object GenerateDocs {
                 ShipMetadata("MULE", 24, 0.5, ResourcesResponse(20, 10, 80), 1.2, 1, 30, 500)
         )))
         writeToFile(Type.RESPONSE, "metadata-buildings.json", BuildingsMetadata(listOf(
-                BuildingMetadata("COMMAND_CENTER", 50, ResourcesResponse(100, 50, 400)),
-                BuildingMetadata("CRYSTAL_MINE", 25, ResourcesResponse(50, 25, 200))
+                BuildingMetadata("COMMAND_CENTER", 1, 50, ResourcesResponse(100, 50, 400)),
+                BuildingMetadata("CRYSTAL_MINE", 1, 25, ResourcesResponse(50, 25, 200))
         )))
     }
 }

@@ -90,6 +90,7 @@ fun main(args: Array<String>) {
     val telescopeController = TelescopeController(validatorFactory, playerService, planetService, buildingService)
     val fightController = FightController(validatorFactory, playerService, planetService, fightService)
     val shipMetadataController = ShipMetadataController(shipFormulas)
+    val buildingMetadataController = BuildingMetadataController(buildingFormulas)
 
     configureSpark()
     addExceptionHandler()
@@ -97,7 +98,8 @@ fun main(args: Array<String>) {
     registerRoutes(
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
-            roundController, flightController, telescopeController, fightController, shipMetadataController
+            roundController, flightController, telescopeController, fightController, shipMetadataController,
+            buildingMetadataController
     )
 
     Spark.awaitInitialization()
@@ -160,13 +162,15 @@ private fun registerRoutes(
         applicationInformationController: ApplicationInformationController,
         configurationController: ConfigurationController, roundController: RoundController,
         flightController: FlightController, telescopeController: TelescopeController,
-        fightController: FightController, shipMetadataController: ShipMetadataController
+        fightController: FightController, shipMetadataController: ShipMetadataController,
+        buildingMetadataController: BuildingMetadataController
 ) {
     Spark.get("/", Json.contentType, route(lockService, RootController.get()))
     Spark.get("/v1/restwars", Json.contentType, route(lockService, applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(lockService, configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(lockService, roundController.get()))
     Spark.get("/v1/metadata/ship", Json.contentType, route(lockService, shipMetadataController.get()))
+    Spark.get("/v1/metadata/building", Json.contentType, route(lockService, buildingMetadataController.get()))
     Spark.post("/v1/player", Json.contentType, route(lockService, playerController.create()))
     Spark.get("/v1/player/fight", Json.contentType, route(lockService, fightController.byPlayer()))
     Spark.get("/v1/planet", Json.contentType, route(lockService, planetController.list()))
