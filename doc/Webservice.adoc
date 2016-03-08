@@ -348,7 +348,7 @@ List all flights
 
 Lists all flights for the player. Needs authentication.
 
-URL: `GET v1/flight`
+URL: `GET /v1/flight`
 
 Response:
 
@@ -360,7 +360,7 @@ List all flights with destination
 
 Lists all flights with a given destination. Needs authentication.
 
-URL: `GET v1/flight/to/:location`
+URL: `GET /v1/flight/to/:location`
 
 Response:
 
@@ -372,7 +372,7 @@ List all flights with start
 
 Lists all flights with a given start. Needs authentication.
 
-URL: `GET v1/flight/from/:location`
+URL: `GET /v1/flight/from/:location`
 
 Response:
 
@@ -391,3 +391,18 @@ To ensure a fair fight, the calculation is being done in two steps:
 2. The same process is now carried out in reverse. All defending ships initially present on the attacked planet are now attacking the assailants ships.
 
 Finally, all attacking and defending ships which were marked for destruction or being destroyed. If there are remaining attacker ships, they will now loot the planet. They will therefore take at most an amount equal to half their available cargo size of crystal and gas each. They can not take more than what is available on the planet at the beginning of the fight.
+
+Metadata
+--------
+
+Ships
+~~~~~
+
+Returns metadata about ships.
+
+URL: `GET /v1/metadata/ship`
+
+Response:
+
+[source,json]
+include::responses/metadata-ships.json[]
