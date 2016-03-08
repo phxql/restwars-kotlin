@@ -102,6 +102,10 @@ object GenerateDocs {
                 ShipMetadata("MOSQUITO", 12, 1.0, ResourcesResponse(10, 5, 40), 1.0, 14, 1, 50),
                 ShipMetadata("MULE", 24, 0.5, ResourcesResponse(20, 10, 80), 1.2, 1, 30, 500)
         )))
+        writeToFile(Type.RESPONSE, "metadata-buildings.json", BuildingsMetadata(listOf(
+                BuildingMetadata("COMMAND_CENTER", 50, ResourcesResponse(100, 50, 400)),
+                BuildingMetadata("CRYSTAL_MINE", 25, ResourcesResponse(50, 25, 200))
+        )))
     }
 }
 

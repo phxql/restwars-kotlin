@@ -22,3 +22,7 @@ data class BuildBuildingRequest(
         @get:org.hibernate.validator.constraints.NotBlank
         val type: String
 )
+
+data class BuildingsMetadata(val data: List<BuildingMetadata>): Result
+
+data class BuildingMetadata(val type: String, val buildTime: Int, val buildCost: ResourcesResponse): Result

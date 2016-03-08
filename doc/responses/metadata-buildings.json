@@ -1,0 +1,19 @@
+{
+  "data" : [ {
+    "type" : "COMMAND_CENTER",
+    "buildTime" : 50,
+    "buildCost" : {
+      "crystal" : 100,
+      "gas" : 50,
+      "energy" : 400
+    }
+  }, {
+    "type" : "CRYSTAL_MINE",
+    "buildTime" : 25,
+    "buildCost" : {
+      "crystal" : 50,
+      "gas" : 25,
+      "energy" : 200
+    }
+  } ]
+}
