@@ -55,8 +55,9 @@ fun main(args: Array<String>) {
     val flightRepository = InMemoryFlightRepository
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
 
+    val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
-    val shipFormulas = ShipFormulasImpl
+    val shipFormulas = ShipFormulasImpl(resourceFormulas)
     val locationFormulas = LocationFormulasImpl
 
     val roundService = RoundServiceImpl(roundRepository)

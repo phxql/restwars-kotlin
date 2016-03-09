@@ -5,6 +5,10 @@ import restwars.business.planet.Location
 import restwars.business.planet.Resources
 import restwars.business.ship.ShipType
 
+interface ResourceFormulas {
+    fun calculatePoints(resources: Resources): Long
+}
+
 interface BuildingFormulas {
     fun calculateBuildTime(type: BuildingType, level: Int): Int
 
@@ -35,10 +39,21 @@ interface ShipFormulas {
     fun calculateDefendPoints(type: ShipType): Int
 
     fun calculateCargoSpace(type: ShipType): Int
+
+    fun calculatePoints(type: ShipType): Long
 }
 
 interface LocationFormulas {
     fun calculateDistance(start: Location, destination: Location): Long
+}
+
+object ResourceFormulasImpl : ResourceFormulas {
+    private val crystalMultiplier = 4L
+    private val gasMultiplier = 8L
+
+    override fun calculatePoints(resources: Resources): Long {
+        return resources.crystal * crystalMultiplier + resources.gas * gasMultiplier + resources.energy
+    }
 }
 
 object BuildingFormulasImpl : BuildingFormulas {
@@ -115,7 +130,7 @@ object BuildingFormulasImpl : BuildingFormulas {
     }
 }
 
-object ShipFormulasImpl : ShipFormulas {
+class ShipFormulasImpl(private val resourceFormulas: ResourceFormulas) : ShipFormulas {
     override fun calculateBuildTime(type: ShipType): Int {
         return when (type) {
             ShipType.MOSQUITO -> 10
@@ -170,6 +185,10 @@ object ShipFormulasImpl : ShipFormulas {
             ShipType.COLONY -> 500
             ShipType.MULE -> 750
         }
+    }
+
+    override fun calculatePoints(type: ShipType): Long {
+        return resourceFormulas.calculatePoints(calculateBuildCost(type))
     }
 }
 

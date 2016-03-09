@@ -2,6 +2,7 @@ package restwars.business.fight
 
 import org.junit.Test
 import restwars.business.RandomNumberGeneratorImpl
+import restwars.business.ResourceFormulasImpl
 import restwars.business.ShipFormulasImpl
 import restwars.business.UUIDFactoryImpl
 import restwars.business.ship.ShipType
@@ -11,7 +12,7 @@ import java.util.*
 class FightCalculatorImplTest {
     @Test
     fun testName() {
-        val calculator = FightCalculatorImpl(UUIDFactoryImpl, ShipFormulasImpl, RandomNumberGeneratorImpl)
+        val calculator = FightCalculatorImpl(UUIDFactoryImpl, ShipFormulasImpl(ResourceFormulasImpl), RandomNumberGeneratorImpl)
         val attacker = UUID.randomUUID()
         val defender = UUID.randomUUID()
         val planet = UUID.randomUUID()
