@@ -54,6 +54,7 @@ fun main(args: Array<String>) {
     val shipInConstructionRepository = InMemoryShipInConstructionRepository
     val flightRepository = InMemoryFlightRepository
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
+    val pointsRepository = InMemoryPointsRepository(playerRepository)
 
     val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
@@ -112,7 +113,7 @@ fun main(args: Array<String>) {
     startClock(clock, config)
     val persister = Persister(
             buildingRepository, constructionSiteRepository, playerRepository, roundRepository, hangarRepository,
-            shipInConstructionRepository, flightRepository, planetRepository, fightRepository
+            shipInConstructionRepository, flightRepository, planetRepository, fightRepository, pointsRepository
     )
     persister.start()
     logger.info("RESTwars started on port {}", port)

@@ -24,6 +24,10 @@ object InMemoryPlayerRepository : PlayerRepository, PersistentRepository {
         return players.firstOrNull { it.username == username }
     }
 
+    override fun findAll(): List<Player> {
+        return players
+    }
+
     override fun persist(persister: Persister, path: Path) {
         persister.saveData(path, players)
     }

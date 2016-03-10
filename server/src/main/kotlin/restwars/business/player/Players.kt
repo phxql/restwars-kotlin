@@ -23,6 +23,8 @@ interface PlayerService {
     fun create(username: String, password: String): Player
 
     fun login(username: String, password: String): Player?
+
+    fun findAll(): List<Player>
 }
 
 interface PlayerRepository {
@@ -31,6 +33,8 @@ interface PlayerRepository {
     fun findByUsername(username: String): Player?
 
     fun findById(id: UUID): Player?
+
+    fun findAll(): List<Player>
 }
 
 class PlayerServiceImpl(
@@ -51,5 +55,9 @@ class PlayerServiceImpl(
         val player = Player(id, username, password) // TODO: Hash password
         playerRepository.insert(player)
         return player
+    }
+
+    override fun findAll(): List<Player> {
+        return playerRepository.findAll()
     }
 }
