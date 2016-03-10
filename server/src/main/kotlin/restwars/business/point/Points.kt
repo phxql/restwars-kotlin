@@ -1,5 +1,6 @@
 package restwars.business.point
 
+import org.slf4j.LoggerFactory
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
@@ -22,13 +23,13 @@ interface PointsRepository {
     fun listMostRecentPoints(): List<PointsWithPlayer>
 }
 
-interface PointService {
+interface PointsService {
     fun calculatePoints()
 
     fun listMostRecentPoints(): List<PointsWithPlayer>
 }
 
-class PointServiceImpl(
+class PointsServiceImpl(
         private val roundService: RoundService,
         private val playerService: PlayerService,
         private val planetService: PlanetService,
@@ -36,8 +37,12 @@ class PointServiceImpl(
         private val shipFormulas: ShipFormulas,
         private val pointsRepository: PointsRepository,
         private val uuidFactory: UUIDFactory
-) : PointService {
+) : PointsService {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     override fun calculatePoints() {
+        logger.info("Calculating points...")
+
         val planets = planetService.findAllInhabited()
         val pointsByPlayer = mutableMapOf<UUID, Long>()
 
@@ -51,6 +56,8 @@ class PointServiceImpl(
         for ((playerId, points) in pointsByPlayer) {
             pointsRepository.insert(Points(uuidFactory.create(), playerId, points, round))
         }
+
+        logger.debug("Done calculating points")
     }
 
     private fun calculatePointsForPlanet(planet: Planet): Long {

@@ -4,10 +4,12 @@ import org.slf4j.LoggerFactory
 import restwars.business.LockService
 import restwars.business.building.Building
 import restwars.business.building.BuildingService
+import restwars.business.config.Config
 import restwars.business.flight.FlightService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
+import restwars.business.point.PointsService
 import restwars.business.resource.ResourceService
 import restwars.business.ship.ShipService
 
@@ -22,7 +24,9 @@ class ClockImpl(
         private val lockService: LockService,
         private val roundService: RoundService,
         private val shipService: ShipService,
-        private val flightService: FlightService
+        private val flightService: FlightService,
+        private val pointsService: PointsService,
+        private val config: Config
 ) : Clock {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -31,7 +35,7 @@ class ClockImpl(
         try {
             logger.debug("Tick")
 
-            roundService.increaseRound()
+            val newRound = roundService.increaseRound()
             buildingService.finishConstructionSites()
             shipService.finishShipsInConstruction()
             flightService.finishFlights()
@@ -40,6 +44,10 @@ class ClockImpl(
                 var updatedPlanet = planet
                 val buildings = buildingService.findBuildingsByPlanet(updatedPlanet)
                 updatedPlanet = gatherResources(buildings, updatedPlanet)
+            }
+
+            if (newRound % config.calculatePointsEvery == 0L) {
+                pointsService.calculatePoints()
             }
         } finally {
             lockService.afterClock()

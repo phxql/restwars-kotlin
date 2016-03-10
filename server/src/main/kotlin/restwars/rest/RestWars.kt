@@ -18,6 +18,7 @@ import restwars.business.flight.*
 import restwars.business.planet.PlanetServiceImpl
 import restwars.business.planet.Resources
 import restwars.business.player.PlayerServiceImpl
+import restwars.business.point.PointsServiceImpl
 import restwars.business.resource.ResourceServiceImpl
 import restwars.business.ship.ShipServiceImpl
 import restwars.business.tournament.*
@@ -78,8 +79,9 @@ fun main(args: Array<String>) {
     val transportFlightHandler = TransportFlightHandler(planetService)
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService)
     val tournamentService = buildTournamentService(commandLine, roundService)
+    val pointService = PointsServiceImpl(roundService, playerService, planetService, shipService, shipFormulas, pointsRepository, uuidFactory)
 
-    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService)
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService, pointService, config)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
@@ -187,7 +189,7 @@ private fun loadConfig(): Config {
     val configFile = Paths.get("config.yaml")
     if (!Files.exists(configFile)) {
         logger.warn("No config file at ${configFile.toAbsolutePath()} found, using default values")
-        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)), 5)
+        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)), 5, 50)
     }
 
     logger.info("Loading config from file ${configFile.toAbsolutePath()}")

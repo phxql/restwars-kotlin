@@ -21,3 +21,6 @@ newPlanet:
 
 # Round time in seconds
 roundTime: 1
+
+# Calculate points every X rounds
+calculatePointsEvery: 50
