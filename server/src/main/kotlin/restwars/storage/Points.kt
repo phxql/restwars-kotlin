@@ -25,7 +25,7 @@ class InMemoryPointsRepository(
             val points = it.value.sortedByDescending { it.round }.firstOrNull()
 
             if (points == null || player == null) null else PointsWithPlayer(player, points)
-        }.filterNotNull()
+        }.filterNotNull().sortedByDescending { it.points.points }
     }
 
     override fun persist(persister: Persister, path: Path) {
