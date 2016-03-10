@@ -107,6 +107,10 @@ object GenerateDocs {
                 BuildingMetadata("CRYSTAL_MINE", 1, 25, ResourcesResponse(50, 25, 200))
         )))
         writeToFile(Type.RESPONSE, "tournament-started.json", SuccessResponse("Tournament has started"))
+        writeToFile(Type.RESPONSE, "points.json", PointsResponse(listOf(
+                PointResponse("player1", 120),
+                PointResponse("player2", 200)
+        )))
     }
 }
 

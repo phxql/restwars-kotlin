@@ -456,3 +456,15 @@ Response:
 
 [source,json]
 include::responses/tournament-started.json[]
+
+Points
+------
+
+Lists the current points.
+
+URL: `GET /v1/points`
+
+Response:
+
+[source,json]
+include::responses/points.json[]

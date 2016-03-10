@@ -1,0 +1,9 @@
+{
+  "players" : [ {
+    "player" : "player1",
+    "points" : 120
+  }, {
+    "player" : "player2",
+    "points" : 200
+  } ]
+}
