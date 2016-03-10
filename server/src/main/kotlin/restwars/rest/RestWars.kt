@@ -79,9 +79,9 @@ fun main(args: Array<String>) {
     val transportFlightHandler = TransportFlightHandler(planetService)
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService)
     val tournamentService = buildTournamentService(commandLine, roundService)
-    val pointService = PointsServiceImpl(roundService, playerService, planetService, shipService, shipFormulas, pointsRepository, uuidFactory)
+    val pointsService = PointsServiceImpl(roundService, playerService, planetService, shipService, shipFormulas, pointsRepository, uuidFactory)
 
-    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService, pointService, config)
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService, pointsService, config)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
@@ -99,6 +99,7 @@ fun main(args: Array<String>) {
     val shipMetadataController = ShipMetadataController(shipFormulas)
     val buildingMetadataController = BuildingMetadataController(buildingFormulas)
     val tournamentController = TournamentController(tournamentService)
+    val pointsController = PointsController(pointsService)
 
     configureSpark()
     addExceptionHandler()
@@ -107,7 +108,7 @@ fun main(args: Array<String>) {
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
             roundController, flightController, telescopeController, fightController, shipMetadataController,
-            buildingMetadataController, tournamentService, tournamentController
+            buildingMetadataController, tournamentService, tournamentController, pointsController
     )
 
     Spark.awaitInitialization()
@@ -209,12 +210,13 @@ private fun registerRoutes(
         flightController: FlightController, telescopeController: TelescopeController,
         fightController: FightController, shipMetadataController: ShipMetadataController,
         buildingMetadataController: BuildingMetadataController, tournamentService: TournamentService,
-        tournamentController: TournamentController
+        tournamentController: TournamentController, pointsController: PointsController
 ) {
     Spark.get("/", Json.contentType, route(RootController.get()))
     Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(roundController.get(), lockService))
+    Spark.get("/v1/points", Json.contentType, route(pointsController.get(), lockService))
     Spark.get("/v1/metadata/ship", Json.contentType, route(shipMetadataController.get()))
     Spark.get("/v1/metadata/building", Json.contentType, route(buildingMetadataController.get()))
     Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.block()))
