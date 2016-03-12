@@ -167,6 +167,20 @@ include::responses/round-websocket.json[]
 
 The game is currently in round 17.
 
+Wait for next round
+~~~~~~~~~~~~~~~~~~~
+
+Blocks until the next round is started.
+
+URL: `/v1/round/wait`
+
+Response:
+
+[source,json]
+include::responses/round-websocket.json[]
+
+The game is currently in round 17.
+
 Buildings
 ---------
 

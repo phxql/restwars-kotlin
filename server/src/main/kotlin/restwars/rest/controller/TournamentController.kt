@@ -12,7 +12,7 @@ import spark.Request
 import spark.Response
 
 class TournamentController(private val tournamentService: TournamentService) {
-    fun block(): Method {
+    fun wait(): Method {
         return object : Method {
             override fun invoke(req: Request, res: Response): Result {
                 tournamentService.blockUntilStart()

@@ -7,7 +7,7 @@ import restwars.business.clock.RoundService
 import restwars.business.config.Config
 import restwars.rest.api.Result
 import restwars.rest.api.RoundResponse
-import restwars.rest.api.RoundWebsocketResponse
+import restwars.rest.api.RoundWithRoundTimeResponse
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.Method
 import spark.Request
@@ -20,7 +20,16 @@ class RoundController(
         return object : Method {
             override fun invoke(req: Request, res: Response): Result {
                 val currentRound = roundService.currentRound()
-                return RoundResponse(currentRound, config.roundTime)
+                return RoundWithRoundTimeResponse(currentRound, config.roundTime)
+            }
+        }
+    }
+
+    fun wait() : Method {
+        return object: Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val round = roundService.blockUntilNextRound()
+                return RoundResponse(round)
             }
         }
     }
@@ -36,7 +45,7 @@ class RoundWebsocketController() : AbstractWebsocketController() {
         roundService.addRoundListener(object : RoundListener {
             override fun onNewRound(newRound: Long) {
                 logger.debug("Notifying websocket clients")
-                broadcastJson(RoundWebsocketResponse(newRound))
+                broadcastJson(RoundResponse(newRound))
             }
         })
     }

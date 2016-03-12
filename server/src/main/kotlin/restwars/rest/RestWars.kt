@@ -216,10 +216,11 @@ private fun registerRoutes(
     Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(roundController.get(), lockService))
+    Spark.get("/v1/round/wait", Json.contentType, route(roundController.wait()))
     Spark.get("/v1/points", Json.contentType, route(pointsController.get(), lockService))
     Spark.get("/v1/metadata/ship", Json.contentType, route(shipMetadataController.get()))
     Spark.get("/v1/metadata/building", Json.contentType, route(buildingMetadataController.get()))
-    Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.block()))
+    Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.wait()))
 
     Spark.post("/v1/player", Json.contentType, route(playerController.create(), lockService, tournamentService))
     Spark.get("/v1/player/fight", Json.contentType, route(fightController.byPlayer(), lockService, tournamentService))

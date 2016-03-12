@@ -57,8 +57,8 @@ object GenerateDocs {
                 PlanetResponse(LocationResponse(1, 2, 3), ResourcesResponse(100, 50, 400)),
                 PlanetResponse(LocationResponse(2, 3, 4), ResourcesResponse(200, 100, 800))
         )))
-        writeToFile(Type.RESPONSE, "round-information.json", RoundResponse(13, 30))
-        writeToFile(Type.RESPONSE, "round-websocket.json", RoundWebsocketResponse(17))
+        writeToFile(Type.RESPONSE, "round-information.json", RoundWithRoundTimeResponse(13, 30))
+        writeToFile(Type.RESPONSE, "round-websocket.json", RoundResponse(17))
         writeToFile(Type.RESPONSE, "ships-in-construction.json", ShipsInConstructionResponse(listOf(
                 ShipInConstructionResponse(UUID.fromString("a675a15c-aeec-47d8-8fc8-4bc0fd452800"), ShipType.COLONY.name, 55))
         ))

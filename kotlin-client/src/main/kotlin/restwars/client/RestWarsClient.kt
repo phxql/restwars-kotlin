@@ -20,7 +20,7 @@ import java.net.URI
 import java.util.concurrent.ConcurrentSkipListSet
 
 interface RoundCallback {
-    fun callback(response: RoundWebsocketResponse)
+    fun callback(response: RoundResponse)
 }
 
 open class RestWarsClient(val hostname: String, val port: Int) {
@@ -63,7 +63,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
         fun restwarsConfiguration(): ConfigResponse
 
         @RequestLine("GET /v1/round")
-        fun roundInformation(): RoundResponse
+        fun roundInformation(): RoundWithRoundTimeResponse
 
         @RequestLine("GET /v1/planet/{location}/building")
         fun listBuildings(@Param("location") location: String): BuildingsResponse
@@ -104,7 +104,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
 
     fun restwarsConfiguration(): ConfigResponse = client.restwarsConfiguration()
 
-    fun roundInformation(): RoundResponse = client.roundInformation()
+    fun roundInformation(): RoundWithRoundTimeResponse = client.roundInformation()
 
     fun withCredentials(username: String, password: String): AuthenticatingRestWarsClient {
         return AuthenticatingRestWarsClient(hostname, port, username, password)
@@ -168,7 +168,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     ) {
         @OnWebSocketMessage
         fun onMessage(message: String) {
-            val response = mapper.readValue(message, RoundWebsocketResponse::class.java)
+            val response = mapper.readValue(message, RoundResponse::class.java)
             for (callback in callbacks) {
                 callback.callback(response)
             }

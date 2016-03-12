@@ -14,6 +14,8 @@ interface RoundService {
     fun addRoundListener(listener: RoundListener)
 
     fun removeRoundListener(listener: RoundListener)
+
+    fun blockUntilNextRound(): Long
 }
 
 interface RoundRepository {
@@ -24,13 +26,18 @@ interface RoundRepository {
     fun readRound(): Long
 }
 
-class RoundServiceImpl(val roundRepository: RoundRepository) : RoundService {
-    val listeners = ConcurrentLinkedQueue<RoundListener>()
+class RoundServiceImpl(private val roundRepository: RoundRepository) : RoundService {
+    private val listeners = ConcurrentLinkedQueue<RoundListener>()
+    private val nextRoundMonitor = Object()
 
     override fun increaseRound(): Long {
         val newRound = roundRepository.readRound() + 1
         roundRepository.update(newRound)
         notifyListeners(newRound)
+        // Notify monitor for the blockUntilNextRound() method
+        synchronized(nextRoundMonitor) {
+            nextRoundMonitor.notifyAll()
+        }
 
         return newRound
     }
@@ -51,5 +58,12 @@ class RoundServiceImpl(val roundRepository: RoundRepository) : RoundService {
 
     override fun removeRoundListener(listener: RoundListener) {
         listeners.remove(listener)
+    }
+
+    override fun blockUntilNextRound(): Long {
+        synchronized(nextRoundMonitor) {
+            nextRoundMonitor.wait()
+        }
+        return currentRound()
     }
 }
