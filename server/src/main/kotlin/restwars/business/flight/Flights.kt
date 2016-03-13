@@ -124,6 +124,8 @@ interface DetectedFlightRepository {
     fun findWithPlayer(playerId: UUID): List<DetectedFlightWithFlight>
 
     fun findWithPlayerSince(playerId: UUID, since: Long): List<DetectedFlightWithFlight>
+
+    fun deleteWithFlightId(flightId: UUID)
 }
 
 interface FlightTypeHandler {
@@ -255,7 +257,7 @@ class FlightServiceImpl(
 
         // Land ships in hangar
         shipService.addShips(planet, flight.ships)
-        flightRepository.delete(flight.id)
+        delete(flight)
     }
 
     private fun finishOutwardFlight(flight: Flight) {
@@ -279,6 +281,7 @@ class FlightServiceImpl(
 
     override fun delete(flight: Flight) {
         flightRepository.delete(flight.id)
+        detectedFlightRepository.deleteWithFlightId(flight.id)
     }
 
     override fun detectFlights() {

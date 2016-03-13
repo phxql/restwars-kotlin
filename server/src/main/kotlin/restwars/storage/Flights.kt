@@ -75,34 +75,38 @@ class InMemoryDetectedFlightRepository(
         private val flightRepository: FlightRepository
 ) : DetectedFlightRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private var flights: MutableList<DetectedFlight> = CopyOnWriteArrayList()
+    private var detectedFlights: MutableList<DetectedFlight> = CopyOnWriteArrayList()
 
     override fun insert(detectedFlight: DetectedFlight) {
         logger.debug("Inserting {}", detectedFlight)
-        flights.add(detectedFlight)
+        detectedFlights.add(detectedFlight)
     }
 
     override fun findWithPlayer(playerId: UUID): List<DetectedFlightWithFlight> {
-        return flights.filter { it.playerId == playerId }.map {
+        return detectedFlights.filter { it.playerId == playerId }.map {
             val flight = flightRepository.findWithId(it.flightId) ?: throw AssertionError("Flight with id ${it.flightId} not found")
             DetectedFlightWithFlight(it, flight)
         }
     }
 
     override fun findWithPlayerSince(playerId: UUID, since: Long): List<DetectedFlightWithFlight> {
-        return flights.filter { it.playerId == playerId && it.detectedInRound >= since }.map {
+        return detectedFlights.filter { it.playerId == playerId && it.detectedInRound >= since }.map {
             val flight = flightRepository.findWithId(it.flightId) ?: throw AssertionError("Flight with id ${it.flightId} not found")
             DetectedFlightWithFlight(it, flight)
         }
     }
 
+    override fun deleteWithFlightId(flightId: UUID) {
+        detectedFlights.removeAll { it.flightId == flightId }
+    }
+
     override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, flights)
+        persister.saveData(path, detectedFlights)
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun load(persister: Persister, path: Path) {
-        flights = persister.loadData(path) as MutableList<DetectedFlight>
+        detectedFlights = persister.loadData(path) as MutableList<DetectedFlight>
     }
 }
 
