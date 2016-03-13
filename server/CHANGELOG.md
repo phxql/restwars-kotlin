@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added game metadata endpoint.
 - Added `since` parameter to fights endpoint.
 - Added HTTP response to `/`.
+- Added flight detection.
 
 ### Changed
 - Command center now produces 5 energy per round.
