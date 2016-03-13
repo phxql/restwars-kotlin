@@ -39,7 +39,9 @@ data class Flight(
         val type: FlightType, val cargo: Resources, val detected: Boolean, val speed: Double
 ) : Serializable
 
-data class DetectedFlight(val id: UUID, val flightId: UUID, val playerId: UUID, val approximatedFleetSize: Long) : Serializable
+data class DetectedFlight(val id: UUID, val flightId: UUID, val playerId: UUID, val detectedInRound: Long, val approximatedFleetSize: Long) : Serializable
+
+data class DetectedFlightWithFlight(val detectedFlight: DetectedFlight, val flight: Flight)
 
 data class SendResult(val planet: Planet, val flight: Flight)
 
@@ -90,6 +92,8 @@ interface FlightService {
     fun findWithPlayer(player: Player): List<Flight>
 
     fun detectFlights()
+
+    fun findDetectedFlightsWithPlayer(player: Player, since: Long?): List<DetectedFlightWithFlight>
 }
 
 interface FlightRepository {
@@ -110,10 +114,16 @@ interface FlightRepository {
     fun findUndetectedFlights(): List<Flight>
 
     fun updateDetected(flightId: UUID, detected: Boolean)
+
+    fun findWithId(flightId: UUID): Flight?
 }
 
 interface DetectedFlightRepository {
     fun insert(detectedFlight: DetectedFlight)
+
+    fun findWithPlayer(playerId: UUID): List<DetectedFlightWithFlight>
+
+    fun findWithPlayerSince(playerId: UUID, since: Long): List<DetectedFlightWithFlight>
 }
 
 interface FlightTypeHandler {
@@ -286,19 +296,28 @@ class FlightServiceImpl(
             if (telescope != null) {
                 val range = buildingFormulas.calculateFlightDetectionRange(telescope.level) * (1.0 / flight.speed).ceil()
                 if (currentRound + range >= flight.arrivalInRound) {
-                    detectFlight(flight)
+                    detectFlight(flight, currentRound)
                 }
             }
         }
     }
 
-    private fun detectFlight(flight: Flight) {
+    private fun detectFlight(flight: Flight, round: Long) {
         logger.debug("Detected flight {}", flight)
 
         val fleetSize = flight.ships.amount()
-        val detectedFlight = DetectedFlight(uuidFactory.create(), flight.id, flight.playerId, fleetSize)
+        val detectedFlight = DetectedFlight(uuidFactory.create(), flight.id, flight.playerId, round, fleetSize)
         detectedFlightRepository.insert(detectedFlight)
 
         flightRepository.updateDetected(flight.id, true)
+    }
+
+    override fun findDetectedFlightsWithPlayer(player: Player, since: Long?): List<DetectedFlightWithFlight> {
+        return if (since == null) {
+            detectedFlightRepository.findWithPlayer(player.id)
+        } else {
+            val round = if (since <= 0) roundService.currentRound() + since else since
+            detectedFlightRepository.findWithPlayerSince(player.id, round)
+        }
     }
 }

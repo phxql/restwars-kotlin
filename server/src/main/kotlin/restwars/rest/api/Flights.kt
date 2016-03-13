@@ -1,5 +1,6 @@
 package restwars.rest.api
 
+import restwars.business.flight.DetectedFlightWithFlight
 import restwars.business.flight.Flight
 import restwars.business.planet.Resources
 import restwars.business.ship.Ship
@@ -18,4 +19,12 @@ fun FlightsResponse.Companion.from(flights: List<Flight>) = FlightsResponse(flig
 fun FlightResponse.Companion.fromFlight(flight: Flight) = FlightResponse(
         LocationResponse.fromLocation(flight.start), LocationResponse.fromLocation(flight.destination),
         flight.arrivalInRound, ShipsResponse.fromShips(flight.ships)
+)
+
+fun DetectedFlightsResponse.Companion.fromFlights(flights: List<DetectedFlightWithFlight>) = DetectedFlightsResponse(flights.map { DetectedFlightResponse.fromFlight(it) })
+
+fun DetectedFlightResponse.Companion.fromFlight(flight: DetectedFlightWithFlight) = DetectedFlightResponse(
+        flight.detectedFlight.id, flight.detectedFlight.detectedInRound,
+        LocationResponse.fromLocation(flight.flight.destination),
+        flight.flight.arrivalInRound, flight.detectedFlight.approximatedFleetSize
 )

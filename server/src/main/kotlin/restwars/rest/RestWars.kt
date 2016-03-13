@@ -56,7 +56,7 @@ fun main(args: Array<String>) {
     val flightRepository = InMemoryFlightRepository
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
     val pointsRepository = InMemoryPointsRepository(playerRepository)
-    val detectedFlightRepository = InMemoryDetectedFlightRepository
+    val detectedFlightRepository = InMemoryDetectedFlightRepository(flightRepository)
 
     val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
@@ -101,6 +101,7 @@ fun main(args: Array<String>) {
     val buildingMetadataController = BuildingMetadataController(buildingFormulas)
     val tournamentController = TournamentController(tournamentService)
     val pointsController = PointsController(pointsService)
+    val detectedFlightController = DetectedFlightController(flightService, playerService)
 
     configureSpark()
     addExceptionHandler()
@@ -109,7 +110,8 @@ fun main(args: Array<String>) {
             lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
             roundController, flightController, telescopeController, fightController, shipMetadataController,
-            buildingMetadataController, tournamentService, tournamentController, pointsController
+            buildingMetadataController, tournamentService, tournamentController, pointsController,
+            detectedFlightController
     )
 
     Spark.awaitInitialization()
@@ -117,7 +119,8 @@ fun main(args: Array<String>) {
     startClock(clock, config)
     val persister = Persister(
             buildingRepository, constructionSiteRepository, playerRepository, roundRepository, hangarRepository,
-            shipInConstructionRepository, flightRepository, planetRepository, fightRepository, pointsRepository
+            shipInConstructionRepository, flightRepository, planetRepository, fightRepository, pointsRepository,
+            detectedFlightRepository
     )
     persister.start()
     logger.info("RESTwars started on port {}", port)
@@ -211,7 +214,8 @@ private fun registerRoutes(
         flightController: FlightController, telescopeController: TelescopeController,
         fightController: FightController, shipMetadataController: ShipMetadataController,
         buildingMetadataController: BuildingMetadataController, tournamentService: TournamentService,
-        tournamentController: TournamentController, pointsController: PointsController
+        tournamentController: TournamentController, pointsController: PointsController,
+        detectedFlightController: DetectedFlightController
 ) {
     Spark.get("/", Json.contentType, route(RootController.get()))
     Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
@@ -238,6 +242,7 @@ private fun registerRoutes(
     Spark.get("/v1/flight/from/:location", Json.contentType, route(flightController.listFrom(), lockService, tournamentService))
     Spark.get("/v1/flight/to/:location", Json.contentType, route(flightController.listTo(), lockService, tournamentService))
     Spark.get("/v1/flight", Json.contentType, route(flightController.list(), lockService, tournamentService))
+    Spark.get("/v1/flight/detected", Json.contentType, route(detectedFlightController.byPlayer(), lockService, tournamentService))
 }
 
 private fun addExceptionHandler() {

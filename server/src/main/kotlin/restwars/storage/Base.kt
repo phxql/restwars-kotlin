@@ -25,7 +25,8 @@ class Persister(
         flightRepository: PersistentRepository,
         planetRepository: PersistentRepository,
         fightRepository: PersistentRepository,
-        pointsRepository: PersistentRepository
+        pointsRepository: PersistentRepository,
+        detectedFlightRepository: PersistentRepository
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Persister") })
@@ -41,7 +42,8 @@ class Persister(
             shipInConstructionRepository to Paths.get("data/ships-in-construction.dat"),
             flightRepository to Paths.get("data/flights.dat"),
             fightRepository to Paths.get("data/fights.dat"),
-            pointsRepository to Paths.get("data/points.dat")
+            pointsRepository to Paths.get("data/points.dat"),
+            detectedFlightRepository to Paths.get("data/detected-flights.dat")
     )
 
     fun start() {

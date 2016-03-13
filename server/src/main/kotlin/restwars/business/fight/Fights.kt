@@ -72,7 +72,7 @@ class FightServiceImpl(
         return if (since == null) {
             fightRepository.findWithPlayer(player.id)
         } else {
-            val round = if (since < 0) roundService.currentRound() + since else since
+            val round = if (since <= 0) roundService.currentRound() + since else since
             fightRepository.findWithPlayerSince(player.id, round)
         }
     }
@@ -81,7 +81,7 @@ class FightServiceImpl(
         return if (since == null) {
             fightRepository.findWithPlayerAndPlanet(player.id, planet.id)
         } else {
-            val round = if (since < 0) roundService.currentRound() + since else since
+            val round = if (since <= 0) roundService.currentRound() + since else since
             fightRepository.findWithPlayerAndPlanetSince(player.id, planet.id, round)
         }
     }

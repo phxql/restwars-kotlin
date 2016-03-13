@@ -1,5 +1,7 @@
 package restwars.rest.api
 
+import java.util.*
+
 data class ShipsRequest(
         @get:org.hibernate.validator.constraints.NotEmpty
         val ships: Map<String, Int>
@@ -35,6 +37,16 @@ data class FlightResponse(
         val destination: LocationResponse,
         val arrivalInRound: Long,
         val ships: ShipsResponse
+) : Result {
+    companion object {}
+}
+
+data class DetectedFlightsResponse(val flights: List<DetectedFlightResponse>) : Result {
+    companion object {}
+}
+
+data class DetectedFlightResponse(
+        val id: UUID, val detectedInRound: Long, val destination: LocationResponse, val arrivalInRound: Long, val fleetSize: Long
 ) : Result {
     companion object {}
 }

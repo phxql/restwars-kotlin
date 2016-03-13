@@ -28,6 +28,10 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
         flights = persister.loadData(path) as MutableList<Flight>
     }
 
+    override fun findWithId(flightId: UUID): Flight? {
+        return flights.firstOrNull { it.id == flightId }
+    }
+
     override fun update(id: UUID, ships: Ships, arrivalInRound: Long, direction: FlightDirection, cargo: Resources) {
         val index = flights.indexOfFirst { it.id == id }
 
@@ -67,13 +71,29 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
     }
 }
 
-object InMemoryDetectedFlightRepository : DetectedFlightRepository, PersistentRepository {
+class InMemoryDetectedFlightRepository(
+        private val flightRepository: FlightRepository
+) : DetectedFlightRepository, PersistentRepository {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var flights: MutableList<DetectedFlight> = CopyOnWriteArrayList()
 
     override fun insert(detectedFlight: DetectedFlight) {
         logger.debug("Inserting {}", detectedFlight)
         flights.add(detectedFlight)
+    }
+
+    override fun findWithPlayer(playerId: UUID): List<DetectedFlightWithFlight> {
+        return flights.filter { it.playerId == playerId }.map {
+            val flight = flightRepository.findWithId(it.flightId) ?: throw AssertionError("Flight with id ${it.flightId} not found")
+            DetectedFlightWithFlight(it, flight)
+        }
+    }
+
+    override fun findWithPlayerSince(playerId: UUID, since: Long): List<DetectedFlightWithFlight> {
+        return flights.filter { it.playerId == playerId && it.detectedInRound >= since }.map {
+            val flight = flightRepository.findWithId(it.flightId) ?: throw AssertionError("Flight with id ${it.flightId} not found")
+            DetectedFlightWithFlight(it, flight)
+        }
     }
 
     override fun persist(persister: Persister, path: Path) {
