@@ -1,8 +1,10 @@
 # RESTwars
 
+* [Server Changelog](server/CHANGELOG.md)
+
 ## Running
 
-1. `./gradlew run`
+1. `./gradlew clean run`
 1. Open browser at [http://localhost:7777/v1/restwars](http://localhost:7777/v1/restwars)
 
 ## Building the documentation
