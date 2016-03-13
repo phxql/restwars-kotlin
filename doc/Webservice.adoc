@@ -400,6 +400,20 @@ Response:
 [source,json]
 include::responses/flights.json[]
 
+List all detected flights
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists all detected flights. Needs authentication.
+
+URL: `GET /v1/flight/detected`
+
+Optional query parameters:
+
+* `since`: Only lists detected flights since the given round. If negative, the last X rounds are returned.
+
+[source,json]
+include::responses/detected-flights.json[]
+
 Attack mechanics
 ~~~~~~~~~~~~~~~~
 
