@@ -1,0 +1,23 @@
+{
+  "flights" : [ {
+    "id" : "b1503ca0-83a5-44d2-a7a2-469c1ef596e2",
+    "detectedInRound" : 12,
+    "destination" : {
+      "galaxy" : 1,
+      "system" : 2,
+      "planet" : 3
+    },
+    "arrivalInRound" : 15,
+    "fleetSize" : 20
+  }, {
+    "id" : "14985b09-a80e-4c92-8ba5-7073a41591d7",
+    "detectedInRound" : 10,
+    "destination" : {
+      "galaxy" : 4,
+      "system" : 5,
+      "planet" : 6
+    },
+    "arrivalInRound" : 25,
+    "fleetSize" : 37
+  } ]
+}

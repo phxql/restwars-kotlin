@@ -111,6 +111,10 @@ object GenerateDocs {
                 PointResponse("player1", 120),
                 PointResponse("player2", 200)
         )))
+        writeToFile(Type.RESPONSE, "detected-flights.json", DetectedFlightsResponse(listOf(
+                DetectedFlightResponse(UUID.fromString("b1503ca0-83a5-44d2-a7a2-469c1ef596e2"), 12, LocationResponse(1, 2, 3), 15, 20),
+                DetectedFlightResponse(UUID.fromString("14985b09-a80e-4c92-8ba5-7073a41591d7"), 10, LocationResponse(4, 5, 6), 25, 37)
+        )))
     }
 }
 
