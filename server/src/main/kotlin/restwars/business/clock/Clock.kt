@@ -38,6 +38,7 @@ class ClockImpl(
             val newRound = roundService.increaseRound()
             buildingService.finishConstructionSites()
             shipService.finishShipsInConstruction()
+            flightService.detectFlights()
             flightService.finishFlights()
 
             for (planet in planetService.findAllInhabited()) {

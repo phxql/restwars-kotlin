@@ -1,9 +1,12 @@
 package restwars.business.flight
 
 import org.slf4j.LoggerFactory
+import restwars.business.BuildingFormulas
 import restwars.business.LocationFormulas
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
+import restwars.business.building.BuildingService
+import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
 import restwars.business.config.Config
 import restwars.business.planet.*
@@ -33,8 +36,10 @@ enum class FlightType {
 data class Flight(
         val id: UUID, val playerId: UUID, val start: Location, val destination: Location,
         val startedInRound: Long, val arrivalInRound: Long, val ships: Ships, val direction: FlightDirection,
-        val type: FlightType, val cargo: Resources
+        val type: FlightType, val cargo: Resources, val detected: Boolean, val speed: Double
 ) : Serializable
+
+data class DetectedFlight(val id: UUID, val flightId: UUID, val playerId: UUID, val approximatedFleetSize: Long) : Serializable
 
 data class SendResult(val planet: Planet, val flight: Flight)
 
@@ -83,6 +88,8 @@ interface FlightService {
     fun findWithPlayerAndStart(player: Player, start: Location): List<Flight>
 
     fun findWithPlayer(player: Player): List<Flight>
+
+    fun detectFlights()
 }
 
 interface FlightRepository {
@@ -99,6 +106,14 @@ interface FlightRepository {
     fun findWithPlayerAndStart(playerId: UUID, start: Location): List<Flight>
 
     fun findWithPlayer(playerId: UUID): List<Flight>
+
+    fun findUndetectedFlights(): List<Flight>
+
+    fun updateDetected(flightId: UUID, detected: Boolean)
+}
+
+interface DetectedFlightRepository {
+    fun insert(detectedFlight: DetectedFlight)
 }
 
 interface FlightTypeHandler {
@@ -117,7 +132,10 @@ class FlightServiceImpl(
         private val attackFlightHandler: FlightTypeHandler,
         private val transferFlightHandler: FlightTypeHandler,
         private val transportFlightHandler: FlightTypeHandler,
-        private val planetService: PlanetService
+        private val planetService: PlanetService,
+        private val buildingService: BuildingService,
+        private val buildingFormulas: BuildingFormulas,
+        private val detectedFlightRepository: DetectedFlightRepository
 ) : FlightService {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -169,7 +187,7 @@ class FlightServiceImpl(
         // Decrease ships
         shipService.removeShips(start, ships)
 
-        val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type, cargo)
+        val flight = Flight(uuidFactory.create(), player.id, start.location, destination, currentRound, arrival, ships, FlightDirection.OUTWARD, type, cargo, false, slowestSpeed)
         flightRepository.insert(flight)
 
         return SendResult(updatedPlanet, flight)
@@ -251,5 +269,36 @@ class FlightServiceImpl(
 
     override fun delete(flight: Flight) {
         flightRepository.delete(flight.id)
+    }
+
+    override fun detectFlights() {
+        logger.debug("Detecting flights")
+
+        val flights = flightRepository.findUndetectedFlights()
+        val currentRound = roundService.currentRound()
+
+        for (flight in flights) {
+            val planet = planetService.findByLocation(flight.destination)
+            // Ignore flights to uninhabited planets or own flights
+            if (planet == null || planet.owner == flight.playerId) continue
+
+            val telescope = buildingService.findBuildingByPlanetAndType(planet, BuildingType.TELESCOPE)
+            if (telescope != null) {
+                val range = buildingFormulas.calculateFlightDetectionRange(telescope.level) * (1.0 / flight.speed).ceil()
+                if (currentRound + range >= flight.arrivalInRound) {
+                    detectFlight(flight)
+                }
+            }
+        }
+    }
+
+    private fun detectFlight(flight: Flight) {
+        logger.debug("Detected flight {}", flight)
+
+        val fleetSize = flight.ships.amount()
+        val detectedFlight = DetectedFlight(uuidFactory.create(), flight.id, flight.playerId, fleetSize)
+        detectedFlightRepository.insert(detectedFlight)
+
+        flightRepository.updateDetected(flight.id, true)
     }
 }

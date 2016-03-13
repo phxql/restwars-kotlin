@@ -23,6 +23,8 @@ interface BuildingFormulas {
     fun calculateBuildingBuildTimeModifier(commandCenterLevel: Int): Double
 
     fun calculateShipBuildTimeModifier(shipyardLevel: Int): Double
+
+    fun calculateFlightDetectionRange(telescopeLevel: Int): Int
 }
 
 interface ShipFormulas {
@@ -127,6 +129,12 @@ object BuildingFormulasImpl : BuildingFormulas {
 
         // TODO Gameplay: This eventually reaches 0, and further upgrade are useless - fix this
         return Math.max(0.0, 1.0 - ((shipyardLevel - 1) * 0.05))
+    }
+
+    override fun calculateFlightDetectionRange(telescopeLevel: Int): Int {
+        if (telescopeLevel == 0) return 0
+
+        return telescopeLevel + 1
     }
 }
 

@@ -1,9 +1,7 @@
 package restwars.storage
 
 import org.slf4j.LoggerFactory
-import restwars.business.flight.Flight
-import restwars.business.flight.FlightDirection
-import restwars.business.flight.FlightRepository
+import restwars.business.flight.*
 import restwars.business.planet.Location
 import restwars.business.planet.Resources
 import restwars.business.ship.Ships
@@ -57,4 +55,35 @@ object InMemoryFlightRepository : FlightRepository, PersistentRepository {
         return flights.filter { it.arrivalInRound == arrivalInRound }
     }
 
+    override fun findUndetectedFlights(): List<Flight> {
+        return flights.filter { !it.detected }
+    }
+
+    override fun updateDetected(flightId: UUID, detected: Boolean) {
+        val index = flights.indexOfFirst { it.id == flightId }
+
+        val flight = flights[index]
+        flights[index] = flight.copy(detected = detected)
+    }
 }
+
+object InMemoryDetectedFlightRepository : DetectedFlightRepository, PersistentRepository {
+    private val logger = LoggerFactory.getLogger(javaClass)
+    private var flights: MutableList<DetectedFlight> = CopyOnWriteArrayList()
+
+    override fun insert(detectedFlight: DetectedFlight) {
+        logger.debug("Inserting {}", detectedFlight)
+        flights.add(detectedFlight)
+    }
+
+    override fun persist(persister: Persister, path: Path) {
+        persister.saveData(path, flights)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun load(persister: Persister, path: Path) {
+        flights = persister.loadData(path) as MutableList<DetectedFlight>
+    }
+}
+
+

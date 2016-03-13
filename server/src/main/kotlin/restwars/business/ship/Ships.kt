@@ -10,6 +10,7 @@ import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
+import restwars.business.sumByLong
 import restwars.util.ceil
 import java.io.Serializable
 import java.util.*
@@ -79,6 +80,10 @@ data class Ships(val ships: List<Ship>) : Serializable {
 
     fun compact(): Ships {
         return Ships(ships.filter { it.amount > 0 })
+    }
+
+    fun amount(): Long {
+        return ships.sumByLong { it.amount.toLong() }
     }
 
     companion object {
