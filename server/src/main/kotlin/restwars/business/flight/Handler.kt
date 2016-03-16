@@ -3,6 +3,7 @@ package restwars.business.flight
 import org.slf4j.LoggerFactory
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
+import restwars.business.event.EventService
 import restwars.business.fight.FightService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
@@ -69,7 +70,8 @@ class AttackFlightHandler(
 class ColonizeFlightHandler(
         private val planetService: PlanetService,
         private val buildingService: BuildingService,
-        private val shipService: ShipService
+        private val shipService: ShipService,
+        private val eventService: EventService
 ) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -94,13 +96,16 @@ class ColonizeFlightHandler(
         // Unload cargo
         planetService.addResources(newPlanet, flight.cargo)
 
+        eventService.createPlanetColonizedEvent(newPlanet.owner, newPlanet.id)
+
         flightService.delete(flight)
     }
 }
 
 class TransferFlightHandler(
         private val planetService: PlanetService,
-        private val shipService: ShipService
+        private val shipService: ShipService,
+        private val eventService: EventService
 ) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -129,7 +134,8 @@ class TransferFlightHandler(
 }
 
 class TransportFlightHandler(
-        private val planetService: PlanetService
+        private val planetService: PlanetService,
+        private val eventService: EventService
 ) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
