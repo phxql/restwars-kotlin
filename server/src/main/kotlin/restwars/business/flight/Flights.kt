@@ -9,6 +9,7 @@ import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
 import restwars.business.config.Config
+import restwars.business.event.EventService
 import restwars.business.planet.*
 import restwars.business.player.Player
 import restwars.business.resource.NotEnoughResourcesException
@@ -147,7 +148,8 @@ class FlightServiceImpl(
         private val planetService: PlanetService,
         private val buildingService: BuildingService,
         private val buildingFormulas: BuildingFormulas,
-        private val detectedFlightRepository: DetectedFlightRepository
+        private val detectedFlightRepository: DetectedFlightRepository,
+        private val eventService: EventService
 ) : FlightService {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -299,13 +301,13 @@ class FlightServiceImpl(
             if (telescope != null) {
                 val range = buildingFormulas.calculateFlightDetectionRange(telescope.level) * (1.0 / flight.speed).ceil()
                 if (currentRound + range >= flight.arrivalInRound) {
-                    detectFlight(flight, currentRound)
+                    detectFlight(planet, flight, currentRound)
                 }
             }
         }
     }
 
-    private fun detectFlight(flight: Flight, round: Long) {
+    private fun detectFlight(destination: Planet, flight: Flight, round: Long) {
         logger.debug("Detected flight {}", flight)
 
         val fleetSize = flight.ships.amount()
@@ -313,6 +315,8 @@ class FlightServiceImpl(
         detectedFlightRepository.insert(detectedFlight)
 
         flightRepository.updateDetected(flight.id, true)
+
+        eventService.createFlightDetectedEvent(destination.owner, destination.id)
     }
 
     override fun findDetectedFlightsWithPlayer(player: Player, since: Long?): List<DetectedFlightWithFlight> {

@@ -8,7 +8,8 @@ import java.io.Serializable
 import java.util.*
 
 enum class EventType {
-    BUILDING_COMPLETE, SHIP_COMPLETE
+    BUILDING_COMPLETE, SHIP_COMPLETE, FLIGHT_DETECTED, PLANET_COLONIZED, FIGHT_HAPPENED, SHIPS_TRANSFERRED,
+    RESOURCES_TRANSFERRED, SHIPS_RETURNED
 }
 
 data class Event(
@@ -27,6 +28,18 @@ interface EventService {
     fun createShipCompleteEvent(player: Player, planet: Planet): Event = createShipCompleteEvent(player.id, planet.id)
 
     fun createShipCompleteEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createFlightDetectedEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createPlanetColonizedEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createFightHappenedEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createShipsTransferredEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createResourcesTransferredEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createShipsReturnedEvent(playerId: UUID, planetId: UUID): Event
 }
 
 interface EventRepository {
@@ -39,14 +52,38 @@ class EventServiceImpl(
         private val eventRepository: EventRepository
 ) : EventService {
     override fun createBuildingCompleteEvent(playerId: UUID, planetId: UUID): Event {
-        return createEvent(planetId, playerId, EventType.BUILDING_COMPLETE)
+        return createAndInsertEvent(planetId, playerId, EventType.BUILDING_COMPLETE)
     }
 
     override fun createShipCompleteEvent(playerId: UUID, planetId: UUID): Event {
-        return createEvent(planetId, playerId, EventType.SHIP_COMPLETE)
+        return createAndInsertEvent(planetId, playerId, EventType.SHIP_COMPLETE)
     }
 
-    private fun createEvent(planetId: UUID, playerId: UUID, type: EventType): Event {
+    override fun createFlightDetectedEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.FLIGHT_DETECTED)
+    }
+
+    override fun createPlanetColonizedEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.PLANET_COLONIZED)
+    }
+
+    override fun createFightHappenedEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.FIGHT_HAPPENED)
+    }
+
+    override fun createShipsTransferredEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.SHIPS_TRANSFERRED)
+    }
+
+    override fun createResourcesTransferredEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.RESOURCES_TRANSFERRED)
+    }
+
+    override fun createShipsReturnedEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.SHIPS_RETURNED)
+    }
+
+    private fun createAndInsertEvent(planetId: UUID, playerId: UUID, type: EventType): Event {
         val id = uuidFactory.create()
         val round = roundService.currentRound()
 
