@@ -12,6 +12,7 @@ import restwars.business.config.Config
 import restwars.business.config.NewPlanet
 import restwars.business.config.StarterPlanet
 import restwars.business.config.UniverseSize
+import restwars.business.event.EventServiceImpl
 import restwars.business.fight.FightCalculatorImpl
 import restwars.business.fight.FightServiceImpl
 import restwars.business.flight.*
@@ -57,6 +58,7 @@ fun main(args: Array<String>) {
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
     val pointsRepository = InMemoryPointsRepository(playerRepository)
     val detectedFlightRepository = InMemoryDetectedFlightRepository(flightRepository)
+    val eventRepository = InMemoryEventRepository
 
     val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
@@ -73,6 +75,7 @@ fun main(args: Array<String>) {
     val applicationInformationService = ApplicationInformationServiceImpl
     val fightCalculator = FightCalculatorImpl(uuidFactory, shipFormulas, randomNumberGenerator)
     val fightService = FightServiceImpl(fightCalculator, roundService, fightRepository)
+    val eventService = EventServiceImpl(uuidFactory, roundService, eventRepository)
 
     val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService)
     val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService)
@@ -120,7 +123,7 @@ fun main(args: Array<String>) {
     val persister = Persister(
             buildingRepository, constructionSiteRepository, playerRepository, roundRepository, hangarRepository,
             shipInConstructionRepository, flightRepository, planetRepository, fightRepository, pointsRepository,
-            detectedFlightRepository
+            detectedFlightRepository, eventRepository
     )
     persister.start()
     logger.info("RESTwars started on port {}", port)
