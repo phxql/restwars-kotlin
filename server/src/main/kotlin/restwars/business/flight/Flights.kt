@@ -260,6 +260,8 @@ class FlightServiceImpl(
         // Land ships in hangar
         shipService.addShips(planet, flight.ships)
         delete(flight)
+
+        eventService.createShipsReturnedEvent(planet.owner, planet.id)
     }
 
     private fun finishOutwardFlight(flight: Flight) {
