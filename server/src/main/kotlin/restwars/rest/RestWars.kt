@@ -77,11 +77,11 @@ fun main(args: Array<String>) {
     val fightCalculator = FightCalculatorImpl(uuidFactory, shipFormulas, randomNumberGenerator)
     val fightService = FightServiceImpl(fightCalculator, roundService, fightRepository)
 
-    val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService)
-    val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService)
-    val transferFlightHandler = TransferFlightHandler(planetService, shipService)
-    val transportFlightHandler = TransportFlightHandler(planetService)
-    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService, buildingService, buildingFormulas, detectedFlightRepository)
+    val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService, eventService)
+    val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService, eventService)
+    val transferFlightHandler = TransferFlightHandler(planetService, shipService, eventService)
+    val transportFlightHandler = TransportFlightHandler(planetService, eventService)
+    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService, buildingService, buildingFormulas, detectedFlightRepository, eventService)
     val tournamentService = buildTournamentService(commandLine, roundService)
     val pointsService = PointsServiceImpl(roundService, playerService, planetService, shipService, shipFormulas, pointsRepository, uuidFactory)
 
