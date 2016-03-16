@@ -58,7 +58,7 @@ fun main(args: Array<String>) {
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
     val pointsRepository = InMemoryPointsRepository(playerRepository)
     val detectedFlightRepository = InMemoryDetectedFlightRepository(flightRepository)
-    val eventRepository = InMemoryEventRepository
+    val eventRepository = InMemoryEventRepository(planetRepository)
 
     val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
@@ -105,6 +105,7 @@ fun main(args: Array<String>) {
     val tournamentController = TournamentController(tournamentService)
     val pointsController = PointsController(pointsService)
     val detectedFlightController = DetectedFlightController(flightService, playerService)
+    val eventController = EventController(validatorFactory, playerService, planetService, eventService)
 
     configureSpark()
     addExceptionHandler()
@@ -114,7 +115,7 @@ fun main(args: Array<String>) {
             shipController, shipyardController, applicationInformationController, configurationController,
             roundController, flightController, telescopeController, fightController, shipMetadataController,
             buildingMetadataController, tournamentService, tournamentController, pointsController,
-            detectedFlightController
+            detectedFlightController, eventController
     )
 
     Spark.awaitInitialization()
@@ -218,7 +219,7 @@ private fun registerRoutes(
         fightController: FightController, shipMetadataController: ShipMetadataController,
         buildingMetadataController: BuildingMetadataController, tournamentService: TournamentService,
         tournamentController: TournamentController, pointsController: PointsController,
-        detectedFlightController: DetectedFlightController
+        detectedFlightController: DetectedFlightController, eventController: EventController
 ) {
     Spark.get("/", Json.contentType, route(RootController.get()))
     Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
@@ -246,6 +247,7 @@ private fun registerRoutes(
     Spark.get("/v1/flight/to/:location", Json.contentType, route(flightController.listTo(), lockService, tournamentService))
     Spark.get("/v1/flight", Json.contentType, route(flightController.list(), lockService, tournamentService))
     Spark.get("/v1/flight/detected", Json.contentType, route(detectedFlightController.byPlayer(), lockService, tournamentService))
+    Spark.get("/v1/event", Json.contentType, route(eventController.byPlayer(), lockService, tournamentService))
 }
 
 private fun addExceptionHandler() {

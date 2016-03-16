@@ -2,6 +2,8 @@ package restwars.business.event
 
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
+import restwars.business.planet.Planet
+import restwars.business.player.Player
 import java.io.Serializable
 import java.util.*
 
@@ -15,8 +17,10 @@ data class Event(
         val type: EventType,
         val round: Long,
         val playerId: UUID,
-        val planet: UUID
+        val planetId: UUID
 ) : Serializable
+
+data class EventWithPlanet(val event: Event, val planet: Planet)
 
 interface EventService {
     fun createBuildingCompleteEvent(playerId: UUID, planetId: UUID): Event
@@ -34,10 +38,16 @@ interface EventService {
     fun createResourcesTransferredEvent(playerId: UUID, planetId: UUID): Event
 
     fun createShipsReturnedEvent(playerId: UUID, planetId: UUID): Event
+
+    fun findWithPlayer(player: Player, since: Long?): List<EventWithPlanet>
 }
 
 interface EventRepository {
     fun insert(event: Event)
+
+    fun findWithPlayer(playerId: UUID): List<EventWithPlanet>
+
+    fun findWithPlayerSince(playerId: UUID, since: Long): List<EventWithPlanet>
 }
 
 class EventServiceImpl(
@@ -45,6 +55,16 @@ class EventServiceImpl(
         private val roundService: RoundService,
         private val eventRepository: EventRepository
 ) : EventService {
+    override fun findWithPlayer(player: Player, since: Long?): List<EventWithPlanet> {
+        return if (since == null) {
+            eventRepository.findWithPlayer(player.id)
+        } else {
+            val round = if (since <= 0) roundService.currentRound() + since else since
+            eventRepository.findWithPlayerSince(player.id, round)
+        }
+
+    }
+
     override fun createBuildingCompleteEvent(playerId: UUID, planetId: UUID): Event {
         return createAndInsertEvent(planetId, playerId, EventType.BUILDING_COMPLETE)
     }
