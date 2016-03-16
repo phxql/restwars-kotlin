@@ -15,7 +15,8 @@ import restwars.business.ship.Ships
 class AttackFlightHandler(
         private val planetService: PlanetService,
         private val fightService: FightService,
-        private val shipService: ShipService
+        private val shipService: ShipService,
+        private val eventService: EventService
 ) : FlightTypeHandler {
     val logger = LoggerFactory.getLogger(javaClass)
 
@@ -39,6 +40,10 @@ class AttackFlightHandler(
 
         val fight = fightService.attack(flight.playerId, planet.owner, planet.id, flight.ships, defenderShips)
         shipService.setShips(planet, fight.remainingDefenderShips)
+
+        // Events created both for attacker and defender
+        eventService.createFightHappenedEvent(fight.attackerId, fight.planetId)
+        eventService.createFightHappenedEvent(fight.defenderId, fight.planetId)
 
         if (fight.remainingAttackerShips.isEmpty()) {
             logger.debug("Attacker lost all ships")
