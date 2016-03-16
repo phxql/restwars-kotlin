@@ -427,6 +427,35 @@ To ensure a fair fight, the calculation is being done in two steps:
 
 Finally, all attacking and defending ships which were marked for destruction or being destroyed. If there are remaining attacker ships, they will now loot the planet. They will therefore take at most an amount equal to half their available cargo size of crystal and gas each. They can not take more than what is available on the planet at the beginning of the fight.
 
+Events
+------
+
+Lists the events. Needs authentication.
+
+URL: `GET /v1/event`
+
+Optional query parameters:
+
+* `since`: Only lists events since the given round. If negative, the last X rounds are returned.
+
+[source,json]
+include::responses/events.json[]
+
+Event types are:
+
+[options="header"]
+|=================
+|Event
+|BUILDING_COMPLETE
+|SHIP_COMPLETE
+|FLIGHT_DETECTED
+|PLANET_COLONIZED
+|FIGHT_HAPPENED
+|SHIPS_TRANSFERRED
+|RESOURCES_TRANSFERRED
+|SHIPS_RETURNED
+|================
+
 Metadata
 --------
 
