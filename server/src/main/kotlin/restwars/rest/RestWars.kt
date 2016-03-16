@@ -1,5 +1,7 @@
 package restwars.rest
 
+import com.codahale.metrics.ConsoleReporter
+import com.codahale.metrics.MetricRegistry
 import com.fasterxml.jackson.core.JsonParseException
 import org.slf4j.LoggerFactory
 import restwars.business.*
@@ -46,6 +48,7 @@ fun main(args: Array<String>) {
 
     val uuidFactory = UUIDFactoryImpl
     val randomNumberGenerator = RandomNumberGeneratorImpl
+    val metricRegistry = MetricRegistry()
 
     val playerRepository = InMemoryPlayerRepository
     val planetRepository = InMemoryPlanetRepository(playerRepository)
@@ -111,7 +114,7 @@ fun main(args: Array<String>) {
     addExceptionHandler()
     registerWebsockets(roundService, tournamentService)
     registerRoutes(
-            lockService, playerController, planetController, buildingController, constructionSiteController,
+            metricRegistry, lockService, playerController, planetController, buildingController, constructionSiteController,
             shipController, shipyardController, applicationInformationController, configurationController,
             roundController, flightController, telescopeController, fightController, shipMetadataController,
             buildingMetadataController, tournamentService, tournamentController, pointsController,
@@ -127,6 +130,12 @@ fun main(args: Array<String>) {
             detectedFlightRepository, eventRepository
     )
     persister.start()
+
+    ConsoleReporter.forRegistry(metricRegistry)
+            .convertDurationsTo(TimeUnit.MILLISECONDS)
+            .convertRatesTo(TimeUnit.SECONDS)
+            .build().start(5, TimeUnit.SECONDS)
+
     logger.info("RESTwars started on port {}", port)
 }
 
@@ -173,8 +182,15 @@ fun registerWebsockets(roundService: RoundService, tournamentService: Tournament
  * @param tournamentService If not null, a check is executed if the tournament has already started. If the tournament hasn't been started, an exception is thrown.
  */
 // May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
-private fun route(method: Method, lockService: LockService? = null, tournamentService: TournamentService? = null): Route {
+private fun route(method: Method, lockService: LockService? = null, tournamentService: TournamentService? = null, path: String? = null, metricRegistry: MetricRegistry? = null): Route {
+    val timer = if (path != null && metricRegistry != null) {
+        metricRegistry.timer(path)
+    } else {
+        null
+    }
+
     return Route { request, response ->
+        val startedTimer = timer?.time()
         lockService?.beforeRequest()
         try {
             // Check if tournament has started
@@ -183,6 +199,7 @@ private fun route(method: Method, lockService: LockService? = null, tournamentSe
             return@Route Json.toJson(response, method.invoke(request, response))
         } finally {
             lockService?.afterRequest()
+            startedTimer?.stop()
         }
     }
 }
@@ -210,7 +227,7 @@ private fun configureSpark() {
 }
 
 private fun registerRoutes(
-        lockService: LockService, playerController: PlayerController, planetController: PlanetController,
+        metricRegistry: MetricRegistry, lockService: LockService, playerController: PlayerController, planetController: PlanetController,
         buildingController: BuildingController, constructionSiteController: ConstructionSiteController,
         shipController: ShipController, shipyardController: ShipyardController,
         applicationInformationController: ApplicationInformationController,
@@ -221,8 +238,8 @@ private fun registerRoutes(
         tournamentController: TournamentController, pointsController: PointsController,
         detectedFlightController: DetectedFlightController, eventController: EventController
 ) {
-    Spark.get("/", Json.contentType, route(RootController.get()))
-    Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
+    Spark.get("/", Json.contentType, route(RootController.get(), path = "/", metricRegistry = metricRegistry))
+    Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get(), path = "/v1/restwars", metricRegistry = metricRegistry))
     Spark.get("/v1/configuration", Json.contentType, route(configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(roundController.get(), lockService))
     Spark.get("/v1/round/wait", Json.contentType, route(roundController.wait()))

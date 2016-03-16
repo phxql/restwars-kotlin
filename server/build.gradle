@@ -21,6 +21,9 @@ dependencies {
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.7.1-2'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.7.1'
 
+    // Metrics
+    compile 'io.dropwizard.metrics:metrics-core:3.1.0'
+
     // Needed for validation
     runtime 'javax.el:javax.el-api:2.2.5'
     runtime 'org.glassfish.web:javax.el:2.2.6'
