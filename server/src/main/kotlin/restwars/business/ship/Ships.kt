@@ -7,6 +7,7 @@ import restwars.business.UUIDFactory
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
+import restwars.business.event.EventService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
@@ -158,7 +159,8 @@ class ShipServiceImpl(
         private val shipFormulas: ShipFormulas,
         private val buildingFormulas: BuildingFormulas,
         private val planetRepository: PlanetRepository,
-        private val buildingService: BuildingService
+        private val buildingService: BuildingService,
+        private val eventService: EventService
 ) : ShipService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -208,7 +210,10 @@ class ShipServiceImpl(
         for (shipDone in shipsDone) {
             logger.debug("Finishing ship {}", shipDone)
 
-            val hangar = hangarRepository.findByPlanetId(shipDone.planetId)
+            val planet = planetRepository.findById(shipDone.planetId) ?: throw AssertionError("Planet with id ${shipDone.planetId} not found")
+            val hangar = hangarRepository.findByPlanetId(planet.id)
+
+            eventService.createShipCompleteEvent(planet.owner, planet.id)
             if (hangar == null) {
                 val newHangar = Hangar(uuidFactory.create(), shipDone.planetId, Ships(listOf(Ship(shipDone.type, 1))))
                 hangarRepository.insert(newHangar)
