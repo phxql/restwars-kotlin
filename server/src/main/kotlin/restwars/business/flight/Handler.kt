@@ -159,6 +159,8 @@ class TransportFlightHandler(
         // Unload cargo
         planetService.addResources(planet, flight.cargo)
 
+        eventService.createResourcesTransferredEvent(planet.owner, planet.id)
+
         // Send ships back
         flightService.createReturnFlight(flight, flight.ships, Resources.none())
     }
