@@ -129,6 +129,8 @@ class TransferFlightHandler(
         // Unload cargo
         planetService.addResources(planet, flight.cargo)
 
+        eventService.createShipsTransferredEvent(planet.owner, planet.id)
+
         flightService.delete(flight)
     }
 }
