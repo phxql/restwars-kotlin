@@ -20,9 +20,13 @@ data class Event(
 ) : Serializable
 
 interface EventService {
-    fun createBuildingCompleteEvent(player: Player, planet: Planet): Event
+    fun createBuildingCompleteEvent(player: Player, planet: Planet): Event = createBuildingCompleteEvent(player.id, planet.id)
 
-    fun createShipCompleteEvent(player: Player, planet: Planet): Event
+    fun createBuildingCompleteEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createShipCompleteEvent(player: Player, planet: Planet): Event = createShipCompleteEvent(player.id, planet.id)
+
+    fun createShipCompleteEvent(playerId: UUID, planetId: UUID): Event
 }
 
 interface EventRepository {
@@ -34,19 +38,19 @@ class EventServiceImpl(
         private val roundService: RoundService,
         private val eventRepository: EventRepository
 ) : EventService {
-    override fun createBuildingCompleteEvent(player: Player, planet: Planet): Event {
-        return createEvent(planet, player, EventType.BUILDING_COMPLETE)
+    override fun createBuildingCompleteEvent(playerId: UUID, planetId: UUID): Event {
+        return createEvent(planetId, playerId, EventType.BUILDING_COMPLETE)
     }
 
-    override fun createShipCompleteEvent(player: Player, planet: Planet): Event {
-        return createEvent(planet, player, EventType.SHIP_COMPLETE)
+    override fun createShipCompleteEvent(playerId: UUID, planetId: UUID): Event {
+        return createEvent(planetId, playerId, EventType.SHIP_COMPLETE)
     }
 
-    private fun createEvent(planet: Planet, player: Player, type: EventType): Event {
+    private fun createEvent(planetId: UUID, playerId: UUID, type: EventType): Event {
         val id = uuidFactory.create()
         val round = roundService.currentRound()
 
-        val event = Event(id, type, round, player.id, planet.id)
+        val event = Event(id, type, round, playerId, planetId)
         eventRepository.insert(event)
         return event
     }

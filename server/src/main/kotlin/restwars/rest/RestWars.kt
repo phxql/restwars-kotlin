@@ -66,16 +66,16 @@ fun main(args: Array<String>) {
     val locationFormulas = LocationFormulasImpl
 
     val roundService = RoundServiceImpl(roundRepository)
+    val eventService = EventServiceImpl(uuidFactory, roundService, eventRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
     val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config, buildingFormulas)
-    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormulas, roundService, planetRepository)
+    val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormulas, roundService, planetRepository, eventService)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
     val shipService = ShipServiceImpl(uuidFactory, roundService, hangarRepository, shipInConstructionRepository, shipFormulas, buildingFormulas, planetRepository, buildingService)
     val applicationInformationService = ApplicationInformationServiceImpl
     val fightCalculator = FightCalculatorImpl(uuidFactory, shipFormulas, randomNumberGenerator)
     val fightService = FightServiceImpl(fightCalculator, roundService, fightRepository)
-    val eventService = EventServiceImpl(uuidFactory, roundService, eventRepository)
 
     val colonizeFlightHandler = ColonizeFlightHandler(planetService, buildingService, shipService)
     val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService)

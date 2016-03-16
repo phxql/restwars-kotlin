@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import restwars.business.BuildingFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
+import restwars.business.event.EventService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
@@ -93,7 +94,8 @@ class BuildingServiceImpl(
         private val constructionSiteRepository: ConstructionSiteRepository,
         private val buildingFormulas: BuildingFormulas,
         private val roundService: RoundService,
-        private val planetRepository: PlanetRepository
+        private val planetRepository: PlanetRepository,
+        private val eventService: EventService
 ) : BuildingService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -167,6 +169,10 @@ class BuildingServiceImpl(
         val sitesDone = constructionSiteRepository.findByDone(currentRound)
         for (siteDone in sitesDone) {
             logger.debug("Finishing construction site {}", siteDone)
+
+            val planet = planetRepository.findById(siteDone.planetId) ?: throw AssertionError("Planet with id ${siteDone.planetId} not found")
+            eventService.createBuildingCompleteEvent(planet.owner, planet.id)
+
             if (siteDone.level == 1) {
                 buildingRepository.insert(Building(uuidFactory.create(), siteDone.planetId, siteDone.type, siteDone.level))
             } else {
