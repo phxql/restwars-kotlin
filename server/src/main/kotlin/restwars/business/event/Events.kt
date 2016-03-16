@@ -2,8 +2,6 @@ package restwars.business.event
 
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
-import restwars.business.planet.Planet
-import restwars.business.player.Player
 import java.io.Serializable
 import java.util.*
 
@@ -21,11 +19,7 @@ data class Event(
 ) : Serializable
 
 interface EventService {
-    fun createBuildingCompleteEvent(player: Player, planet: Planet): Event = createBuildingCompleteEvent(player.id, planet.id)
-
     fun createBuildingCompleteEvent(playerId: UUID, planetId: UUID): Event
-
-    fun createShipCompleteEvent(player: Player, planet: Planet): Event = createShipCompleteEvent(player.id, planet.id)
 
     fun createShipCompleteEvent(playerId: UUID, planetId: UUID): Event
 
