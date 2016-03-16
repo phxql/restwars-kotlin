@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added `since` parameter to fights endpoint.
 - Added HTTP response to `/`.
 - Added flight detection.
+- Added events.
 
 ### Changed
 - Command center now produces 5 energy per round.
