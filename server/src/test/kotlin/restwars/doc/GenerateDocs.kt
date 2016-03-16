@@ -1,6 +1,7 @@
 package restwars.doc
 
 import restwars.business.building.BuildingType
+import restwars.business.event.EventType
 import restwars.business.flight.FlightType
 import restwars.business.ship.ShipType
 import restwars.rest.api.*
@@ -114,6 +115,10 @@ object GenerateDocs {
         writeToFile(Type.RESPONSE, "detected-flights.json", DetectedFlightsResponse(listOf(
                 DetectedFlightResponse(UUID.fromString("b1503ca0-83a5-44d2-a7a2-469c1ef596e2"), 12, LocationResponse(1, 2, 3), 15, 20),
                 DetectedFlightResponse(UUID.fromString("14985b09-a80e-4c92-8ba5-7073a41591d7"), 10, LocationResponse(4, 5, 6), 25, 37)
+        )))
+        writeToFile(Type.RESPONSE, "events.json", EventsResponse(listOf(
+                EventResponse(UUID.fromString("06319f52-9dd6-488f-bf84-2757e92217b4"), EventType.BUILDING_COMPLETE.name, 120, LocationResponse(1, 2, 3)),
+                EventResponse(UUID.fromString("09deb43b-f6fc-4f80-9651-00c766d67d97"), EventType.PLANET_COLONIZED.name, 224, LocationResponse(4, 5, 6))
         )))
     }
 }

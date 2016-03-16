@@ -1,0 +1,21 @@
+{
+  "events" : [ {
+    "id" : "06319f52-9dd6-488f-bf84-2757e92217b4",
+    "type" : "BUILDING_COMPLETE",
+    "round" : 120,
+    "location" : {
+      "galaxy" : 1,
+      "system" : 2,
+      "planet" : 3
+    }
+  }, {
+    "id" : "09deb43b-f6fc-4f80-9651-00c766d67d97",
+    "type" : "PLANET_COLONIZED",
+    "round" : 224,
+    "location" : {
+      "galaxy" : 4,
+      "system" : 5,
+      "planet" : 6
+    }
+  } ]
+}
