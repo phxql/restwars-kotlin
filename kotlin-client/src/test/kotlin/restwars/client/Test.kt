@@ -1,7 +1,5 @@
 package restwars.client
 
-import restwars.rest.api.RoundResponse
-
 fun main(args: Array<String>) {
     val client = RestWarsClient("localhost", 7777)
     val applicationInformation = client.applicationInformation()
@@ -13,11 +11,13 @@ fun main(args: Array<String>) {
     val roundInformation = client.roundInformation()
     println(roundInformation)
 
-    client.addRoundCallback(object : RoundCallback {
-        override fun callback(response: RoundResponse) {
-            println(response)
-        }
-    })
+    client.addRoundCallback {
+        println("Round callback: $it")
+    }
+
+    client.addTournamentCallback {
+        println("Tournament callback: $it")
+    }
 
     // client.createPlayer("moe", "moe")
     val client2 = client.withCredentials("moe", "moe")
@@ -43,4 +43,6 @@ fun main(args: Array<String>) {
         val shipsInConstruction = client2.listShipsInConstruction(planet.location.toString())
         println(shipsInConstruction)
     }
+
+    Thread.sleep(100000)
 }

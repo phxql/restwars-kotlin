@@ -63,7 +63,7 @@ class PointsServiceImpl(
     private fun calculatePointsForPlanet(planet: Planet): Long {
         val ships = shipService.findShipsByPlanet(planet)
 
-        val shipPoints = ships.ships.sumByLong { shipFormulas.calculatePoints(it.type) }
+        val shipPoints = ships.ships.sumByLong { shipFormulas.calculatePoints(it.type) * it.amount }
         return shipPoints
     }
 

@@ -35,6 +35,18 @@ Response:
 * `201 Created` if the player has been created.
 * `409 Conflict` if the username is already taken.
 
+Get current player
+~~~~~~~~~~~~~~~~~~
+
+Returns the current player.
+
+URL: `GET /v1/player`
+
+Response:
+
+[source,json]
+include::responses/player.json[]
+
 Fights
 ------
 

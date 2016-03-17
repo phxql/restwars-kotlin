@@ -19,6 +19,12 @@
         "type" : "COLONY",
         "amount" : 2
       } ]
+    },
+    "direction" : "OUTWARD",
+    "cargo" : {
+      "crystal" : 0,
+      "gas" : 0,
+      "energy" : 0
     }
   }, {
     "start" : {
@@ -40,6 +46,12 @@
         "type" : "MULE",
         "amount" : 1
       } ]
+    },
+    "direction" : "OUTWARD",
+    "cargo" : {
+      "crystal" : 0,
+      "gas" : 0,
+      "energy" : 0
     }
   } ]
 }
