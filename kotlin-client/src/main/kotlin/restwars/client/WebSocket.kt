@@ -8,7 +8,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArraySet
 
-interface WebsocketCallback<T> {
+interface WebSocketCallback<T> {
     fun call(response: T)
 }
 
@@ -18,10 +18,10 @@ class WebSocket<T>(
         private val url: String
 ) {
     private val lock = Object()
-    private val callbacks: MutableSet<WebsocketCallback<T>> = CopyOnWriteArraySet()
+    private val callbacks: MutableSet<WebSocketCallback<T>> = CopyOnWriteArraySet()
     private var client: WebSocketClient? = null
 
-    fun addCallback(callback: WebsocketCallback<T>) {
+    fun addCallback(callback: WebSocketCallback<T>) {
         callbacks.add(callback)
 
         synchronized(lock) {
@@ -31,7 +31,7 @@ class WebSocket<T>(
         }
     }
 
-    fun removeCallback(callback: WebsocketCallback<T>) {
+    fun removeCallback(callback: WebSocketCallback<T>) {
         if (callbacks.remove(callback)) {
             synchronized(lock) {
                 if (callbacks.isEmpty()) {
@@ -63,7 +63,7 @@ class WebSocket<T>(
     class WebsocketHandler<T>(
             private val mapper: ObjectMapper,
             private val responseClazz: Class<T>,
-            private val callbacks: Iterable<WebsocketCallback<T>>
+            private val callbacks: Iterable<WebSocketCallback<T>>
     ) {
         @OnWebSocketMessage
         fun onMessage(message: String) {

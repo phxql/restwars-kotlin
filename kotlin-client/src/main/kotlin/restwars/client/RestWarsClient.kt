@@ -144,7 +144,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     /**
      * Adds a [callback] which is called on the start of a new round.
      */
-    fun addRoundCallback(callback: WebsocketCallback<RoundResponse>) {
+    fun addRoundCallback(callback: WebSocketCallback<RoundResponse>) {
         roundWebsocket.addCallback(callback)
     }
 
@@ -152,7 +152,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
      * Adds a [callback] which is called on the start of a new round.
      */
     fun addRoundCallback(callback: (RoundResponse) -> Unit) {
-        addRoundCallback(object : WebsocketCallback<RoundResponse> {
+        addRoundCallback(object : WebSocketCallback<RoundResponse> {
             override fun call(response: RoundResponse) {
                 callback(response)
             }
@@ -162,14 +162,14 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     /**
      * Removes a round [callback].
      */
-    fun removeRoundCallback(callback: WebsocketCallback<RoundResponse>) {
+    fun removeRoundCallback(callback: WebSocketCallback<RoundResponse>) {
         roundWebsocket.removeCallback(callback)
     }
 
     /**
      * Adds a [callback] which is called on the start of the tournament.
      */
-    fun addTournamentCallback(callback: WebsocketCallback<SuccessResponse>) {
+    fun addTournamentCallback(callback: WebSocketCallback<SuccessResponse>) {
         tournamentWebsocket.addCallback(callback)
     }
 
@@ -177,7 +177,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
      * Adds a [callback] which is called on the start of the tournament.
      */
     fun addTournamentCallback(callback: (SuccessResponse) -> Unit) {
-        addTournamentCallback(object : WebsocketCallback<SuccessResponse> {
+        addTournamentCallback(object : WebSocketCallback<SuccessResponse> {
             override fun call(response: SuccessResponse) {
                 callback(response)
             }
@@ -187,7 +187,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     /**
      * Removes a tournament [callback].
      */
-    fun removeTournamentCallback(callback: WebsocketCallback<SuccessResponse>) {
+    fun removeTournamentCallback(callback: WebSocketCallback<SuccessResponse>) {
         tournamentWebsocket.removeCallback(callback)
     }
 
