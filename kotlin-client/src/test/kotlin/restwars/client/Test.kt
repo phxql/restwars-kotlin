@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
     println(roundInformation)
 
     client.addRoundCallback(object : RoundCallback {
-        override fun callback(response: RoundResponse) {
+        override fun onRoundStarted(response: RoundResponse) {
             println(response)
         }
     })

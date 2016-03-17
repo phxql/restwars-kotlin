@@ -20,7 +20,11 @@ import java.net.URI
 import java.util.concurrent.ConcurrentSkipListSet
 
 interface RoundCallback {
-    fun callback(response: RoundResponse)
+    fun onRoundStarted(response: RoundResponse)
+}
+
+interface TournamentCallback {
+    fun onTournamentStarted(response: SuccessResponse)
 }
 
 open class RestWarsClient(val hostname: String, val port: Int) {
@@ -35,6 +39,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
             .target(Restwars::class.java, httpBaseUrl)
 
     private val roundCallbacks: MutableSet<RoundCallback> = ConcurrentSkipListSet()
+    private val tournamentCallbacks: MutableSet<TournamentCallback> = ConcurrentSkipListSet()
 
     private var websocketClient: WebSocketClient? = null
     private val websocketClientLock = Object()
@@ -50,8 +55,14 @@ open class RestWarsClient(val hostname: String, val port: Int) {
         @RequestLine("GET /v1/player/fight")
         fun listFights(): FightsResponse
 
+        @RequestLine("GET /v1/player/fight?since={since}")
+        fun listFights(@Param("since") since: Long): FightsResponse
+
         @RequestLine("GET /v1/planet/{location}/fight")
         fun listFightsWithPlanet(@Param("location") location: String): FightsResponse
+
+        @RequestLine("GET /v1/planet/{location}/fight?since={since}")
+        fun listFightsWithPlanet(@Param("location") location: String, @Param("since") since: Long): FightsResponse
 
         @RequestLine("POST /v1/planet/{location}/telescope/scan")
         fun telescopeScan(@Param("location") location: String): ScanResponse
@@ -64,6 +75,9 @@ open class RestWarsClient(val hostname: String, val port: Int) {
 
         @RequestLine("GET /v1/round")
         fun roundInformation(): RoundWithRoundTimeResponse
+
+        @RequestLine("GET /v1/round/wait")
+        fun waitForNextRound(): RoundResponse
 
         @RequestLine("GET /v1/planet/{location}/building")
         fun listBuildings(@Param("location") location: String): BuildingsResponse
@@ -94,6 +108,30 @@ open class RestWarsClient(val hostname: String, val port: Int) {
 
         @RequestLine("GET /v1/flight/from/{location}")
         fun listFlightsWithStart(@Param("location") location: String): FlightsResponse
+
+        @RequestLine("GET /v1/flight/detected")
+        fun listDetectedFlights(): DetectedFlightsResponse
+
+        @RequestLine("GET /v1/flight/detected?since={since}")
+        fun listDetectedFlights(@Param("since") since: Long): DetectedFlightsResponse
+
+        @RequestLine("GET /v1/event")
+        fun listEvents(): EventsResponse
+
+        @RequestLine("GET /v1/event?since={since}")
+        fun listEvents(@Param("since") since: Long): EventsResponse
+
+        @RequestLine("GET /v1/metadata/ship")
+        fun listShipMetadata(): ShipsMetadataResponse
+
+        @RequestLine("GET /v1/metadata/building")
+        fun listBuildingMetadata(): BuildingsMetadataResponse
+
+        @RequestLine("GET /v1/tournament/wait")
+        fun waitForTournamentStart(): SuccessResponse
+
+        @RequestLine("GET /v1/points")
+        fun listsPoints(): PointsResponse
     }
 
     fun createPlayer(username: String, password: String) {
@@ -105,6 +143,16 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     fun restwarsConfiguration(): ConfigResponse = client.restwarsConfiguration()
 
     fun roundInformation(): RoundWithRoundTimeResponse = client.roundInformation()
+
+    fun waitForNextRound(): RoundResponse = client.waitForNextRound()
+
+    fun listShipMetadata(): ShipsMetadataResponse = client.listShipMetadata()
+
+    fun listBuildingMetadat(): BuildingsMetadataResponse = client.listBuildingMetadata()
+
+    fun waitForTournamentStart(): SuccessResponse = client.waitForTournamentStart()
+
+    fun listsPoints(): PointsResponse = client.listsPoints()
 
     fun withCredentials(username: String, password: String): AuthenticatingRestWarsClient {
         return AuthenticatingRestWarsClient(hostname, port, username, password)
@@ -170,7 +218,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
         fun onMessage(message: String) {
             val response = mapper.readValue(message, RoundResponse::class.java)
             for (callback in callbacks) {
-                callback.callback(response)
+                callback.onRoundStarted(response)
             }
         }
     }
@@ -208,4 +256,16 @@ class AuthenticatingRestWarsClient(hostname: String, port: Int, val username: St
     fun listFlightsWithDestination(location: String) = client.listFlightsWithDestination(location)
 
     fun listFlightsWithStart(location: String) = client.listFlightsWithStart(location)
+
+    fun listFights(since: Long): FightsResponse = client.listFights(since)
+
+    fun listFightsWithPlanet(location: String, since: Long): FightsResponse = client.listFightsWithPlanet(location, since)
+
+    fun listDetectedFlights(): DetectedFlightsResponse = client.listDetectedFlights()
+
+    fun listDetectedFlights(since: Long): DetectedFlightsResponse = client.listDetectedFlights(since)
+
+    fun listEvents(): EventsResponse = client.listEvents()
+
+    fun listEvents(since: Long): EventsResponse = client.listEvents(since)
 }
