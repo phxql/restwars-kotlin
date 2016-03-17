@@ -24,8 +24,8 @@ class PlayerController(
     }
 
     fun get2(): RestMethod<PlayerResponse> {
-        return RestMethodImpl(PlayerResponse::class.java, HttpMethod.GET, "/v1/player", { req, res ->
-            PlayerResponse("Dummy")
+        return AuthenticatedRestMethodImpl(PlayerResponse::class.java, HttpMethod.GET, "/v1/player", playerService, { req, res, context ->
+            PlayerResponse(context.player.username)
         })
     }
 
