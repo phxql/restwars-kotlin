@@ -121,6 +121,7 @@ object GenerateDocs {
                 EventResponse(UUID.fromString("06319f52-9dd6-488f-bf84-2757e92217b4"), EventType.BUILDING_COMPLETE.name, 120, LocationResponse(1, 2, 3)),
                 EventResponse(UUID.fromString("09deb43b-f6fc-4f80-9651-00c766d67d97"), EventType.PLANET_COLONIZED.name, 224, LocationResponse(4, 5, 6))
         )))
+        writeToFile(Type.RESPONSE, "player.json", PlayerResponse("player1"))
     }
 }
 
