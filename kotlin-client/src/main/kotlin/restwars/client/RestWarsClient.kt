@@ -11,17 +11,7 @@ import feign.auth.BasicAuthRequestInterceptor
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import feign.slf4j.Slf4jLogger
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage
-import org.eclipse.jetty.websocket.api.annotations.WebSocket
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest
-import org.eclipse.jetty.websocket.client.WebSocketClient
 import restwars.rest.api.*
-import java.net.URI
-import java.util.concurrent.CopyOnWriteArraySet
-
-interface WebsocketCallback<T> {
-    fun call(response: T)
-}
 
 open class RestWarsClient(val hostname: String, val port: Int) {
     protected val httpBaseUrl = "http://$hostname:$port/"
@@ -34,14 +24,8 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     private val client: Restwars = feignBuilder()
             .target(Restwars::class.java, httpBaseUrl)
 
-    private val roundCallbacks: MutableSet<WebsocketCallback<RoundResponse>> = CopyOnWriteArraySet()
-    private val tournamentCallbacks: MutableSet<WebsocketCallback<SuccessResponse>> = CopyOnWriteArraySet()
-
-    private var roundWebsocketClient: WebSocketClient? = null
-    private val roundWebsocketClientLock = Object()
-
-    private var tournamentWebsocketClient: WebSocketClient? = null
-    private val tournamentWebsocketClientLock = Object()
+    private val roundWebsocket = WebSocket(mapper, RoundResponse::class.java, websocketBaseUrl + "v1/round/websocket")
+    private val tournamentWebsocket = WebSocket(mapper, SuccessResponse::class.java, websocketBaseUrl + "v1/tournament/websocket")
 
     @Headers("Content-Type: application/json", "Accept: application/json")
     interface Restwars {
@@ -161,13 +145,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
      * Adds a [callback] which is called on the start of a new round.
      */
     fun addRoundCallback(callback: WebsocketCallback<RoundResponse>) {
-        roundCallbacks.add(callback)
-
-        synchronized(roundWebsocketClientLock) {
-            if (roundWebsocketClient == null && !roundCallbacks.isEmpty()) {
-                startRoundWebsocketListener()
-            }
-        }
+        roundWebsocket.addCallback(callback)
     }
 
     /**
@@ -185,26 +163,14 @@ open class RestWarsClient(val hostname: String, val port: Int) {
      * Removes a round [callback].
      */
     fun removeRoundCallback(callback: WebsocketCallback<RoundResponse>) {
-        if (roundCallbacks.remove(callback)) {
-            synchronized(roundWebsocketClientLock) {
-                if (roundCallbacks.isEmpty()) {
-                    stopRoundWebsocketListener()
-                }
-            }
-        }
+        roundWebsocket.removeCallback(callback)
     }
 
     /**
      * Adds a [callback] which is called on the start of the tournament.
      */
     fun addTournamentCallback(callback: WebsocketCallback<SuccessResponse>) {
-        tournamentCallbacks.add(callback)
-
-        synchronized(tournamentWebsocketClientLock) {
-            if (tournamentWebsocketClient == null && !tournamentCallbacks.isEmpty()) {
-                startTournamentWebsocketListener()
-            }
-        }
+        tournamentWebsocket.addCallback(callback)
     }
 
     /**
@@ -222,46 +188,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
      * Removes a tournament [callback].
      */
     fun removeTournamentCallback(callback: WebsocketCallback<SuccessResponse>) {
-        if (tournamentCallbacks.remove(callback)) {
-            synchronized(tournamentWebsocketClientLock) {
-                if (tournamentCallbacks.isEmpty()) {
-                    stopTournamentWebsocketListener()
-                }
-            }
-        }
-    }
-
-    private fun <T> createWebsocketListener(websocketHandler: WebsocketHandler<T>, url: String): WebSocketClient {
-        val newWebsocketClient = WebSocketClient()
-        newWebsocketClient.start()
-        val request = ClientUpgradeRequest()
-
-        assert(websocketBaseUrl.endsWith('/'))
-
-        newWebsocketClient.connect(websocketHandler, URI.create(websocketBaseUrl + url), request)
-        return newWebsocketClient
-    }
-
-    private fun startRoundWebsocketListener() {
-        val socket = WebsocketHandler(mapper, RoundResponse::class.java, roundCallbacks)
-        roundWebsocketClient = createWebsocketListener(socket, "v1/round/websocket")
-    }
-
-    private fun startTournamentWebsocketListener() {
-        val socket = WebsocketHandler(mapper, SuccessResponse::class.java, tournamentCallbacks)
-        tournamentWebsocketClient = createWebsocketListener(socket, "v1/tournament/websocket")
-    }
-
-    private fun stopRoundWebsocketListener() {
-        roundWebsocketClient?.stop()
-        roundWebsocketClient?.destroy()
-        roundWebsocketClient = null
-    }
-
-    private fun stopTournamentWebsocketListener() {
-        tournamentWebsocketClient?.stop()
-        tournamentWebsocketClient?.destroy()
-        tournamentWebsocketClient = null
+        tournamentWebsocket.removeCallback(callback)
     }
 
     protected fun feignBuilder(): Feign.Builder {
@@ -269,21 +196,6 @@ open class RestWarsClient(val hostname: String, val port: Int) {
                 .encoder(JacksonEncoder(mapper))
                 .decoder(JacksonDecoder(mapper))
                 .logger(Slf4jLogger())
-    }
-
-    @WebSocket
-    class WebsocketHandler<T>(
-            private val mapper: ObjectMapper,
-            private val responseClazz: Class<T>,
-            private val callbacks: Iterable<WebsocketCallback<T>>
-    ) {
-        @OnWebSocketMessage
-        fun onMessage(message: String) {
-            val response = mapper.readValue(message, responseClazz)
-            for (callback in callbacks) {
-                callback.call(response)
-            }
-        }
     }
 }
 
