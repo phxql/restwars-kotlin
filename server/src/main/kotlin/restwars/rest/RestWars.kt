@@ -231,6 +231,7 @@ private fun registerRoutes(
     Spark.get("/v1/metadata/building", Json.contentType, route(buildingMetadataController.get()))
     Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.wait()))
 
+    Spark.get("/v1/player", Json.contentType, route(playerController.get(), lockService, tournamentService))
     Spark.post("/v1/player", Json.contentType, route(playerController.create(), lockService, tournamentService))
     Spark.get("/v1/player/fight", Json.contentType, route(fightController.byPlayer(), lockService, tournamentService))
     Spark.get("/v1/planet", Json.contentType, route(planetController.list(), lockService, tournamentService))

@@ -4,13 +4,11 @@ import restwars.business.building.BuildingService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.business.player.UsernameNotUniqueException
-import restwars.rest.api.CreatePlayerRequest
-import restwars.rest.api.ErrorResponse
-import restwars.rest.api.Result
-import restwars.rest.api.SuccessResponse
+import restwars.rest.api.*
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.Json
 import restwars.rest.base.Method
+import restwars.rest.base.RequestContext
 import restwars.rest.http.StatusCode
 import spark.Request
 import spark.Response
@@ -38,6 +36,15 @@ class PlayerController(
 
                 res.status(StatusCode.CREATED)
                 return SuccessResponse("Player created")
+            }
+        }
+    }
+
+    fun get(): Method {
+        return object : Method {
+            override fun invoke(req: Request, res: Response): Result {
+                val context = RequestContext.build(req, playerService)
+                return PlayerResponse(context.player.username)
             }
         }
     }

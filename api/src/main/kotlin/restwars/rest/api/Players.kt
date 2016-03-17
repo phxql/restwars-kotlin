@@ -6,3 +6,9 @@ data class CreatePlayerRequest(
         @get:org.hibernate.validator.constraints.NotBlank
         val password: String
 )
+
+data class PlayerResponse(
+        val username: String
+) : Result {
+        companion object {}
+}
