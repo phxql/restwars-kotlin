@@ -2,6 +2,7 @@ package restwars.doc
 
 import restwars.business.building.BuildingType
 import restwars.business.event.EventType
+import restwars.business.flight.FlightDirection
 import restwars.business.flight.FlightType
 import restwars.business.ship.ShipType
 import restwars.rest.api.*
@@ -70,7 +71,7 @@ object GenerateDocs {
         writeToFile(Type.RESPONSE, "start-flight.json", FlightResponse(LocationResponse(1, 2, 3), LocationResponse(4, 5, 6), 112, ShipsResponse(listOf(
                 ShipResponse(ShipType.MOSQUITO.name, 3),
                 ShipResponse(ShipType.COLONY.name, 2))
-        )))
+        ), FlightDirection.OUTWARD.name, ResourcesResponse(0, 0, 0)))
         writeToFile(Type.RESPONSE, "telescope-scan.json", ScanResponse(listOf(
                 ScannedPlanetResponse(LocationResponse(1, 1, 1), "player1"),
                 ScannedPlanetResponse(LocationResponse(1, 1, 2), "player2"),
@@ -93,11 +94,11 @@ object GenerateDocs {
                 FlightResponse(LocationResponse(1, 2, 3), LocationResponse(4, 5, 6), 112, ShipsResponse(listOf(
                         ShipResponse(ShipType.MOSQUITO.name, 3),
                         ShipResponse(ShipType.COLONY.name, 2))
-                )),
+                ), FlightDirection.OUTWARD.name, ResourcesResponse(0, 0, 0)),
                 FlightResponse(LocationResponse(1, 2, 3), LocationResponse(7, 8, 9), 144, ShipsResponse(listOf(
                         ShipResponse(ShipType.MOSQUITO.name, 1),
                         ShipResponse(ShipType.MULE.name, 1))
-                ))
+                ), FlightDirection.OUTWARD.name, ResourcesResponse(0, 0, 0))
         )))
         writeToFile(Type.RESPONSE, "metadata-ships.json", ShipsMetadataResponse(listOf(
                 ShipMetadataResponse("MOSQUITO", 12, 1.0, ResourcesResponse(10, 5, 40), 1.0, 14, 1, 50),

@@ -36,7 +36,9 @@ data class FlightResponse(
         val start: LocationResponse,
         val destination: LocationResponse,
         val arrivalInRound: Long,
-        val ships: ShipsResponse
+        val ships: ShipsResponse,
+        val direction: String,
+        val cargo: ResourcesResponse
 ) : Result {
     companion object {}
 }
