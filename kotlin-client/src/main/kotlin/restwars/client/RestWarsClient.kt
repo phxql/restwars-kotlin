@@ -18,6 +18,8 @@ open class RestWarsClient(val hostname: String, val port: Int) {
     private val roundWebSocket = WebSocket(mapper, RoundResponse::class.java, webSocketBaseUrl + "v1/round/websocket")
     private val tournamentWebSocket = WebSocket(mapper, SuccessResponse::class.java, webSocketBaseUrl + "v1/tournament/websocket")
 
+    fun getPlayer(): PlayerResponse = client.getPlayer()
+
     fun createPlayer(username: String, password: String) {
         client.createPlayer(CreatePlayerRequest(username, password))
     }
@@ -95,6 +97,11 @@ open class RestWarsClient(val hostname: String, val port: Int) {
 
 class AuthenticatingRestWarsClient(hostname: String, port: Int, val username: String, val password: String) : RestWarsClient(hostname, port) {
     private val client: Restwars = Restwars.create(httpBaseUrl, username, password, mapper)
+
+    init {
+        // Test authorization
+        client.getPlayer()
+    }
 
     fun listPlanets(): PlanetsResponse = client.listPlanets()
 

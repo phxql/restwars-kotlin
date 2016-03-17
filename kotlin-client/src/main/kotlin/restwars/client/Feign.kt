@@ -13,6 +13,9 @@ import restwars.rest.api.*
 
 @Headers("Content-Type: application/json", "Accept: application/json")
 interface Restwars {
+    @RequestLine("GET /v1/player")
+    fun getPlayer(): PlayerResponse
+
     @RequestLine("POST /v1/player")
     fun createPlayer(request: CreatePlayerRequest)
 
