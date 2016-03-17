@@ -30,6 +30,8 @@ import restwars.rest.base.*
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
+import spark.Request
+import spark.Response
 import spark.Route
 import spark.Spark
 import java.nio.file.Files
@@ -238,6 +240,9 @@ private fun registerRoutes(
         tournamentController: TournamentController, pointsController: PointsController,
         detectedFlightController: DetectedFlightController, eventController: EventController
 ) {
+    registerRestMethod(playerController.create2())
+    registerRestMethod(playerController.get2())
+
     Spark.get("/", Json.contentType, route(RootController.get(), path = "/", metricRegistry = metricRegistry))
     Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get(), path = "/v1/restwars", metricRegistry = metricRegistry))
     Spark.get("/v1/configuration", Json.contentType, route(configurationController.get()))
@@ -248,8 +253,8 @@ private fun registerRoutes(
     Spark.get("/v1/metadata/building", Json.contentType, route(buildingMetadataController.get()))
     Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.wait()))
 
-    Spark.get("/v1/player", Json.contentType, route(playerController.get(), lockService, tournamentService))
-    Spark.post("/v1/player", Json.contentType, route(playerController.create(), lockService, tournamentService))
+    // Spark.get("/v1/player", Json.contentType, route(playerController.get(), lockService, tournamentService))
+    // Spark.post("/v1/player", Json.contentType, route(playerController.create(), lockService, tournamentService))
     Spark.get("/v1/player/fight", Json.contentType, route(fightController.byPlayer(), lockService, tournamentService))
     Spark.get("/v1/planet", Json.contentType, route(planetController.list(), lockService, tournamentService))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(buildingController.listOnPlanet(), lockService, tournamentService))
@@ -266,6 +271,21 @@ private fun registerRoutes(
     Spark.get("/v1/flight", Json.contentType, route(flightController.list(), lockService, tournamentService))
     Spark.get("/v1/flight/detected", Json.contentType, route(detectedFlightController.byPlayer(), lockService, tournamentService))
     Spark.get("/v1/event", Json.contentType, route(eventController.byPlayer(), lockService, tournamentService))
+}
+
+fun registerRestMethod(method: RestMethod<*>) {
+    val route: Route = object : Route {
+        override fun handle(request: Request, response: Response): Any? {
+            return Json.toJson(response, method.invoke(request, response))
+        }
+    }
+
+    when (method.verb) {
+        HttpMethod.POST -> Spark.post(method.path, Json.contentType, route)
+        HttpMethod.GET -> Spark.get(method.path, Json.contentType, route)
+        HttpMethod.DELETE -> Spark.delete(method.path, Json.contentType, route)
+        HttpMethod.PUT -> Spark.put(method.path, Json.contentType, route)
+    }
 }
 
 private fun addExceptionHandler() {

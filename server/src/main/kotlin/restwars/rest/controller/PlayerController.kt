@@ -5,10 +5,7 @@ import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.business.player.UsernameNotUniqueException
 import restwars.rest.api.*
-import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Json
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
+import restwars.rest.base.*
 import restwars.rest.http.StatusCode
 import spark.Request
 import spark.Response
@@ -20,6 +17,18 @@ class PlayerController(
         private val planetService: PlanetService,
         private val buildingService: BuildingService
 ) : ControllerHelper {
+    fun create2(): RestMethod<SuccessResponse> {
+        return RestMethodImpl(SuccessResponse::class.java, HttpMethod.POST, "/v1/player", { req, res ->
+            SuccessResponse("Player created")
+        })
+    }
+
+    fun get2(): RestMethod<PlayerResponse> {
+        return RestMethodImpl(PlayerResponse::class.java, HttpMethod.GET, "/v1/player", { req, res ->
+            PlayerResponse("Dummy")
+        })
+    }
+
     fun create(): Method {
         return object : Method {
             override fun invoke(req: Request, res: Response): Result {
