@@ -13,8 +13,8 @@ class ShipMetadataController(
     fun get(): Method {
         return object : Method {
             override fun invoke(req: Request, res: Response): Result {
-                return ShipsMetadata(ShipType.values().map {
-                    ShipMetadata(
+                return ShipsMetadataResponse(ShipType.values().map {
+                    ShipMetadataResponse(
                             it.name, shipFormulas.calculateBuildTime(it), shipFormulas.calculateFlightSpeed(it),
                             ResourcesResponse.fromResources(shipFormulas.calculateBuildCost(it)),
                             shipFormulas.calculateFlightCostModifier(it), shipFormulas.calculateAttackPoints(it),

@@ -23,11 +23,11 @@ data class BuildShipRequest(
         val type: String
 )
 
-data class ShipsMetadata(val data: List<ShipMetadata>) : Result {
+data class ShipsMetadataResponse(val data: List<ShipMetadataResponse>) : Result {
     companion object {}
 }
 
-data class ShipMetadata(
+data class ShipMetadataResponse(
         val type: String, val buildTime: Int, val flightSpeed: Double, val buildCost: ResourcesResponse,
         val flightCostModifier: Double, val attackPoint: Int, val defensePoints: Int, val cargoSpace: Int
 ) : Result {

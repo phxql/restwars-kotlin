@@ -7,7 +7,7 @@ build/
 .gradle/
 
 # Data
-data/
+/server/data/
 
 # Rendered documentation
-doc/*.html
+/doc/*.html

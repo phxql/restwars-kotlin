@@ -99,13 +99,13 @@ object GenerateDocs {
                         ShipResponse(ShipType.MULE.name, 1))
                 ))
         )))
-        writeToFile(Type.RESPONSE, "metadata-ships.json", ShipsMetadata(listOf(
-                ShipMetadata("MOSQUITO", 12, 1.0, ResourcesResponse(10, 5, 40), 1.0, 14, 1, 50),
-                ShipMetadata("MULE", 24, 0.5, ResourcesResponse(20, 10, 80), 1.2, 1, 30, 500)
+        writeToFile(Type.RESPONSE, "metadata-ships.json", ShipsMetadataResponse(listOf(
+                ShipMetadataResponse("MOSQUITO", 12, 1.0, ResourcesResponse(10, 5, 40), 1.0, 14, 1, 50),
+                ShipMetadataResponse("MULE", 24, 0.5, ResourcesResponse(20, 10, 80), 1.2, 1, 30, 500)
         )))
-        writeToFile(Type.RESPONSE, "metadata-buildings.json", BuildingsMetadata(listOf(
-                BuildingMetadata("COMMAND_CENTER", 1, 50, ResourcesResponse(100, 50, 400)),
-                BuildingMetadata("CRYSTAL_MINE", 1, 25, ResourcesResponse(50, 25, 200))
+        writeToFile(Type.RESPONSE, "metadata-buildings.json", BuildingsMetadataResponse(listOf(
+                BuildingMetadataResponse("COMMAND_CENTER", 1, 50, ResourcesResponse(100, 50, 400)),
+                BuildingMetadataResponse("CRYSTAL_MINE", 1, 25, ResourcesResponse(50, 25, 200))
         )))
         writeToFile(Type.RESPONSE, "tournament-started.json", SuccessResponse("Tournament has started"))
         writeToFile(Type.RESPONSE, "points.json", PointsResponse(listOf(

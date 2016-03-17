@@ -13,8 +13,8 @@ class BuildingMetadataController(private val buildingFormulas: BuildingFormulas)
             override fun invoke(req: Request, res: Response): Result {
                 val level = Math.max(1, req.queryParams("level")?.toInt() ?: 1)
 
-                return BuildingsMetadata(BuildingType.values().map {
-                    BuildingMetadata(
+                return BuildingsMetadataResponse(BuildingType.values().map {
+                    BuildingMetadataResponse(
                             it.name, level, buildingFormulas.calculateBuildTime(it, level),
                             ResourcesResponse.fromResources(buildingFormulas.calculateBuildCost(it, level))
                     )
