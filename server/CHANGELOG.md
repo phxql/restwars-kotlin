@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added flight detection.
 - Added events.
 - Added cargo and direction to flight responses.
+- Added endpoints to fetch request metrics.
 
 ### Changed
 - Command center now produces 5 energy per round.
