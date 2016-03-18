@@ -18,7 +18,7 @@ class PlayerController(
         private val planetService: PlanetService,
         private val buildingService: BuildingService
 ) : ControllerHelper {
-    fun create2(): RestMethod<SuccessResponse> {
+    fun create(): RestMethod<SuccessResponse> {
         return PayloadRestMethod(HttpMethod.POST, "/v1/player", SuccessResponse::class.java, CreatePlayerRequest::class.java, validation, { req, res, payload ->
             val player = try {
                 playerService.create(payload.username, payload.password)
@@ -33,7 +33,7 @@ class PlayerController(
         })
     }
 
-    fun get2(): RestMethod<PlayerResponse> {
+    fun get(): RestMethod<PlayerResponse> {
         return AuthenticatedRestMethod(HttpMethod.GET, "/v1/player", PlayerResponse::class.java, playerService, { req, res, context ->
             PlayerResponse(context.player.username)
         })
