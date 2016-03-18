@@ -19,11 +19,9 @@ class PlayerController(
         private val buildingService: BuildingService
 ) : ControllerHelper {
     fun create2(): RestMethod<SuccessResponse> {
-        return DefaultRestMethod(SuccessResponse::class.java, HttpMethod.POST, "/v1/player", { req, res ->
-            val request = validate(validation, Json.fromJson(req, CreatePlayerRequest::class.java))
-
+        return PayloadRestMethod(SuccessResponse::class.java, CreatePlayerRequest::class.java, HttpMethod.POST, "/v1/player", validation, { req, res, payload ->
             val player = try {
-                playerService.create(request.username, request.password)
+                playerService.create(payload.username, payload.password)
             } catch(ex: UsernameNotUniqueException) {
                 throw StatusCodeException(StatusCode.CONFLICT, ErrorResponse(ex.message ?: ""))
             }

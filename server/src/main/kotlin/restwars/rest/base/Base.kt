@@ -37,6 +37,7 @@ interface Method {
 }
 
 interface ControllerHelper {
+    @Deprecated("Use new REST method framework")
     fun <T> validate(validatorFactory: ValidatorFactory, obj: T?): T {
         obj ?: throw ValidationException("Object is null")
 
