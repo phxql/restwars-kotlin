@@ -173,30 +173,6 @@ fun registerWebsockets(roundService: RoundService, tournamentService: Tournament
     Spark.webSocket("/v1/tournament/websocket", TournamentWebsocketController::class.java)
 }
 
-/**
- * Function to create a Spark route to a controller method.
- *
- * The result of the controller method will be serialized in JSON.
- *
- * @param lockService If not null, a lock will be aquired before the request and released afterwards.
- * @param tournamentService If not null, a check is executed if the tournament has already started. If the tournament hasn't been started, an exception is thrown.
- */
-// May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
-@Deprecated("Use new REST method framework")
-private fun route(method: Method, lockService: LockService? = null, tournamentService: TournamentService? = null): Route {
-    return Route { request, response ->
-        lockService?.beforeRequest()
-        try {
-            // Check if tournament has started
-            if (tournamentService != null && !tournamentService.hasStarted()) throw TournamentNotStartedException()
-
-            return@Route Json.toJson(response, method.invoke(request, response))
-        } finally {
-            lockService?.afterRequest()
-        }
-    }
-}
-
 private fun startClock(clock: Clock, config: Config) {
     val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Clock") })
     executor.scheduleAtFixedRate({

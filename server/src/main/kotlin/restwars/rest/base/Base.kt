@@ -8,9 +8,7 @@ import restwars.business.player.PlayerService
 import restwars.rest.api.ErrorResponse
 import restwars.rest.api.Result
 import spark.Request
-import spark.Response
 import java.util.*
-import javax.validation.ValidatorFactory
 
 class ValidationException(message: String) : Exception(message)
 
@@ -22,33 +20,7 @@ class StatusCodeException(val statusCode: Int, val response: Result) : Exception
 
 class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet at $location found")
 
-/**
- * A controller method.
- */
-interface Method {
-    /**
-     * Invokes the method.
-     *
-     * @param req Request.
-     * @param res Response.
-     * @return Result.
-     */
-    fun invoke(req: Request, res: Response): Result
-}
-
 interface ControllerHelper {
-    @Deprecated("Use new REST method framework")
-    fun <T> validate(validatorFactory: ValidatorFactory, obj: T?): T {
-        obj ?: throw ValidationException("Object is null")
-
-        val validation = validatorFactory.validator.validate(obj)
-        if (validation.isNotEmpty()) {
-            throw ValidationException("Validation failed")
-        }
-
-        return obj
-    }
-
     fun parseLocation(req: Request, parameter: String = ":location"): Location {
         val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse("Path variable $parameter is missing"))
         try {
