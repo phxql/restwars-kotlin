@@ -4,6 +4,8 @@ import com.codahale.metrics.MetricRegistry
 import com.fasterxml.jackson.core.JsonParseException
 import org.slf4j.LoggerFactory
 import restwars.business.*
+import restwars.business.admin.Admin
+import restwars.business.admin.AdminServiceImpl
 import restwars.business.building.BuildingServiceImpl
 import restwars.business.clock.Clock
 import restwars.business.clock.ClockImpl
@@ -86,6 +88,7 @@ fun main(args: Array<String>) {
     val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService, buildingService, buildingFormulas, detectedFlightRepository, eventService)
     val tournamentService = buildTournamentService(commandLine, roundService)
     val pointsService = PointsServiceImpl(roundService, playerService, planetService, shipService, shipFormulas, pointsRepository, uuidFactory)
+    val adminService = AdminServiceImpl(config)
 
     val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService, pointsService, config)
 
@@ -108,7 +111,7 @@ fun main(args: Array<String>) {
     val pointsController = PointsController(pointsService)
     val detectedFlightController = DetectedFlightController(flightService, playerService)
     val eventController = EventController(validatorFactory, playerService, planetService, eventService)
-    val metricController = MetricController(metricRegistry)
+    val metricController = MetricController(metricRegistry, adminService)
 
     configureSpark()
     addExceptionHandler()
@@ -179,7 +182,7 @@ private fun loadConfig(): Config {
     val configFile = Paths.get("config.yaml")
     if (!Files.exists(configFile)) {
         logger.warn("No config file at ${configFile.toAbsolutePath()} found, using default values")
-        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)), 5, 50)
+        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)), 5, 50, Admin("admin", "admin"))
     }
 
     logger.info("Loading config from file ${configFile.toAbsolutePath()}")

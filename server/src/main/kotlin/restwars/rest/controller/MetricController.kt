@@ -1,19 +1,27 @@
 package restwars.rest.controller
 
 import com.codahale.metrics.MetricRegistry
+import restwars.business.admin.AdminService
 import restwars.rest.api.MetricsResponse
 import restwars.rest.api.TimerResponse
+import restwars.rest.api.fromTimer
+import restwars.rest.base.AdminRestMethod
 import restwars.rest.base.HttpMethod
 import restwars.rest.base.RestMethod
-import restwars.rest.base.SimpleRestMethod
+import java.util.concurrent.TimeUnit
 
 class MetricController(
-        private val metricRegistry: MetricRegistry
+        private val metricRegistry: MetricRegistry, private val adminService: AdminService
 ) {
+    // Rates are in x per second
+    private val rateUnit = TimeUnit.SECONDS
+    // Durations are milliseconds
+    private val durationUnit = TimeUnit.MILLISECONDS
+
     fun all(): RestMethod<MetricsResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/admin/metric", MetricsResponse::class.java, { req, res ->
+        return AdminRestMethod(HttpMethod.GET, "/v1/admin/metric", MetricsResponse::class.java, adminService, { req, res ->
             MetricsResponse(
-                    metricRegistry.timers.map { TimerResponse(it.key, it.value) }
+                    metricRegistry.timers.map { TimerResponse.fromTimer(it.key, rateUnit, durationUnit, it.value) }
             )
         })
     }

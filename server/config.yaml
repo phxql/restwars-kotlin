@@ -24,3 +24,8 @@ roundTime: 1
 
 # Calculate points every X rounds
 calculatePointsEvery: 50
+
+# Admin access
+admin:
+  username: admin
+  password: admin

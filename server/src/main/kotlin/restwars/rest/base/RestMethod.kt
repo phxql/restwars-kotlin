@@ -1,7 +1,10 @@
 package restwars.rest.base
 
+import restwars.business.admin.AdminService
 import restwars.business.player.PlayerService
+import restwars.rest.api.ErrorResponse
 import restwars.rest.api.Result
+import restwars.rest.http.StatusCode
 import spark.Request
 import spark.Response
 import javax.validation.ValidatorFactory
@@ -30,6 +33,28 @@ class SimpleRestMethod<T : Result>(
         val func: (res: Request, req: Response) -> T
 ) : RestMethod<T> {
     override fun invoke(req: Request, res: Response): T = func(req, res)
+}
+
+/**
+ * A REST method which only allows admin authenticated requests.
+ */
+class AdminRestMethod<T : Result>(
+        override val verb: HttpMethod,
+        override val path: String,
+        override val responseClass: Class<T>,
+        private val adminService: AdminService,
+        val func: (res: Request, req: Response) -> T
+) : RestMethod<T> {
+    override fun invoke(req: Request, res: Response): T {
+        val header = req.headers("Authorization") ?: throw AuthenticationException("No Authorization header found")
+        val authorization = BasicAuthorization.parse(header)
+
+        if (!adminService.login(authorization.username, authorization.password)) {
+            throw StatusCodeException(StatusCode.FORBIDDEN, ErrorResponse("Admin account required"))
+        }
+
+        return func(req, res)
+    }
 }
 
 /**

@@ -3,6 +3,7 @@ package restwars.business.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import restwars.business.admin.Admin
 import restwars.business.planet.Resources
 import java.nio.file.Files
 import java.nio.file.Path
@@ -13,7 +14,7 @@ data class StarterPlanet(val resources: Resources)
 
 data class NewPlanet(val resources: Resources)
 
-data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int, val calculatePointsEvery: Int) {
+data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int, val calculatePointsEvery: Int, val admin: Admin) {
     data class UniverseSizeDto(val maxGalaxies: Int, val maxSystems: Int, val maxPlanets: Int) {
         fun toUniverseSize(): UniverseSize {
             return UniverseSize(maxGalaxies, maxSystems, maxPlanets)
@@ -38,16 +39,24 @@ data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlan
         }
     }
 
+    data class AdminDto(val username: String, val password: String) {
+        fun toAdmin(): Admin {
+            return Admin(username, password)
+        }
+    }
+
     data class ConfigDto(
             val universeSize: UniverseSizeDto,
             val starterPlanet: StarterPlanetDto,
             val newPlanet: NewPlanetDto,
             val roundTime: Int,
-            val calculatePointsEvery: Int
+            val calculatePointsEvery: Int,
+            val admin: AdminDto
     ) {
         fun toConfig(): Config {
-            return Config(universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), newPlanet.toNewPlanet(), roundTime, calculatePointsEvery)
+            return Config(universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), newPlanet.toNewPlanet(), roundTime, calculatePointsEvery, admin.toAdmin())
         }
+
     }
 
     companion object {
