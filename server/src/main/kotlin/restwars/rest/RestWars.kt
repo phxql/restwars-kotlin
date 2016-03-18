@@ -261,6 +261,15 @@ private fun registerRoutes(
     Spark.get("/v1/event", Json.contentType, route(eventController.byPlayer(), lockService, tournamentService))
 }
 
+/**
+ * Function to create a Spark route to a controller method.
+ *
+ * The result of the controller method will be serialized in JSON.
+ *
+ * @param method Method to register.
+ * @param lockService If not null, a lock will be acquired before the request and released afterwards.
+ * @param tournamentService If not null, a check is executed if the tournament has already started. If the tournament hasn't been started, an exception is thrown.
+ */
 fun registerRestMethod(method: RestMethod<*>, lockService: LockService? = null, tournamentService: TournamentService? = null) {
     val route: Route = Route { request, response ->
         lockService?.beforeRequest()
