@@ -22,7 +22,8 @@ dependencies {
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.7.1'
 
     // Metrics
-    compile 'io.dropwizard.metrics:metrics-core:3.1.0'
+    compile 'io.dropwizard.metrics:metrics-core:3.1.2'
+    compile 'io.dropwizard.metrics:metrics-json:3.1.2'
 
     // Needed for validation
     runtime 'javax.el:javax.el-api:2.2.5'

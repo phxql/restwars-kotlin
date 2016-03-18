@@ -1,6 +1,5 @@
 package restwars.rest
 
-import com.codahale.metrics.ConsoleReporter
 import com.codahale.metrics.MetricRegistry
 import com.fasterxml.jackson.core.JsonParseException
 import org.slf4j.LoggerFactory
@@ -109,6 +108,7 @@ fun main(args: Array<String>) {
     val pointsController = PointsController(pointsService)
     val detectedFlightController = DetectedFlightController(flightService, playerService)
     val eventController = EventController(validatorFactory, playerService, planetService, eventService)
+    val metricController = MetricController(metricRegistry)
 
     configureSpark()
     addExceptionHandler()
@@ -118,7 +118,7 @@ fun main(args: Array<String>) {
             shipController, shipyardController, applicationInformationController, configurationController,
             roundController, flightController, telescopeController, fightController, shipMetadataController,
             buildingMetadataController, tournamentService, tournamentController, pointsController,
-            detectedFlightController, eventController
+            detectedFlightController, eventController, metricController
     )
 
     Spark.awaitInitialization()
@@ -130,11 +130,6 @@ fun main(args: Array<String>) {
             detectedFlightRepository, eventRepository
     )
     persister.start()
-
-    ConsoleReporter.forRegistry(metricRegistry)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .build().start(5, TimeUnit.SECONDS)
 
     logger.info("RESTwars started on port {}", port)
 }
@@ -205,7 +200,7 @@ private fun registerRoutes(
         fightController: FightController, shipMetadataController: ShipMetadataController,
         buildingMetadataController: BuildingMetadataController, tournamentService: TournamentService,
         tournamentController: TournamentController, pointsController: PointsController,
-        detectedFlightController: DetectedFlightController, eventController: EventController
+        detectedFlightController: DetectedFlightController, eventController: EventController, metricController: MetricController
 ) {
     registerRestMethod(metricRegistry, RootController.get())
     registerRestMethod(metricRegistry, applicationInformationController.get())
@@ -236,6 +231,8 @@ private fun registerRoutes(
     registerRestMethod(metricRegistry, flightController.list(), lockService, tournamentService)
     registerRestMethod(metricRegistry, detectedFlightController.byPlayer(), lockService, tournamentService)
     registerRestMethod(metricRegistry, eventController.byPlayer(), lockService, tournamentService)
+
+    registerRestMethod(metricRegistry, metricController.all())
 }
 
 /**
