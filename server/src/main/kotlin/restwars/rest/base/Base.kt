@@ -18,6 +18,8 @@ class AuthenticationException(message: String) : Exception(message)
 
 class BadRequestException(val response: Any) : Exception("Bad request")
 
+class StatusCodeException(val statusCode: Int, val response: Result) : Exception()
+
 class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet at $location found")
 
 /**

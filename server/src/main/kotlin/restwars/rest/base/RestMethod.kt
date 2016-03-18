@@ -19,7 +19,7 @@ interface RestMethod<T : Result> {
     fun invoke(req: Request, res: Response): T
 }
 
-class RestMethodImpl<T : Result>(
+class DefaultRestMethod<T : Result>(
         override val responseClass: Class<T>,
         override val verb: HttpMethod,
         override val path: String,
@@ -28,7 +28,7 @@ class RestMethodImpl<T : Result>(
     override fun invoke(req: Request, res: Response): T = func(req, res)
 }
 
-class AuthenticatedRestMethodImpl<T : Result>(
+class AuthenticatedRestMethod<T : Result>(
         override val responseClass: Class<T>,
         override val verb: HttpMethod,
         override val path: String,

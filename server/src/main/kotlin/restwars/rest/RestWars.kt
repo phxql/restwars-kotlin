@@ -30,8 +30,6 @@ import restwars.rest.base.*
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
-import spark.Request
-import spark.Response
 import spark.Route
 import spark.Spark
 import java.nio.file.Files
@@ -184,15 +182,8 @@ fun registerWebsockets(roundService: RoundService, tournamentService: Tournament
  * @param tournamentService If not null, a check is executed if the tournament has already started. If the tournament hasn't been started, an exception is thrown.
  */
 // May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
-private fun route(method: Method, lockService: LockService? = null, tournamentService: TournamentService? = null, path: String? = null, metricRegistry: MetricRegistry? = null): Route {
-    val timer = if (path != null && metricRegistry != null) {
-        metricRegistry.timer(path)
-    } else {
-        null
-    }
-
+private fun route(method: Method, lockService: LockService? = null, tournamentService: TournamentService? = null): Route {
     return Route { request, response ->
-        val startedTimer = timer?.time()
         lockService?.beforeRequest()
         try {
             // Check if tournament has started
@@ -201,7 +192,6 @@ private fun route(method: Method, lockService: LockService? = null, tournamentSe
             return@Route Json.toJson(response, method.invoke(request, response))
         } finally {
             lockService?.afterRequest()
-            startedTimer?.stop()
         }
     }
 }
@@ -240,11 +230,9 @@ private fun registerRoutes(
         tournamentController: TournamentController, pointsController: PointsController,
         detectedFlightController: DetectedFlightController, eventController: EventController
 ) {
-    registerRestMethod(playerController.create2())
-    registerRestMethod(playerController.get2())
 
-    Spark.get("/", Json.contentType, route(RootController.get(), path = "/", metricRegistry = metricRegistry))
-    Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get(), path = "/v1/restwars", metricRegistry = metricRegistry))
+    Spark.get("/", Json.contentType, route(RootController.get()))
+    Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
     Spark.get("/v1/configuration", Json.contentType, route(configurationController.get()))
     Spark.get("/v1/round", Json.contentType, route(roundController.get(), lockService))
     Spark.get("/v1/round/wait", Json.contentType, route(roundController.wait()))
@@ -253,8 +241,8 @@ private fun registerRoutes(
     Spark.get("/v1/metadata/building", Json.contentType, route(buildingMetadataController.get()))
     Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.wait()))
 
-    // Spark.get("/v1/player", Json.contentType, route(playerController.get(), lockService, tournamentService))
-    // Spark.post("/v1/player", Json.contentType, route(playerController.create(), lockService, tournamentService))
+    registerRestMethod(playerController.get2(), lockService, tournamentService)
+    registerRestMethod(playerController.create2(), lockService, tournamentService)
     Spark.get("/v1/player/fight", Json.contentType, route(fightController.byPlayer(), lockService, tournamentService))
     Spark.get("/v1/planet", Json.contentType, route(planetController.list(), lockService, tournamentService))
     Spark.get("/v1/planet/:location/building", Json.contentType, route(buildingController.listOnPlanet(), lockService, tournamentService))
@@ -273,10 +261,16 @@ private fun registerRoutes(
     Spark.get("/v1/event", Json.contentType, route(eventController.byPlayer(), lockService, tournamentService))
 }
 
-fun registerRestMethod(method: RestMethod<*>) {
-    val route: Route = object : Route {
-        override fun handle(request: Request, response: Response): Any? {
-            return Json.toJson(response, method.invoke(request, response))
+fun registerRestMethod(method: RestMethod<*>, lockService: LockService? = null, tournamentService: TournamentService? = null) {
+    val route: Route = Route { request, response ->
+        lockService?.beforeRequest()
+        try {
+            // Check if tournament has started
+            if (tournamentService != null && !tournamentService.hasStarted()) throw TournamentNotStartedException()
+
+            return@Route Json.toJson(response, method.invoke(request, response))
+        } finally {
+            lockService?.afterRequest()
         }
     }
 
@@ -289,34 +283,42 @@ fun registerRestMethod(method: RestMethod<*>) {
 }
 
 private fun addExceptionHandler() {
-    Spark.exception(ValidationException::class.java, fun(e, req, res) {
+    Spark.exception(ValidationException::class.java) { e, req, res ->
         res.status(StatusCode.BAD_REQUEST)
         res.body(Json.toJson(res, ErrorResponse("Request validation failed")))
-    })
+    }
 
-    Spark.exception(AuthenticationException::class.java, fun(e, req, res) {
+    Spark.exception(AuthenticationException::class.java) { e, req, res ->
         res.status(StatusCode.UNAUTHORIZED)
         res.body(Json.toJson(res, ErrorResponse("Invalid credentials")))
-    })
+    }
 
-    Spark.exception(PlanetNotFoundOrOwnedException::class.java, fun(e, req, res) {
+    Spark.exception(PlanetNotFoundOrOwnedException::class.java) { e, req, res ->
         res.status(StatusCode.NOT_FOUND)
         res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
-    })
+    }
 
-    Spark.exception(BadRequestException::class.java, fun(e, req, res) {
-        res.status(StatusCode.BAD_REQUEST)
+    Spark.exception(BadRequestException::class.java) { e, req, res ->
         e as BadRequestException
-        res.body(Json.toJson(res, e.response))
-    })
 
-    Spark.exception(JsonParseException::class.java, fun(e, req, res) {
+        res.status(StatusCode.BAD_REQUEST)
+        res.body(Json.toJson(res, e.response))
+    }
+
+    Spark.exception(JsonParseException::class.java) { e, req, res ->
         res.status(StatusCode.UNPROCESSABLE_ENTITY)
         res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
-    })
+    }
 
-    Spark.exception(TournamentNotStartedException::class.java, fun(e, req, res) {
+    Spark.exception(TournamentNotStartedException::class.java) { e, req, res ->
         res.status(StatusCode.SERVICE_UNAVAILABLE)
         res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
+    }
+
+    Spark.exception(StatusCodeException::class.java, { e, req, res ->
+        e as StatusCodeException
+
+        res.status(e.statusCode)
+        res.body(Json.toJson(res, e.response))
     })
 }
