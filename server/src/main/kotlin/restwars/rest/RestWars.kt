@@ -207,35 +207,35 @@ private fun registerRoutes(
         tournamentController: TournamentController, pointsController: PointsController,
         detectedFlightController: DetectedFlightController, eventController: EventController
 ) {
-    registerRestMethod(RootController.get())
-    registerRestMethod(applicationInformationController.get())
-    registerRestMethod(configurationController.get())
-    registerRestMethod(roundController.get(), lockService)
-    registerRestMethod(roundController.wait())
+    registerRestMethod(metricRegistry, RootController.get())
+    registerRestMethod(metricRegistry, applicationInformationController.get())
+    registerRestMethod(metricRegistry, configurationController.get())
+    registerRestMethod(metricRegistry, roundController.get(), lockService)
+    registerRestMethod(metricRegistry, roundController.wait())
 
-    registerRestMethod(pointsController.get(), lockService)
-    registerRestMethod(shipMetadataController.get())
-    registerRestMethod(buildingMetadataController.get())
-    registerRestMethod(tournamentController.wait())
+    registerRestMethod(metricRegistry, pointsController.get(), lockService)
+    registerRestMethod(metricRegistry, shipMetadataController.get())
+    registerRestMethod(metricRegistry, buildingMetadataController.get())
+    registerRestMethod(metricRegistry, tournamentController.wait())
 
-    registerRestMethod(playerController.get(), lockService, tournamentService)
-    registerRestMethod(playerController.create(), lockService, tournamentService)
-    registerRestMethod(fightController.byPlayer(), lockService, tournamentService)
-    registerRestMethod(planetController.list(), lockService, tournamentService)
-    registerRestMethod(buildingController.listOnPlanet(), lockService, tournamentService)
-    registerRestMethod(buildingController.build(), lockService, tournamentService)
-    registerRestMethod(constructionSiteController.listOnPlanet(), lockService, tournamentService)
-    registerRestMethod(shipController.listOnPlanet(), lockService, tournamentService)
-    registerRestMethod(shipController.build(), lockService, tournamentService)
-    registerRestMethod(shipyardController.listOnPlanet(), lockService, tournamentService)
-    registerRestMethod(flightController.create(), lockService, tournamentService)
-    registerRestMethod(telescopeController.scan(), lockService, tournamentService)
-    registerRestMethod(fightController.byPlanet(), lockService, tournamentService)
-    registerRestMethod(flightController.listFrom(), lockService, tournamentService)
-    registerRestMethod(flightController.listTo(), lockService, tournamentService)
-    registerRestMethod(flightController.list(), lockService, tournamentService)
-    registerRestMethod(detectedFlightController.byPlayer(), lockService, tournamentService)
-    registerRestMethod(eventController.byPlayer(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, playerController.get(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, playerController.create(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, fightController.byPlayer(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, planetController.list(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, buildingController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, buildingController.build(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, constructionSiteController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, shipController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, shipController.build(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, shipyardController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, flightController.create(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, telescopeController.scan(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, fightController.byPlanet(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, flightController.listFrom(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, flightController.listTo(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, flightController.list(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, detectedFlightController.byPlayer(), lockService, tournamentService)
+    registerRestMethod(metricRegistry, eventController.byPlayer(), lockService, tournamentService)
 }
 
 /**
@@ -247,8 +247,13 @@ private fun registerRoutes(
  * @param lockService If not null, a lock will be acquired before the request and released afterwards.
  * @param tournamentService If not null, a check is executed if the tournament has already started. If the tournament hasn't been started, an exception is thrown.
  */
-fun registerRestMethod(method: RestMethod<*>, lockService: LockService? = null, tournamentService: TournamentService? = null) {
+fun registerRestMethod(metricRegistry: MetricRegistry, method: RestMethod<*>, lockService: LockService? = null, tournamentService: TournamentService? = null) {
+    val metricName = "${method.verb.name} ${method.path}"
+    val requestTimer = metricRegistry.timer(metricName)
+    val allRequestsMetric = metricRegistry.timer("All requests")
+
     val route: Route = Route { request, response ->
+        val timer = Pair(requestTimer.time(), allRequestsMetric.time())
         lockService?.beforeRequest()
         try {
             // Check if tournament has started
@@ -257,6 +262,8 @@ fun registerRestMethod(method: RestMethod<*>, lockService: LockService? = null, 
             return@Route Json.toJson(response, method.invoke(request, response))
         } finally {
             lockService?.afterRequest()
+            timer.first.stop()
+            timer.second.stop()
         }
     }
 
