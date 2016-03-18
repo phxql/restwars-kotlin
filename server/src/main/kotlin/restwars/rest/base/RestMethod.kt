@@ -24,9 +24,9 @@ interface RestMethod<T : Result> {
  * A REST method which allows unauthenticated requests.
  */
 class SimpleRestMethod<T : Result>(
-        override val responseClass: Class<T>,
         override val verb: HttpMethod,
         override val path: String,
+        override val responseClass: Class<T>,
         val func: (res: Request, req: Response) -> T
 ) : RestMethod<T> {
     override fun invoke(req: Request, res: Response): T = func(req, res)
@@ -36,10 +36,10 @@ class SimpleRestMethod<T : Result>(
  * A REST method which allows unauthenticated requests with a payload.
  */
 class PayloadRestMethod<T : Result, U : Any>(
-        override val responseClass: Class<T>,
-        private val requestClass: Class<U>,
         override val verb: HttpMethod,
         override val path: String,
+        override val responseClass: Class<T>,
+        private val requestClass: Class<U>,
         private val validatorFactory: ValidatorFactory,
         val func: (res: Request, req: Response, payload: U) -> T
 ) : RestMethod<T> {
@@ -53,9 +53,9 @@ class PayloadRestMethod<T : Result, U : Any>(
  * A REST method which only allows authenticated requests.
  */
 class AuthenticatedRestMethod<T : Result>(
-        override val responseClass: Class<T>,
         override val verb: HttpMethod,
         override val path: String,
+        override val responseClass: Class<T>,
         private val playerService: PlayerService,
         val func: (res: Request, req: Response, context: RequestContext) -> T
 ) : RestMethod<T> {
@@ -69,10 +69,10 @@ class AuthenticatedRestMethod<T : Result>(
  * A REST method which only allows authenticated requests with a payload.
  */
 class AuthenticatedPayloadRestMethod<T : Result, U : Any>(
-        override val responseClass: Class<T>,
-        private val requestClass: Class<U>,
         override val verb: HttpMethod,
         override val path: String,
+        override val responseClass: Class<T>,
+        private val requestClass: Class<U>,
         private val playerService: PlayerService,
         private val validatorFactory: ValidatorFactory,
         val func: (res: Request, req: Response, context: RequestContext, payload: U) -> T
