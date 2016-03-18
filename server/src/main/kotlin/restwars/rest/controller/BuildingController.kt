@@ -8,13 +8,8 @@ import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.business.resource.NotEnoughResourcesException
 import restwars.rest.api.*
-import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Json
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
+import restwars.rest.base.*
 import restwars.rest.http.StatusCode
-import spark.Request
-import spark.Response
 import javax.validation.ValidatorFactory
 
 class BuildingController(
@@ -23,43 +18,34 @@ class BuildingController(
         val planetService: PlanetService,
         val buildingService: BuildingService
 ) : ControllerHelper {
-    fun listOnPlanet(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val location = parseLocation(req)
+    fun listOnPlanet(): RestMethod<BuildingsResponse> {
+        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/planet/:location/building", BuildingsResponse::class.java, playerService, { req, res, context ->
+            val location = parseLocation(req)
 
-                val planet = getOwnPlanet(planetService, context.player, location)
-                val buildings = buildingService.findBuildingsByPlanet(planet)
+            val planet = getOwnPlanet(planetService, context.player, location)
+            val buildings = buildingService.findBuildingsByPlanet(planet)
 
-                return BuildingsResponse.fromBuildings(buildings)
-            }
-        }
+            BuildingsResponse.fromBuildings(buildings)
+        })
     }
 
-    fun build(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val request = validate(validation, Json.fromJson(req, BuildBuildingRequest::class.java))
-                val type = BuildingType.parse(request.type)
-                val location = parseLocation(req)
+    fun build(): RestMethod<ConstructionSiteResponse> {
+        return AuthenticatedPayloadRestMethod(HttpMethod.POST, "/v1/planet/:location/building", ConstructionSiteResponse::class.java, BuildBuildingRequest::class.java, playerService, validation, { req, res, context, payload ->
+            val type = BuildingType.parse(payload.type)
+            val location = parseLocation(req)
 
-                val planet = getOwnPlanet(planetService, context.player, location)
-                val buildResult: BuildResult
-                try {
-                    buildResult = buildingService.build(planet, type)
-                } catch(ex: BuildBuildingException) {
-                    res.status(StatusCode.BAD_REQUEST)
-                    return ErrorResponse(ex.message ?: "")
-                } catch(ex: NotEnoughResourcesException) {
-                    res.status(StatusCode.BAD_REQUEST)
-                    return ErrorResponse(ex.message ?: "")
-                }
-
-                res.status(StatusCode.CREATED)
-                return ConstructionSiteResponse.fromConstructionSite(buildResult.constructionSite)
+            val planet = getOwnPlanet(planetService, context.player, location)
+            val buildResult: BuildResult
+            try {
+                buildResult = buildingService.build(planet, type)
+            } catch(ex: BuildBuildingException) {
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+            } catch(ex: NotEnoughResourcesException) {
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
             }
-        }
+
+            res.status(StatusCode.CREATED)
+            ConstructionSiteResponse.fromConstructionSite(buildResult.constructionSite)
+        })
     }
 }

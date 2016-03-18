@@ -6,15 +6,10 @@ import restwars.business.planet.NoTelescopeException
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.ErrorResponse
-import restwars.rest.api.Result
 import restwars.rest.api.ScanResponse
 import restwars.rest.api.from
-import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
+import restwars.rest.base.*
 import restwars.rest.http.StatusCode
-import spark.Request
-import spark.Response
 import javax.validation.ValidatorFactory
 
 class TelescopeController(
@@ -23,22 +18,18 @@ class TelescopeController(
         val planetService: PlanetService,
         val buildingService: BuildingService
 ) : ControllerHelper {
-    fun scan(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val location = parseLocation(req)
+    fun scan(): RestMethod<ScanResponse> {
+        return AuthenticatedRestMethod(HttpMethod.POST, "/v1/planet/:location/telescope/scan", ScanResponse::class.java, playerService, { req, res, context ->
+            val location = parseLocation(req)
 
-                val planet = getOwnPlanet(planetService, context.player, location)
-                val telescopeLevel = buildingService.findBuildingByPlanetAndType(planet, BuildingType.TELESCOPE)?.level ?: 0
-                try {
-                    val planets = planetService.findInVicinity(planet, telescopeLevel)
-                    return ScanResponse.from(planets)
-                } catch(ex: NoTelescopeException) {
-                    res.status(StatusCode.BAD_REQUEST)
-                    return ErrorResponse(ex.message ?: "")
-                }
+            val planet = getOwnPlanet(planetService, context.player, location)
+            val telescopeLevel = buildingService.findBuildingByPlanetAndType(planet, BuildingType.TELESCOPE)?.level ?: 0
+            try {
+                val planets = planetService.findInVicinity(planet, telescopeLevel)
+                ScanResponse.from(planets)
+            } catch(ex: NoTelescopeException) {
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
             }
-        }
+        })
     }
 }

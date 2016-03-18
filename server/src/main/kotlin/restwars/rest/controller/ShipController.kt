@@ -7,13 +7,8 @@ import restwars.business.ship.BuildShipException
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.rest.api.*
-import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Json
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
+import restwars.rest.base.*
 import restwars.rest.http.StatusCode
-import spark.Request
-import spark.Response
 import javax.validation.ValidatorFactory
 
 class ShipController(
@@ -22,43 +17,34 @@ class ShipController(
         val planetService: PlanetService,
         val shipService: ShipService
 ) : ControllerHelper {
-    fun listOnPlanet(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val location = parseLocation(req)
+    fun listOnPlanet(): RestMethod<ShipsResponse> {
+        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/planet/:location/hangar", ShipsResponse::class.java, playerService, { req, res, context ->
+            val location = parseLocation(req)
 
-                val planet = getOwnPlanet(planetService, context.player, location)
-                val ships = shipService.findShipsByPlanet(planet)
+            val planet = getOwnPlanet(planetService, context.player, location)
+            val ships = shipService.findShipsByPlanet(planet)
 
-                return ShipsResponse.fromShips(ships)
-            }
-        }
+            ShipsResponse.fromShips(ships)
+        })
     }
 
-    fun build(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val request = validate(validation, Json.fromJson(req, BuildShipRequest::class.java))
-                val type = ShipType.parse(request.type)
-                val location = parseLocation(req)
+    fun build(): RestMethod<ShipInConstructionResponse> {
+        return AuthenticatedPayloadRestMethod(HttpMethod.POST, "/v1/planet/:location/hangar", ShipInConstructionResponse::class.java, BuildShipRequest::class.java, playerService, validation, { req, res, context, payload ->
+            val type = ShipType.parse(payload.type)
+            val location = parseLocation(req)
 
-                val planet = getOwnPlanet(planetService, context.player, location)
-                val buildResult = try {
-                    shipService.buildShip(planet, type)
-                } catch(ex: BuildShipException) {
-                    res.status(StatusCode.BAD_REQUEST)
-                    return ErrorResponse(ex.message ?: "")
-                } catch(ex: NotEnoughResourcesException) {
-                    res.status(StatusCode.BAD_REQUEST)
-                    return ErrorResponse(ex.message ?: "")
-                }
-
-                res.status(StatusCode.CREATED)
-                return ShipInConstructionResponse.fromShipInConstruction(buildResult.shipInConstruction)
+            val planet = getOwnPlanet(planetService, context.player, location)
+            val buildResult = try {
+                shipService.buildShip(planet, type)
+            } catch(ex: BuildShipException) {
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+            } catch(ex: NotEnoughResourcesException) {
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
             }
-        }
+
+            res.status(StatusCode.CREATED)
+            ShipInConstructionResponse.fromShipInConstruction(buildResult.shipInConstruction)
+        })
     }
 
 }

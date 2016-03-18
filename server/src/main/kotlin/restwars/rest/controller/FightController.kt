@@ -4,11 +4,10 @@ import restwars.business.fight.FightService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.*
+import restwars.rest.base.AuthenticatedRestMethod
 import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
-import spark.Request
-import spark.Response
+import restwars.rest.base.HttpMethod
+import restwars.rest.base.RestMethod
 import javax.validation.ValidatorFactory
 
 class FightController(
@@ -17,47 +16,41 @@ class FightController(
         val planetService: PlanetService,
         val fightService: FightService
 ) : ControllerHelper {
-    fun byPlayer(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val since = req.queryParams("since")?.toLong()
+    fun byPlayer(): RestMethod<FightsResponse> {
+        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/player/fight", FightsResponse::class.java, playerService, { req, res, context ->
+            val since = req.queryParams("since")?.toLong()
 
-                val fights = fightService.findWithPlayer(context.player, since)
+            val fights = fightService.findWithPlayer(context.player, since)
 
-                return FightsResponse(fights.map {
-                    val fight = it.fight
-                    FightResponse(
-                            fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
-                            ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
-                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips),
-                            ResourcesResponse.fromResources(fight.loot)
-                    )
-                })
-            }
-        }
+            FightsResponse(fights.map {
+                val fight = it.fight
+                FightResponse(
+                        fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
+                        ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
+                        ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips),
+                        ResourcesResponse.fromResources(fight.loot)
+                )
+            })
+        })
     }
 
-    fun byPlanet(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val location = parseLocation(req)
-                val since = req.queryParams("since")?.toLong()
+    fun byPlanet(): RestMethod<FightsResponse> {
+        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/planet/:location/fight", FightsResponse::class.java, playerService, { req, res, context ->
+            val location = parseLocation(req)
+            val since = req.queryParams("since")?.toLong()
 
-                val planet = planetService.findByLocation(location) ?: return FightsResponse(listOf())
-                val fights = fightService.findWithPlayerAndPlanet(context.player, planet, since)
+            val planet = planetService.findByLocation(location) ?: return@AuthenticatedRestMethod FightsResponse(listOf())
+            val fights = fightService.findWithPlayerAndPlanet(context.player, planet, since)
 
-                return FightsResponse(fights.map {
-                    val fight = it.fight
-                    FightResponse(
-                            fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
-                            ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
-                            ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips),
-                            ResourcesResponse.fromResources(fight.loot)
-                    )
-                })
-            }
-        }
+            FightsResponse(fights.map {
+                val fight = it.fight
+                FightResponse(
+                        fight.id, it.attacker.username, it.defender.username, LocationResponse.fromLocation(it.planet.location),
+                        ShipsResponse.fromShips(fight.attackerShips), ShipsResponse.fromShips(fight.defenderShips),
+                        ShipsResponse.fromShips(fight.remainingAttackerShips), ShipsResponse.fromShips(fight.remainingDefenderShips),
+                        ResourcesResponse.fromResources(fight.loot)
+                )
+            })
+        })
     }
 }

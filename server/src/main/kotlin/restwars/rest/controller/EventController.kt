@@ -4,13 +4,11 @@ import restwars.business.event.EventService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.EventsResponse
-import restwars.rest.api.Result
 import restwars.rest.api.fromEvents
+import restwars.rest.base.AuthenticatedRestMethod
 import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
-import spark.Request
-import spark.Response
+import restwars.rest.base.HttpMethod
+import restwars.rest.base.RestMethod
 import javax.validation.ValidatorFactory
 
 class EventController(
@@ -19,15 +17,12 @@ class EventController(
         val planetService: PlanetService,
         val eventService: EventService
 ) : ControllerHelper {
-    fun byPlayer(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val since = req.queryParams("since")?.toLong()
+    fun byPlayer(): RestMethod<EventsResponse> {
+        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/event", EventsResponse::class.java, playerService, { req, res, context ->
+            val since = req.queryParams("since")?.toLong()
 
-                val events = eventService.findWithPlayer(context.player, since)
-                return EventsResponse.fromEvents(events)
-            }
-        }
+            val events = eventService.findWithPlayer(context.player, since)
+            EventsResponse.fromEvents(events)
+        })
     }
 }

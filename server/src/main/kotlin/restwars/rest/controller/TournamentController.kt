@@ -5,20 +5,17 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket
 import org.slf4j.LoggerFactory
 import restwars.business.tournament.TournamentService
 import restwars.business.tournament.TournamentStartListener
-import restwars.rest.api.Result
 import restwars.rest.api.SuccessResponse
-import restwars.rest.base.Method
-import spark.Request
-import spark.Response
+import restwars.rest.base.HttpMethod
+import restwars.rest.base.RestMethod
+import restwars.rest.base.SimpleRestMethod
 
 class TournamentController(private val tournamentService: TournamentService) {
-    fun wait(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                tournamentService.blockUntilStart()
-                return SuccessResponse("Tournament has started")
-            }
-        }
+    fun wait(): RestMethod<SuccessResponse> {
+        return SimpleRestMethod(HttpMethod.GET, "/v1/tournament/wait", SuccessResponse::class.java, { req, res ->
+            tournamentService.blockUntilStart()
+            SuccessResponse("Tournament has started")
+        })
     }
 }
 

@@ -182,6 +182,7 @@ fun registerWebsockets(roundService: RoundService, tournamentService: Tournament
  * @param tournamentService If not null, a check is executed if the tournament has already started. If the tournament hasn't been started, an exception is thrown.
  */
 // May be obsolete after https://github.com/perwendel/spark/pull/406 has been merged
+@Deprecated("Use new REST method framework")
 private fun route(method: Method, lockService: LockService? = null, tournamentService: TournamentService? = null): Route {
     return Route { request, response ->
         lockService?.beforeRequest()
@@ -230,35 +231,35 @@ private fun registerRoutes(
         tournamentController: TournamentController, pointsController: PointsController,
         detectedFlightController: DetectedFlightController, eventController: EventController
 ) {
+    registerRestMethod(RootController.get())
+    registerRestMethod(applicationInformationController.get())
+    registerRestMethod(configurationController.get())
+    registerRestMethod(roundController.get(), lockService)
+    registerRestMethod(roundController.wait())
 
-    Spark.get("/", Json.contentType, route(RootController.get()))
-    Spark.get("/v1/restwars", Json.contentType, route(applicationInformationController.get()))
-    Spark.get("/v1/configuration", Json.contentType, route(configurationController.get()))
-    Spark.get("/v1/round", Json.contentType, route(roundController.get(), lockService))
-    Spark.get("/v1/round/wait", Json.contentType, route(roundController.wait()))
-    Spark.get("/v1/points", Json.contentType, route(pointsController.get(), lockService))
-    Spark.get("/v1/metadata/ship", Json.contentType, route(shipMetadataController.get()))
-    Spark.get("/v1/metadata/building", Json.contentType, route(buildingMetadataController.get()))
-    Spark.get("/v1/tournament/wait", Json.contentType, route(tournamentController.wait()))
+    registerRestMethod(pointsController.get(), lockService)
+    registerRestMethod(shipMetadataController.get())
+    registerRestMethod(buildingMetadataController.get())
+    registerRestMethod(tournamentController.wait())
 
     registerRestMethod(playerController.get(), lockService, tournamentService)
     registerRestMethod(playerController.create(), lockService, tournamentService)
-    Spark.get("/v1/player/fight", Json.contentType, route(fightController.byPlayer(), lockService, tournamentService))
-    Spark.get("/v1/planet", Json.contentType, route(planetController.list(), lockService, tournamentService))
-    Spark.get("/v1/planet/:location/building", Json.contentType, route(buildingController.listOnPlanet(), lockService, tournamentService))
-    Spark.post("/v1/planet/:location/building", Json.contentType, route(buildingController.build(), lockService, tournamentService))
-    Spark.get("/v1/planet/:location/construction-site", Json.contentType, route(constructionSiteController.listOnPlanet(), lockService, tournamentService))
-    Spark.get("/v1/planet/:location/hangar", Json.contentType, route(shipController.listOnPlanet(), lockService, tournamentService))
-    Spark.post("/v1/planet/:location/hangar", Json.contentType, route(shipController.build(), lockService, tournamentService))
-    Spark.get("/v1/planet/:location/shipyard", Json.contentType, route(shipyardController.listOnPlanet(), lockService, tournamentService))
-    Spark.post("/v1/planet/:location/flight", Json.contentType, route(flightController.create(), lockService, tournamentService))
-    Spark.post("/v1/planet/:location/telescope/scan", Json.contentType, route(telescopeController.scan(), lockService, tournamentService))
-    Spark.get("/v1/planet/:location/fight", Json.contentType, route(fightController.byPlanet(), lockService, tournamentService))
-    Spark.get("/v1/flight/from/:location", Json.contentType, route(flightController.listFrom(), lockService, tournamentService))
-    Spark.get("/v1/flight/to/:location", Json.contentType, route(flightController.listTo(), lockService, tournamentService))
-    Spark.get("/v1/flight", Json.contentType, route(flightController.list(), lockService, tournamentService))
-    Spark.get("/v1/flight/detected", Json.contentType, route(detectedFlightController.byPlayer(), lockService, tournamentService))
-    Spark.get("/v1/event", Json.contentType, route(eventController.byPlayer(), lockService, tournamentService))
+    registerRestMethod(fightController.byPlayer(), lockService, tournamentService)
+    registerRestMethod(planetController.list(), lockService, tournamentService)
+    registerRestMethod(buildingController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(buildingController.build(), lockService, tournamentService)
+    registerRestMethod(constructionSiteController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(shipController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(shipController.build(), lockService, tournamentService)
+    registerRestMethod(shipyardController.listOnPlanet(), lockService, tournamentService)
+    registerRestMethod(flightController.create(), lockService, tournamentService)
+    registerRestMethod(telescopeController.scan(), lockService, tournamentService)
+    registerRestMethod(fightController.byPlanet(), lockService, tournamentService)
+    registerRestMethod(flightController.listFrom(), lockService, tournamentService)
+    registerRestMethod(flightController.listTo(), lockService, tournamentService)
+    registerRestMethod(flightController.list(), lockService, tournamentService)
+    registerRestMethod(detectedFlightController.byPlayer(), lockService, tournamentService)
+    registerRestMethod(eventController.byPlayer(), lockService, tournamentService)
 }
 
 /**

@@ -4,13 +4,11 @@ import restwars.business.building.BuildingService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.ConstructionSitesResponse
-import restwars.rest.api.Result
 import restwars.rest.api.fromConstructionSites
+import restwars.rest.base.AuthenticatedRestMethod
 import restwars.rest.base.ControllerHelper
-import restwars.rest.base.Method
-import restwars.rest.base.RequestContext
-import spark.Request
-import spark.Response
+import restwars.rest.base.HttpMethod
+import restwars.rest.base.RestMethod
 import javax.validation.ValidatorFactory
 
 class ConstructionSiteController(
@@ -19,18 +17,14 @@ class ConstructionSiteController(
         val planetService: PlanetService,
         val buildingService: BuildingService
 ) : ControllerHelper {
-    fun listOnPlanet(): Method {
-        return object : Method {
-            override fun invoke(req: Request, res: Response): Result {
-                val context = RequestContext.build(req, playerService)
-                val location = parseLocation(req)
+    fun listOnPlanet(): RestMethod<ConstructionSitesResponse> {
+        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/planet/:location/construction-site", ConstructionSitesResponse::class.java, playerService, { req, res, context ->
+            val location = parseLocation(req)
 
-                val planet = getOwnPlanet(planetService, context.player, location)
-                val constructionSites = buildingService.findConstructionSitesByPlanet(planet)
+            val planet = getOwnPlanet(planetService, context.player, location)
+            val constructionSites = buildingService.findConstructionSitesByPlanet(planet)
 
-                return ConstructionSitesResponse.fromConstructionSites(constructionSites)
-            }
-        }
+            ConstructionSitesResponse.fromConstructionSites(constructionSites)
+        })
     }
-
 }
