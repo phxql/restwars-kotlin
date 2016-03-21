@@ -27,7 +27,7 @@ include::responses/error.json[]
 
 Error reasons are:
 
-include::responses/error-reason.table[]
+include::responses/error-reason.enum[]
 
 Players
 -------
@@ -242,7 +242,7 @@ Constructs a new command center.
 
 Buildings available for construction are:
 
-include::requests/building.table[]
+include::requests/building.enum[]
 
 Response:
 
@@ -303,7 +303,7 @@ Builds a new mosquito.
 
 Ships available for construction are:
 
-include::requests/ship.table[]
+include::requests/ship.enum[]
 
 Response:
 
@@ -456,7 +456,7 @@ include::responses/events.json[]
 
 Event types are:
 
-include::responses/event.table[]
+include::responses/event.enum[]
 
 Metadata
 --------

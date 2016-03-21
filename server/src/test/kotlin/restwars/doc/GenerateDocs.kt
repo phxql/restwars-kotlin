@@ -35,31 +35,21 @@ object GenerateDocs {
         }
     }
 
-    private fun <T : Enum<*>> writeEnumTable(type: Type, filename: String, header: String, values: Array<T>) {
+    private fun <T : Enum<*>> writeEnumList(type: Type, filename: String, values: Array<T>) {
         val path = type.getPath(filename)
         println("Writing enum to ${path.toAbsolutePath()}")
 
         Files.newBufferedWriter(path, Charsets.UTF_8).use {
-            it.write("""[options="header"]""")
-            it.newLine()
-            it.write("""|=================""")
-            it.newLine()
-            it.write("|$header")
-            it.newLine()
-
             for (value in values) {
-                it.write("|${value.name}")
+                it.write("* ${value.name}")
                 it.newLine()
             }
-
-            it.write("""|=================""")
-            it.newLine()
         }
     }
 
     fun run() {
         writeToFile(Type.RESPONSE, "error.json", ErrorResponse(ErrorReason.PLANET_NOT_FOUND.name, "Planet at 1.2.3 not found"));
-        writeEnumTable(Type.RESPONSE, "error-reason.table", "Reason", ErrorReason.values())
+        writeEnumList(Type.RESPONSE, "error-reason.enum", ErrorReason.values())
 
         writeToFile(Type.REQUEST, "construct-building.json", BuildBuildingRequest(BuildingType.COMMAND_CENTER.name))
         writeToFile(Type.REQUEST, "construct-ship.json", BuildShipRequest(ShipType.MOSQUITO.name))
@@ -72,10 +62,10 @@ object GenerateDocs {
         writeToFile(Type.RESPONSE, "application-information.json", ApplicationInformationResponse("1.0.0", "e1d9d75d436a4adaca8d0fd56f5c13550e95e797"))
         writeToFile(Type.RESPONSE, "configuration.json", ConfigResponse(30, UniverseSizeResponse(1, 3, 1, 3, 1, 3)))
         writeToFile(Type.RESPONSE, "construct-building.json", ConstructionSiteResponse(UUID.fromString("f1596555-2039-42a4-9a95-2db312871b6a"), BuildingType.COMMAND_CENTER.name, 2, 102))
-        writeEnumTable(Type.REQUEST, "building.table", "Building", BuildingType.values())
+        writeEnumList(Type.REQUEST, "building.enum", BuildingType.values())
 
         writeToFile(Type.RESPONSE, "construct-ship.json", ShipInConstructionResponse(UUID.fromString("873bbd47-8a03-4407-a1d8-5665bd6b150b"), ShipType.MOSQUITO.name, 73))
-        writeEnumTable(Type.REQUEST, "ship.table", "Ship", ShipType.values())
+        writeEnumList(Type.REQUEST, "ship.enum", ShipType.values())
 
         writeToFile(Type.RESPONSE, "list-buildings.json", BuildingsResponse(listOf(
                 BuildingResponse(BuildingType.COMMAND_CENTER.name, 2),
@@ -150,7 +140,7 @@ object GenerateDocs {
                 EventResponse(UUID.fromString("06319f52-9dd6-488f-bf84-2757e92217b4"), EventType.BUILDING_COMPLETE.name, 120, LocationResponse(1, 2, 3)),
                 EventResponse(UUID.fromString("09deb43b-f6fc-4f80-9651-00c766d67d97"), EventType.PLANET_COLONIZED.name, 224, LocationResponse(4, 5, 6))
         )))
-        writeEnumTable(Type.RESPONSE, "event.table", "Event", EventType.values())
+        writeEnumList(Type.RESPONSE, "event.enum", EventType.values())
 
         writeToFile(Type.RESPONSE, "player.json", PlayerResponse("player1"))
     }
