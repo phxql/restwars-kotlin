@@ -2,6 +2,7 @@ package restwars.rest.base
 
 import restwars.business.admin.AdminService
 import restwars.business.player.PlayerService
+import restwars.rest.api.ErrorReason
 import restwars.rest.api.ErrorResponse
 import restwars.rest.api.Result
 import restwars.rest.http.StatusCode
@@ -50,7 +51,7 @@ class AdminRestMethod<T : Result>(
         val authorization = BasicAuthorization.parse(header)
 
         if (!adminService.login(authorization.username, authorization.password)) {
-            throw StatusCodeException(StatusCode.FORBIDDEN, ErrorResponse("Admin account required"))
+            throw StatusCodeException(StatusCode.FORBIDDEN, ErrorResponse(ErrorReason.ADMIN_ACCOUNT_REQUIRED.name, "Admin account required"))
         }
 
         return func(req, res)

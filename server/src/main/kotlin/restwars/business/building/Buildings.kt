@@ -8,6 +8,7 @@ import restwars.business.event.EventService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
+import restwars.rest.api.ErrorReason
 import restwars.util.ceil
 import java.io.Serializable
 import java.util.*
@@ -31,11 +32,11 @@ data class Building(val id: UUID, val planetId: UUID, val type: BuildingType, va
 
 data class ConstructionSite(val id: UUID, val planetId: UUID, val type: BuildingType, val level: Int, val done: Long) : Serializable
 
-abstract class BuildBuildingException(message: String) : Exception(message)
+abstract class BuildBuildingException(val reason: ErrorReason, message: String) : Exception(message)
 
-class NotEnoughBuildSlotsException() : BuildBuildingException("Not enough build slots available")
+class NotEnoughBuildSlotsException() : BuildBuildingException(ErrorReason.NOT_ENOUGH_BUILD_SLOTS_AVAILABLE, "Not enough build slots available")
 
-class BuildingAlreadyInProgress(val type: BuildingType) : BuildBuildingException("Building $type is already in progress")
+class BuildingAlreadyInProgress(val type: BuildingType) : BuildBuildingException(ErrorReason.BUILDING_TYPE_ALREADY_IN_PROGRESS, "Building $type is already in progress")
 
 interface BuildingService {
     fun createStarterBuildings(planet: Planet): List<Building>

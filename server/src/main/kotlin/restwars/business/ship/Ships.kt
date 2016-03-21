@@ -12,6 +12,7 @@ import restwars.business.planet.Planet
 import restwars.business.planet.PlanetRepository
 import restwars.business.resource.NotEnoughResourcesException
 import restwars.business.sumByLong
+import restwars.rest.api.ErrorReason
 import restwars.util.ceil
 import java.io.Serializable
 import java.util.*
@@ -100,9 +101,9 @@ data class Ships(val ships: List<Ship>) : Serializable {
 data class Hangar(val id: UUID, val planetId: UUID, val ships: Ships) : Serializable {
 }
 
-abstract class BuildShipException(message: String) : Exception(message)
-class NotEnoughBuildSlotsException() : BuildShipException("Not enough build slots available")
-class NoShipyardException() : BuildShipException("No shipyard on planet")
+abstract class BuildShipException(val reason: ErrorReason, message: String) : Exception(message)
+class NotEnoughBuildSlotsException() : BuildShipException(ErrorReason.NOT_ENOUGH_BUILD_SLOTS_AVAILABLE, "Not enough build slots available")
+class NoShipyardException() : BuildShipException(ErrorReason.NO_SHIPYARD, "No shipyard on planet")
 
 interface ShipService {
     /**

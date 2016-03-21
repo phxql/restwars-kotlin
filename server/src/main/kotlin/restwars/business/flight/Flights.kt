@@ -16,6 +16,7 @@ import restwars.business.resource.NotEnoughResourcesException
 import restwars.business.ship.ShipService
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
+import restwars.rest.api.ErrorReason
 import restwars.util.ceil
 import java.io.Serializable
 import java.util.*
@@ -46,23 +47,21 @@ data class DetectedFlightWithFlight(val detectedFlight: DetectedFlight, val flig
 
 data class SendResult(val planet: Planet, val flight: Flight)
 
-abstract class FlightException(message: String?) : Exception(message) {
-    constructor() : this(null)
-}
+abstract class FlightException(val reason: ErrorReason, message: String?) : Exception(message)
 
-class SameStartAndDestinationException : FlightException("Start and destination are the same")
+class SameStartAndDestinationException : FlightException(ErrorReason.SAME_START_AND_DESTINATION, "Start and destination are the same")
 
-class NoShipsException : FlightException("No ships on the flight")
+class NoShipsException : FlightException(ErrorReason.NO_SHIPS_ON_FLIGHT, "No ships on the flight")
 
-class NotEnoughShipsException(val type: ShipType, val needed: Int, val available: Int) : FlightException("Not enough ships of type $type available. Needed: $needed, available: $available")
+class NotEnoughShipsException(val type: ShipType, val needed: Int, val available: Int) : FlightException(ErrorReason.NOT_ENOUGH_SHIPS_AVAILABLE, "Not enough ships of type $type available. Needed: $needed, available: $available")
 
-class ColonyShipRequiredException : FlightException("A colony ship on this flight is required")
+class ColonyShipRequiredException : FlightException(ErrorReason.COLONY_SHIP_REQUIRED, "A colony ship on this flight is required")
 
-class CargoNotAllowedException : FlightException("Cargo is not allowed")
+class CargoNotAllowedException : FlightException(ErrorReason.CARGO_NOT_ALLOWED, "Cargo is not allowed")
 
-class EnergyInCargoException : FlightException("Energy can't be put in cargo")
+class EnergyInCargoException : FlightException(ErrorReason.ENERGY_IN_CARGO_NOT_ALLOWED, "Energy can't be put in cargo")
 
-class NotEnoughCargoSpaceException(val needed: Int, val available: Int) : FlightException("Not enough cargo available: Needed: $needed, available: $available")
+class NotEnoughCargoSpaceException(val needed: Int, val available: Int) : FlightException(ErrorReason.NOT_ENOUGH_CARGO_AVAILABLE, "Not enough cargo available: Needed: $needed, available: $available")
 
 interface FlightService {
     /**

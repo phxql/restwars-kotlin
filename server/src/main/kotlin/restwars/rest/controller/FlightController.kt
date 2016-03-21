@@ -31,11 +31,11 @@ class FlightController(
             val sendResult = try {
                 flightService.sendShipsToPlanet(context.player, planet, destination, payload.ships.toShips(), type, cargo)
             } catch(ex: FlightException) {
-                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.reason.name, ex.message ?: ""))
             } catch(ex: InvalidLocationException) {
-                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ErrorReason.INVALID_LOCATION.name, ex.message ?: ""))
             } catch(ex: NotEnoughResourcesException) {
-                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ErrorReason.NOT_ENOUGH_RESOURCES.name, ex.message ?: ""))
             }
 
             FlightResponse.fromFlight(sendResult.flight)

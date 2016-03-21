@@ -26,6 +26,7 @@ import restwars.business.point.PointsServiceImpl
 import restwars.business.resource.ResourceServiceImpl
 import restwars.business.ship.ShipServiceImpl
 import restwars.business.tournament.*
+import restwars.rest.api.ErrorReason
 import restwars.rest.api.ErrorResponse
 import restwars.rest.base.*
 import restwars.rest.controller.*
@@ -278,17 +279,17 @@ fun registerRestMethod(metricRegistry: MetricRegistry, method: RestMethod<*>, lo
 private fun addExceptionHandler() {
     Spark.exception(ValidationException::class.java) { e, req, res ->
         res.status(StatusCode.BAD_REQUEST)
-        res.body(Json.toJson(res, ErrorResponse("Request validation failed")))
+        res.body(Json.toJson(res, ErrorResponse(ErrorReason.REQUEST_VALIDATION_FAILED.name, "Request validation failed")))
     }
 
     Spark.exception(AuthenticationException::class.java) { e, req, res ->
         res.status(StatusCode.UNAUTHORIZED)
-        res.body(Json.toJson(res, ErrorResponse("Invalid credentials")))
+        res.body(Json.toJson(res, ErrorResponse(ErrorReason.INVALID_CREDENTIALS.name, "Invalid credentials")))
     }
 
     Spark.exception(PlanetNotFoundOrOwnedException::class.java) { e, req, res ->
         res.status(StatusCode.NOT_FOUND)
-        res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
+        res.body(Json.toJson(res, ErrorResponse(ErrorReason.PLANET_NOT_FOUND.name, e.message ?: "")))
     }
 
     Spark.exception(BadRequestException::class.java) { e, req, res ->
@@ -300,12 +301,12 @@ private fun addExceptionHandler() {
 
     Spark.exception(JsonParseException::class.java) { e, req, res ->
         res.status(StatusCode.UNPROCESSABLE_ENTITY)
-        res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
+        res.body(Json.toJson(res, ErrorResponse(ErrorReason.UNPROCESSABLE_ENTITY.name, e.message ?: "")))
     }
 
     Spark.exception(TournamentNotStartedException::class.java) { e, req, res ->
         res.status(StatusCode.SERVICE_UNAVAILABLE)
-        res.body(Json.toJson(res, ErrorResponse(e.message ?: "")))
+        res.body(Json.toJson(res, ErrorResponse(ErrorReason.TOURNAMENT_NOT_STARTED.name, e.message ?: "")))
     }
 
     Spark.exception(StatusCodeException::class.java, { e, req, res ->

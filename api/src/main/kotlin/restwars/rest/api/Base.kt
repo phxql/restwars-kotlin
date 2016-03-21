@@ -7,6 +7,6 @@ interface Result {
 
 }
 
-data class ErrorResponse(val reason: String) : Result
+data class ErrorResponse(val reason: String, val message: String) : Result
 
 data class SuccessResponse(val message: String) : Result

@@ -4,10 +4,7 @@ import restwars.business.building.BuildingService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.business.player.UsernameNotUniqueException
-import restwars.rest.api.CreatePlayerRequest
-import restwars.rest.api.ErrorResponse
-import restwars.rest.api.PlayerResponse
-import restwars.rest.api.SuccessResponse
+import restwars.rest.api.*
 import restwars.rest.base.*
 import restwars.rest.http.StatusCode
 import javax.validation.ValidatorFactory
@@ -23,7 +20,7 @@ class PlayerController(
             val player = try {
                 playerService.create(payload.username, payload.password)
             } catch(ex: UsernameNotUniqueException) {
-                throw StatusCodeException(StatusCode.CONFLICT, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.CONFLICT, ErrorResponse(ErrorReason.USERNAME_ALREADY_EXISTS.name, ex.message ?: ""))
             }
             val planet = planetService.createStarterPlanet(player)
             buildingService.createStarterBuildings(planet)

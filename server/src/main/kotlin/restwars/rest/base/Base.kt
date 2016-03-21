@@ -5,6 +5,7 @@ import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.player.Player
 import restwars.business.player.PlayerService
+import restwars.rest.api.ErrorReason
 import restwars.rest.api.ErrorResponse
 import restwars.rest.api.Result
 import spark.Request
@@ -22,11 +23,11 @@ class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet 
 
 interface ControllerHelper {
     fun parseLocation(req: Request, parameter: String = ":location"): Location {
-        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse("Path variable $parameter is missing"))
+        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse(ErrorReason.LOCATION_VARIABLE_MISSING.name, "Path variable $parameter is missing"))
         try {
             return Location.parse(locationString)
         } catch(e: IllegalArgumentException) {
-            throw BadRequestException(ErrorResponse(e.message ?: ""))
+            throw BadRequestException(ErrorResponse(ErrorReason.LOCATION_PARSING_FAILED.name, e.message ?: ""))
         }
     }
 

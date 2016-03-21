@@ -5,6 +5,7 @@ import restwars.business.building.BuildingType
 import restwars.business.planet.NoTelescopeException
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
+import restwars.rest.api.ErrorReason
 import restwars.rest.api.ErrorResponse
 import restwars.rest.api.ScanResponse
 import restwars.rest.api.from
@@ -28,7 +29,7 @@ class TelescopeController(
                 val planets = planetService.findInVicinity(planet, telescopeLevel)
                 ScanResponse.from(planets)
             } catch(ex: NoTelescopeException) {
-                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ErrorReason.NO_TELESCOPE.name, ex.message ?: ""))
             }
         })
     }

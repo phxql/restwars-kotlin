@@ -39,9 +39,9 @@ class BuildingController(
             try {
                 buildResult = buildingService.build(planet, type)
             } catch(ex: BuildBuildingException) {
-                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.reason.name, ex.message ?: ""))
             } catch(ex: NotEnoughResourcesException) {
-                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ex.message ?: ""))
+                throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ErrorReason.NOT_ENOUGH_RESOURCES.name, ex.message ?: ""))
             }
 
             res.status(StatusCode.CREATED)
