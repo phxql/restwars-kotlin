@@ -35,7 +35,32 @@ object GenerateDocs {
         }
     }
 
+    private fun <T : Enum<*>> writeEnumTable(type: Type, filename: String, header: String, values: Array<T>) {
+        val path = type.getPath(filename)
+        println("Writing enum to ${path.toAbsolutePath()}")
+
+        Files.newBufferedWriter(path, Charsets.UTF_8).use {
+            it.write("""[options="header"]""")
+            it.newLine()
+            it.write("""|=================""")
+            it.newLine()
+            it.write("|$header")
+            it.newLine()
+
+            for (value in values) {
+                it.write("|${value.name}")
+                it.newLine()
+            }
+
+            it.write("""|=================""")
+            it.newLine()
+        }
+    }
+
     fun run() {
+        writeToFile(Type.RESPONSE, "error.json", ErrorResponse(ErrorReason.PLANET_NOT_FOUND.name, "Planet at 1.2.3 not found"));
+        writeEnumTable(Type.RESPONSE, "error-reason.table", "Reason", ErrorReason.values())
+
         writeToFile(Type.REQUEST, "construct-building.json", BuildBuildingRequest(BuildingType.COMMAND_CENTER.name))
         writeToFile(Type.REQUEST, "construct-ship.json", BuildShipRequest(ShipType.MOSQUITO.name))
         writeToFile(Type.REQUEST, "create-player.json", CreatePlayerRequest("player1", "s3cret"))

@@ -13,6 +13,22 @@ General exceptions
 * `422 Unprocessable Entity`: If the client sent invalid JSON.
 * `503 Service Unavailable`: If the tournament hasn't been started yet.
 
+Errors
+------
+
+If a request didn't succeed, the endpoint responds with an HTTP error code.
+
+Response:
+
+[source,json]
+include::responses/error.json[]
+
+`reason` contains a machine-readable error reason, `message` contains a human-readable description for debugging purposes.
+
+Error reasons are:
+
+include::responses/error-reason.table[]
+
 Players
 -------
 
