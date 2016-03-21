@@ -303,13 +303,7 @@ Builds a new mosquito.
 
 Ships available for construction are:
 
-[options="header"]
-|=================
-|Ship     |Attack|Defense|Cargo Space|Speed|Flight Cost Modifier|Build Time (Rounds)|Build Cost (Crystal/Gas/Energy)
-|MOSQUITO |14    |10     |10         |1    |1                   |10                 |100/20/270
-|COLONY   |0     |75     |500        |0.5  |2                   |60                 |350/150/1750
-|MULE     |0     |50     |750        |1    |1.5                 |20                 |200/100/1225
-|================
+include::requests/ship.table[]
 
 Response:
 
@@ -462,18 +456,7 @@ include::responses/events.json[]
 
 Event types are:
 
-[options="header"]
-|=================
-|Event
-|BUILDING_COMPLETE
-|SHIP_COMPLETE
-|FLIGHT_DETECTED
-|PLANET_COLONIZED
-|FIGHT_HAPPENED
-|SHIPS_TRANSFERRED
-|RESOURCES_TRANSFERRED
-|SHIPS_RETURNED
-|================
+include::responses/event.table[]
 
 Metadata
 --------

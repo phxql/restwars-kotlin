@@ -75,6 +75,8 @@ object GenerateDocs {
         writeEnumTable(Type.REQUEST, "building.table", "Building", BuildingType.values())
 
         writeToFile(Type.RESPONSE, "construct-ship.json", ShipInConstructionResponse(UUID.fromString("873bbd47-8a03-4407-a1d8-5665bd6b150b"), ShipType.MOSQUITO.name, 73))
+        writeEnumTable(Type.REQUEST, "ship.table", "Ship", ShipType.values())
+
         writeToFile(Type.RESPONSE, "list-buildings.json", BuildingsResponse(listOf(
                 BuildingResponse(BuildingType.COMMAND_CENTER.name, 2),
                 BuildingResponse(BuildingType.CRYSTAL_MINE.name, 3)
@@ -148,6 +150,8 @@ object GenerateDocs {
                 EventResponse(UUID.fromString("06319f52-9dd6-488f-bf84-2757e92217b4"), EventType.BUILDING_COMPLETE.name, 120, LocationResponse(1, 2, 3)),
                 EventResponse(UUID.fromString("09deb43b-f6fc-4f80-9651-00c766d67d97"), EventType.PLANET_COLONIZED.name, 224, LocationResponse(4, 5, 6))
         )))
+        writeEnumTable(Type.RESPONSE, "event.table", "Event", EventType.values())
+
         writeToFile(Type.RESPONSE, "player.json", PlayerResponse("player1"))
     }
 }
