@@ -8,6 +8,7 @@ build/
 
 # Data
 /server/data/
+/data/
 
 # Rendered documentation
 /doc/*.html
