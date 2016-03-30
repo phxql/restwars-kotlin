@@ -10,5 +10,5 @@ data class CreatePlayerRequest(
 data class PlayerResponse(
         val username: String
 ) : Result {
-        companion object {}
+    companion object {}
 }

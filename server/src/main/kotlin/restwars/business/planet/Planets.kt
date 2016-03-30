@@ -60,7 +60,7 @@ data class Planet(val id: UUID, val owner: UUID, val location: Location, val res
 
 data class PlanetWithPlayer(val planet: Planet, val player: Player)
 
-class NoTelescopeException: Exception("No telescope on planet")
+class NoTelescopeException : Exception("No telescope on planet")
 
 interface PlanetService {
     fun createStarterPlanet(player: Player): Planet
