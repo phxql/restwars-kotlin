@@ -1,6 +1,7 @@
 package restwars.business
 
 import restwars.business.building.BuildingType
+import restwars.business.config.UniverseSize
 import restwars.business.planet.Location
 import restwars.business.planet.Resources
 import restwars.business.ship.ShipType
@@ -200,9 +201,18 @@ class ShipFormulasImpl(private val resourceFormulas: ResourceFormulas) : ShipFor
     }
 }
 
-object LocationFormulasImpl : LocationFormulas {
+class LocationFormulasImpl(private val universeSize: UniverseSize) : LocationFormulas {
     override fun calculateDistance(start: Location, destination: Location): Long {
         // TODO: Add factors: (planet1 - planet2) + (system2 - system2) * x + (galaxy - galaxy) * y
-        return Math.abs(start.planet - destination.planet).toLong() + Math.abs(start.system - destination.system) + Math.abs(start.galaxy - destination.galaxy)
+
+        val planets = Math.abs(start.planet - destination.planet).toLong()
+        val systems = Math.abs(start.system - destination.system).toLong()
+        val galaxies = Math.abs(start.galaxy - destination.galaxy).toLong()
+
+        return galaxies * universeSize.maxSystems * universeSize.maxPlanets + systems * universeSize.maxPlanets + planets
     }
+
+    private fun cube(value: Long): Long = value * value * value
+
+    private fun square(value: Long): Long = value * value
 }

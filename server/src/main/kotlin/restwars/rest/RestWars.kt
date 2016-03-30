@@ -68,7 +68,7 @@ fun main(args: Array<String>) {
     val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
     val shipFormulas = ShipFormulasImpl(resourceFormulas)
-    val locationFormulas = LocationFormulasImpl
+    val locationFormulas = LocationFormulasImpl(config.universeSize)
 
     val roundService = RoundServiceImpl(roundRepository)
     val eventService = EventServiceImpl(uuidFactory, roundService, eventRepository)
