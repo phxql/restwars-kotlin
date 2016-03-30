@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added cargo and direction to flight responses.
 - Added endpoints to fetch request metrics.
 - Added machine readable reasons to failed requests.
+- Added building types to documentation.
 
 ### Changed
 - Command center now produces 5 energy per round.
@@ -24,7 +25,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - The configuration endpoint now includes the universe size.
 - The fight responses now contain the loot.
 - Ships with amount 0 are now ommited from responses.
-- Added building types to documentation.
+- Changed distance calculation.
 
 ### Fixed
 - Players now need a shipyard to build ships.
