@@ -1,41 +1,49 @@
 package restwars.storage
 
+import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import restwars.business.building.*
+import restwars.storage.jooq.Tables.BUILDINGS
+import restwars.storage.jooq.tables.records.BuildingsRecord
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object InMemoryBuildingRepository : BuildingRepository, PersistentRepository {
-    private val logger = LoggerFactory.getLogger(javaClass)
-    private var buildings: MutableList<Building> = CopyOnWriteArrayList()
-
-    override fun findByPlanetId(planetId: UUID): List<Building> {
-        return buildings.filter { it.planetId == planetId }
-    }
-
+class JooqBuildingRepository(val jooq: DSLContext) : BuildingRepository {
     override fun insert(building: Building) {
-        logger.info("Inserting building {}", building)
-        buildings.add(building)
-    }
-
-    override fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): Building? {
-        return buildings.firstOrNull { it.planetId == planetId && it.type == type }
+        jooq.insertInto(BUILDINGS, BUILDINGS.ID, BUILDINGS.PLANET_ID, BUILDINGS.TYPE, BUILDINGS.LEVEL)
+                .values(building.id, building.planetId, building.type.name, building.level)
+                .execute()
     }
 
     override fun updateLevel(buildingId: UUID, newLevel: Int) {
-        val index = buildings.indexOfFirst { it.id == buildingId }
-
-        buildings[index] = buildings[index].copy(level = newLevel)
+        jooq.update(BUILDINGS)
+                .set(BUILDINGS.LEVEL, newLevel)
+                .where(BUILDINGS.ID.eq(buildingId))
+                .execute()
     }
 
-    override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, buildings)
+    override fun findByPlanetId(planetId: UUID): List<Building> {
+        return jooq.selectFrom(BUILDINGS)
+                .where(BUILDINGS.PLANET_ID.eq(planetId))
+                .fetch()
+                .map { JooqBuildingMapper.toBuilding(it) }
+                .toList()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun load(persister: Persister, path: Path) {
-        this.buildings = persister.loadData(path) as MutableList<Building>
+    override fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): Building? {
+        val record = jooq.selectFrom(BUILDINGS)
+                .where(BUILDINGS.PLANET_ID.eq(planetId).and(BUILDINGS.TYPE.eq(type.name)))
+                .fetchOne() ?: return null
+        return JooqBuildingMapper.toBuilding(record)
+    }
+}
+
+object JooqBuildingMapper {
+    fun toBuilding(record: BuildingsRecord): Building {
+        return Building(
+                record.id, record.planetId, BuildingType.valueOf(record.type), record.level
+        )
     }
 }
 
