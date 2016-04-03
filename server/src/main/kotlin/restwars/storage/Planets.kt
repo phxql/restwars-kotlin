@@ -56,7 +56,7 @@ class JooqPlanetRepository(private val jooq: DSLContext) : PlanetRepository {
                 .where(PLANETS.GALAXY.between(galaxyMin, galaxyMax)
                         .and(PLANETS.SYSTEM.between(systemMin, systemMax))
                         .and(PLANETS.PLANET.between(planetMin, planetMax))
-                ).map { PlanetWithPlayer(JooqPlanetMapper.toPlanet(it), JooqPlayerMapper.toPlayer(it)) }
+                ).map { PlanetWithPlayer(JooqPlanetMapper.toPlanet(it), JooqPlayerMapper.fromRecord(it)) }
                 .toList()
     }
 }

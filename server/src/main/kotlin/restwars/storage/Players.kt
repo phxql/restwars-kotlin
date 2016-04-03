@@ -20,7 +20,7 @@ class JooqPlayerRepository(private val jooq: DSLContext) : PlayerRepository {
                 .where(PLAYERS.USERNAME.eq(username))
                 .fetchOne() ?: return null
 
-        return JooqPlayerMapper.toPlayer(record)
+        return JooqPlayerMapper.fromRecord(record)
     }
 
     override fun findById(id: UUID): Player? {
@@ -28,20 +28,20 @@ class JooqPlayerRepository(private val jooq: DSLContext) : PlayerRepository {
                 .where(PLAYERS.ID.eq(id))
                 .fetchOne() ?: return null
 
-        return JooqPlayerMapper.toPlayer(record)
+        return JooqPlayerMapper.fromRecord(record)
     }
 
     override fun findAll(): List<Player> {
         return jooq.selectFrom(PLAYERS).fetch().map {
-            JooqPlayerMapper.toPlayer(it)
+            JooqPlayerMapper.fromRecord(it)
         }.toList()
     }
 }
 
 object JooqPlayerMapper {
-    fun toPlayer(record: Record): Player = toPlayer(record.into(PlayersRecord::class.java))
+    fun fromRecord(record: Record): Player = fromRecord(record.into(PlayersRecord::class.java))
 
-    fun toPlayer(record: PlayersRecord): Player {
+    fun fromRecord(record: PlayersRecord): Player {
         return Player(record.id, record.username, record.password)
     }
 }
