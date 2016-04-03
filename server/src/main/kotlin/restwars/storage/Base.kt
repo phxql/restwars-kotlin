@@ -22,7 +22,6 @@ class Persister(
         hangarRepository: PersistentRepository,
         shipInConstructionRepository: PersistentRepository,
         flightRepository: PersistentRepository,
-        planetRepository: PersistentRepository,
         fightRepository: PersistentRepository,
         pointsRepository: PersistentRepository,
         detectedFlightRepository: PersistentRepository,
@@ -35,7 +34,6 @@ class Persister(
     private val repositories = mapOf<PersistentRepository, Path>(
             buildingRepository to Paths.get("data/buildings.dat"),
             constructionSiteRepository to Paths.get("data/construction-sites.dat"),
-            planetRepository to Paths.get("data/planets.dat"),
             roundRepository to Paths.get("data/round.dat"),
             hangarRepository to Paths.get("data/hangars.dat"),
             shipInConstructionRepository to Paths.get("data/ships-in-construction.dat"),

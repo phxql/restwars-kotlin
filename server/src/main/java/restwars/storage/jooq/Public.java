@@ -6,6 +6,7 @@ package restwars.storage.jooq;
 
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
+import restwars.storage.jooq.tables.Planets;
 import restwars.storage.jooq.tables.Players;
 
 import javax.annotation.Generated;
@@ -27,7 +28,7 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1732358887;
+    private static final long serialVersionUID = 1149260495;
 
     /**
      * The reference instance of <code>PUBLIC</code>
@@ -50,6 +51,7 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
-                Players.PLAYERS);
+                Players.PLAYERS,
+                Planets.PLANETS);
     }
 }

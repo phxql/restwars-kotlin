@@ -67,7 +67,7 @@ interface PlanetService {
 
     fun createPlanet(playerId: UUID, location: Location): Planet
 
-    fun findByOwner(owner: Player?): List<Planet>
+    fun findByOwner(owner: Player): List<Planet>
 
     fun findByLocation(location: Location): Planet?
 
@@ -86,9 +86,7 @@ interface PlanetService {
 interface PlanetRepository {
     fun findById(id: UUID): Planet?
 
-    fun findAtLocation(location: Location): Planet?
-
-    fun findByOwnerId(ownerId: UUID?): List<Planet>
+    fun findByOwnerId(ownerId: UUID): List<Planet>
 
     fun insert(planet: Planet)
 
@@ -130,7 +128,7 @@ class PlanetServiceImpl(
         return planetRepository.findByLocation(location)
     }
 
-    override fun findByOwner(owner: Player?): List<Planet> = planetRepository.findByOwnerId(owner?.id)
+    override fun findByOwner(owner: Player): List<Planet> = planetRepository.findByOwnerId(owner.id)
 
     override fun createStarterPlanet(player: Player): Planet {
         // Find location which isn't already occupied
@@ -140,7 +138,7 @@ class PlanetServiceImpl(
             val system = randomNumberGenerator.nextInt(1, config.universeSize.maxSystems)
             val planet = randomNumberGenerator.nextInt(1, config.universeSize.maxPlanets)
             location = Location(galaxy, system, planet)
-        } while (planetRepository.findAtLocation(location) != null)
+        } while (planetRepository.findByLocation(location) != null)
 
         val id = uuidFactory.create()
         val planet = Planet(id, player.id, location, config.starterPlanet.resources)
