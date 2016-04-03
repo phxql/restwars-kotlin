@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.2.0] - 2016-04-03
 ### Added
 - Started writing a changelog.
 - Implemented endpoint which blocks until the next round starts.
