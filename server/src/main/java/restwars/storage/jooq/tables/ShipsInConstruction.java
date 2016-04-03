@@ -123,5 +123,5 @@ public class ShipsInConstruction extends TableImpl<ShipsInConstructionRecord> {
      */
     public ShipsInConstruction rename(String name) {
         return new ShipsInConstruction(name, null);
-    }
+	}
 }

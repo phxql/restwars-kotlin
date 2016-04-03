@@ -49,7 +49,7 @@ CREATE TABLE ships_in_construction (
 
 CREATE TABLE points (
   id        UUID PRIMARY KEY,
-  player_id UUID   NOT NULL UNIQUE REFERENCES players (id),
+  player_id UUID   NOT NULL REFERENCES players (id),
   points    BIGINT NOT NULL,
   round     BIGINT NOT NULL
 );

@@ -19,7 +19,6 @@ class Persister(
         hangarRepository: PersistentRepository,
         flightRepository: PersistentRepository,
         fightRepository: PersistentRepository,
-        pointsRepository: PersistentRepository,
         detectedFlightRepository: PersistentRepository,
         eventRepository: PersistentRepository
 ) {
@@ -31,7 +30,6 @@ class Persister(
             hangarRepository to Paths.get("data/hangars.dat"),
             flightRepository to Paths.get("data/flights.dat"),
             fightRepository to Paths.get("data/fights.dat"),
-            pointsRepository to Paths.get("data/points.dat"),
             detectedFlightRepository to Paths.get("data/detected-flights.dat"),
             eventRepository to Paths.get("data/events.dat")
     )

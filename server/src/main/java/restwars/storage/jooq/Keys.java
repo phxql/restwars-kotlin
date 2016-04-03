@@ -43,7 +43,6 @@ public class Keys {
 	public static final UniqueKey<ConstructionSitesRecord> CONSTRAINT_7 = UniqueKeys0.CONSTRAINT_7;
 	public static final UniqueKey<ShipsInConstructionRecord> CONSTRAINT_3 = UniqueKeys0.CONSTRAINT_3;
 	public static final UniqueKey<PointsRecord> CONSTRAINT_8 = UniqueKeys0.CONSTRAINT_8;
-	public static final UniqueKey<PointsRecord> CONSTRAINT_8C = UniqueKeys0.CONSTRAINT_8C;
 	public static final UniqueKey<EventsRecord> CONSTRAINT_7A = UniqueKeys0.CONSTRAINT_7A;
 
 	// -------------------------------------------------------------------------
@@ -54,7 +53,7 @@ public class Keys {
 	public static final ForeignKey<BuildingsRecord, PlanetsRecord> CONSTRAINT_52 = ForeignKeys0.CONSTRAINT_52;
 	public static final ForeignKey<ConstructionSitesRecord, PlanetsRecord> CONSTRAINT_7E = ForeignKeys0.CONSTRAINT_7E;
 	public static final ForeignKey<ShipsInConstructionRecord, PlanetsRecord> CONSTRAINT_31 = ForeignKeys0.CONSTRAINT_31;
-	public static final ForeignKey<PointsRecord, PlayersRecord> CONSTRAINT_8CF = ForeignKeys0.CONSTRAINT_8CF;
+	public static final ForeignKey<PointsRecord, PlayersRecord> CONSTRAINT_8C = ForeignKeys0.CONSTRAINT_8C;
 	public static final ForeignKey<EventsRecord, PlayersRecord> CONSTRAINT_7A9 = ForeignKeys0.CONSTRAINT_7A9;
 	public static final ForeignKey<EventsRecord, PlanetsRecord> CONSTRAINT_7A9A = ForeignKeys0.CONSTRAINT_7A9A;
 
@@ -70,7 +69,6 @@ public class Keys {
 		public static final UniqueKey<ConstructionSitesRecord> CONSTRAINT_7 = createUniqueKey(ConstructionSites.CONSTRUCTION_SITES, ConstructionSites.CONSTRUCTION_SITES.ID);
 		public static final UniqueKey<ShipsInConstructionRecord> CONSTRAINT_3 = createUniqueKey(ShipsInConstruction.SHIPS_IN_CONSTRUCTION, ShipsInConstruction.SHIPS_IN_CONSTRUCTION.ID);
 		public static final UniqueKey<PointsRecord> CONSTRAINT_8 = createUniqueKey(Points.POINTS, Points.POINTS.ID);
-		public static final UniqueKey<PointsRecord> CONSTRAINT_8C = createUniqueKey(Points.POINTS, Points.POINTS.PLAYER_ID);
 		public static final UniqueKey<EventsRecord> CONSTRAINT_7A = createUniqueKey(Events.EVENTS, Events.EVENTS.ID);
 	}
 
@@ -79,7 +77,7 @@ public class Keys {
 		public static final ForeignKey<BuildingsRecord, PlanetsRecord> CONSTRAINT_52 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Buildings.BUILDINGS, Buildings.BUILDINGS.PLANET_ID);
 		public static final ForeignKey<ConstructionSitesRecord, PlanetsRecord> CONSTRAINT_7E = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, ConstructionSites.CONSTRUCTION_SITES, ConstructionSites.CONSTRUCTION_SITES.PLANET_ID);
 		public static final ForeignKey<ShipsInConstructionRecord, PlanetsRecord> CONSTRAINT_31 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, ShipsInConstruction.SHIPS_IN_CONSTRUCTION, ShipsInConstruction.SHIPS_IN_CONSTRUCTION.PLANET_ID);
-		public static final ForeignKey<PointsRecord, PlayersRecord> CONSTRAINT_8CF = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Points.POINTS, Points.POINTS.PLAYER_ID);
+		public static final ForeignKey<PointsRecord, PlayersRecord> CONSTRAINT_8C = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Points.POINTS, Points.POINTS.PLAYER_ID);
 		public static final ForeignKey<EventsRecord, PlayersRecord> CONSTRAINT_7A9 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Events.EVENTS, Events.EVENTS.PLAYER_ID);
 		public static final ForeignKey<EventsRecord, PlanetsRecord> CONSTRAINT_7A9A = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Events.EVENTS, Events.EVENTS.PLANET_ID);
 	}

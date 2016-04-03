@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="restwars" level="TRACE"/>
+    <logger name="restwars" level="DEBUG"/>
 
     <root level="WARN">
         <appender-ref ref="STDOUT"/>

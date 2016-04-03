@@ -1,39 +1,30 @@
 package restwars.storage
 
-import org.slf4j.LoggerFactory
-import restwars.business.player.PlayerRepository
+import org.jooq.DSLContext
 import restwars.business.point.Points
 import restwars.business.point.PointsRepository
 import restwars.business.point.PointsWithPlayer
-import java.nio.file.Path
-import java.util.concurrent.CopyOnWriteArrayList
+import restwars.storage.jooq.Tables.POINTS
+import restwars.storage.jooq.tables.records.PointsRecord
 
-class InMemoryPointsRepository(
-        private val playerRepository: PlayerRepository
-) : PointsRepository, PersistentRepository {
-    private val logger = LoggerFactory.getLogger(InMemoryPointsRepository::class.java)
-    private var points: MutableList<Points> = CopyOnWriteArrayList()
-
+class JooqPointsRepository(private val jooq: DSLContext) : PointsRepository {
     override fun insert(points: Points) {
-        logger.debug("Inserting {}", points)
-        this.points.add(points)
+        jooq.insertInto(POINTS, POINTS.ID, POINTS.PLAYER_ID, POINTS.ROUND, POINTS.POINTS_)
+                .values(points.id, points.playerId, points.round, points.points)
+                .execute()
     }
 
     override fun listMostRecentPoints(): List<PointsWithPlayer> {
-        return points.groupBy { it.playerId }.map {
-            val player = playerRepository.findById(it.key)
-            val points = it.value.sortedByDescending { it.round }.firstOrNull()
+        //        return jooq.selectFrom(POINTS.join(PLAYERS).on(PLAYERS.ID.eq(POINTS.PLAYER_ID)))
+        //        .groupBy(POINTS.PLAYER_ID)
+        //        .
 
-            if (points == null || player == null) null else PointsWithPlayer(player, points)
-        }.filterNotNull().sortedByDescending { it.points.points }
+        return listOf()
     }
+}
 
-    override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, points)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun load(persister: Persister, path: Path) {
-        points = persister.loadData(path) as MutableList<Points>
+object JooqPointsMapper {
+    fun fromRecord(record: PointsRecord): Points {
+        return Points(record.id, record.playerId, record.points, record.round)
     }
 }
