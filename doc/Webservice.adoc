@@ -200,7 +200,7 @@ Wait for next round
 
 Blocks until the next round is started.
 
-URL: `/v1/round/wait`
+URL: `GET /v1/round/wait`
 
 Response:
 
