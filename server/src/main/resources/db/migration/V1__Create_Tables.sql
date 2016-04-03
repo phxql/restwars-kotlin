@@ -16,3 +16,12 @@ CREATE TABLE planets (
 );
 
 CREATE UNIQUE INDEX planets_location ON planets (galaxy, system, planet);
+
+CREATE TABLE buildings (
+  id        UUID PRIMARY KEY,
+  planet_id UUID        NOT NULL REFERENCES planets (id),
+  type      VARCHAR(50) NOT NULL,
+  level     INT         NOT NULL
+);
+
+CREATE UNIQUE INDEX planets_type_planet ON buildings (type, planet_id);

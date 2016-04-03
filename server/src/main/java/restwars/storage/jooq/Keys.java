@@ -7,8 +7,10 @@ package restwars.storage.jooq;
 import org.jooq.ForeignKey;
 import org.jooq.UniqueKey;
 import org.jooq.impl.AbstractKeys;
+import restwars.storage.jooq.tables.Buildings;
 import restwars.storage.jooq.tables.Planets;
 import restwars.storage.jooq.tables.Players;
+import restwars.storage.jooq.tables.records.BuildingsRecord;
 import restwars.storage.jooq.tables.records.PlanetsRecord;
 import restwars.storage.jooq.tables.records.PlayersRecord;
 
@@ -41,12 +43,14 @@ public class Keys {
 	public static final UniqueKey<PlayersRecord> CONSTRAINT_D = UniqueKeys0.CONSTRAINT_D;
 	public static final UniqueKey<PlayersRecord> CONSTRAINT_D6 = UniqueKeys0.CONSTRAINT_D6;
 	public static final UniqueKey<PlanetsRecord> CONSTRAINT_D5 = UniqueKeys0.CONSTRAINT_D5;
+	public static final UniqueKey<BuildingsRecord> CONSTRAINT_5 = UniqueKeys0.CONSTRAINT_5;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
 	public static final ForeignKey<PlanetsRecord, PlayersRecord> CONSTRAINT_D5B = ForeignKeys0.CONSTRAINT_D5B;
+	public static final ForeignKey<BuildingsRecord, PlanetsRecord> CONSTRAINT_52 = ForeignKeys0.CONSTRAINT_52;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
@@ -56,9 +60,11 @@ public class Keys {
 		public static final UniqueKey<PlayersRecord> CONSTRAINT_D = createUniqueKey(Players.PLAYERS, Players.PLAYERS.ID);
 		public static final UniqueKey<PlayersRecord> CONSTRAINT_D6 = createUniqueKey(Players.PLAYERS, Players.PLAYERS.USERNAME);
 		public static final UniqueKey<PlanetsRecord> CONSTRAINT_D5 = createUniqueKey(Planets.PLANETS, Planets.PLANETS.ID);
+		public static final UniqueKey<BuildingsRecord> CONSTRAINT_5 = createUniqueKey(Buildings.BUILDINGS, Buildings.BUILDINGS.ID);
 	}
 
 	private static class ForeignKeys0 extends AbstractKeys {
 		public static final ForeignKey<PlanetsRecord, PlayersRecord> CONSTRAINT_D5B = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Planets.PLANETS, Planets.PLANETS.OWNER_ID);
+		public static final ForeignKey<BuildingsRecord, PlanetsRecord> CONSTRAINT_52 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Buildings.BUILDINGS, Buildings.BUILDINGS.PLANET_ID);
 	}
 }

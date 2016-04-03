@@ -4,6 +4,7 @@
 package restwars.storage.jooq;
 
 
+import restwars.storage.jooq.tables.Buildings;
 import restwars.storage.jooq.tables.Planets;
 import restwars.storage.jooq.tables.Players;
 
@@ -32,4 +33,9 @@ public class Tables {
 	 * The table PUBLIC.PLANETS
 	 */
 	public static final Planets PLANETS = restwars.storage.jooq.tables.Planets.PLANETS;
+
+	/**
+	 * The table PUBLIC.BUILDINGS
+	 */
+	public static final Buildings BUILDINGS = restwars.storage.jooq.tables.Buildings.BUILDINGS;
 }
