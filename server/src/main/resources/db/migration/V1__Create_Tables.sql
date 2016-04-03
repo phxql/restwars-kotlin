@@ -61,3 +61,16 @@ CREATE TABLE events (
   player_id UUID        NOT NULL REFERENCES players (id),
   planet_id UUID        NOT NULL REFERENCES planets (id)
 );
+
+CREATE TABLE hangar (
+  id        UUID PRIMARY KEY,
+  planet_id UUID NOT NULL REFERENCES planets (id)
+);
+
+CREATE TABLE hangar_ships (
+  hangar_id UUID        NOT NULL REFERENCES hangar (id),
+  type      VARCHAR(50) NOT NULL,
+  amount    INT         NOT NULL
+);
+
+CREATE UNIQUE INDEX hangar_ships_hangar_amount ON hangar_ships (hangar_id, type);

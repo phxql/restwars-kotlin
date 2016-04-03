@@ -61,4 +61,14 @@ public class Tables {
 	 * The table PUBLIC.EVENTS
 	 */
 	public static final Events EVENTS = restwars.storage.jooq.tables.Events.EVENTS;
+
+	/**
+	 * The table PUBLIC.HANGAR
+	 */
+	public static final Hangar HANGAR = restwars.storage.jooq.tables.Hangar.HANGAR;
+
+	/**
+	 * The table PUBLIC.HANGAR_SHIPS
+	 */
+	public static final HangarShips HANGAR_SHIPS = restwars.storage.jooq.tables.HangarShips.HANGAR_SHIPS;
 }

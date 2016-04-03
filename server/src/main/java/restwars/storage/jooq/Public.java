@@ -27,7 +27,7 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1832235785;
+    private static final long serialVersionUID = 822779335;
 
     /**
      * The reference instance of <code>PUBLIC</code>
@@ -57,6 +57,8 @@ public class Public extends SchemaImpl {
                 Round.ROUND,
                 ShipsInConstruction.SHIPS_IN_CONSTRUCTION,
                 Points.POINTS,
-                Events.EVENTS);
+                Events.EVENTS,
+                Hangar.HANGAR,
+                HangarShips.HANGAR_SHIPS);
     }
 }
