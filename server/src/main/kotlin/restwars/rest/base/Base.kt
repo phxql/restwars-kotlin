@@ -22,13 +22,17 @@ class StatusCodeException(val statusCode: Int, val response: Result) : Exception
 class PlanetNotFoundOrOwnedException(location: Location) : Exception("No planet at $location found")
 
 interface ControllerHelper {
-    fun parseLocation(req: Request, parameter: String = ":location"): Location {
-        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse(ErrorReason.LOCATION_VARIABLE_MISSING.name, "Path variable $parameter is missing"))
+    fun parseLocation(input: String): Location {
         try {
-            return Location.parse(locationString)
+            return Location.parse(input)
         } catch(e: IllegalArgumentException) {
             throw BadRequestException(ErrorResponse(ErrorReason.LOCATION_PARSING_FAILED.name, e.message ?: ""))
         }
+    }
+
+    fun parseLocation(req: Request, parameter: String = ":location"): Location {
+        val locationString = req.params(parameter) ?: throw BadRequestException(ErrorResponse(ErrorReason.LOCATION_VARIABLE_MISSING.name, "Path variable $parameter is missing"))
+        return parseLocation(locationString)
     }
 
     fun getOwnPlanet(planetService: PlanetService, player: Player, location: Location): Planet {

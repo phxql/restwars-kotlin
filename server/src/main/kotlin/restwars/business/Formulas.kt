@@ -203,8 +203,6 @@ class ShipFormulasImpl(private val resourceFormulas: ResourceFormulas) : ShipFor
 
 class LocationFormulasImpl(private val universeSize: UniverseSize) : LocationFormulas {
     override fun calculateDistance(start: Location, destination: Location): Long {
-        // TODO: Add factors: (planet1 - planet2) + (system2 - system2) * x + (galaxy - galaxy) * y
-
         val planets = Math.abs(start.planet - destination.planet).toLong()
         val systems = Math.abs(start.system - destination.system).toLong()
         val galaxies = Math.abs(start.galaxy - destination.galaxy).toLong()

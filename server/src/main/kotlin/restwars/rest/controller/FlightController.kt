@@ -4,7 +4,6 @@ import restwars.business.flight.FlightException
 import restwars.business.flight.FlightService
 import restwars.business.flight.FlightType
 import restwars.business.planet.InvalidLocationException
-import restwars.business.planet.Location
 import restwars.business.planet.PlanetService
 import restwars.business.planet.Resources
 import restwars.business.player.PlayerService
@@ -20,12 +19,20 @@ class FlightController(
         val planetService: PlanetService,
         val flightService: FlightService
 ) : ControllerHelper {
+    private fun parseFlightType(input: String): FlightType {
+        try {
+            return FlightType.parse(input)
+        } catch (e: IllegalArgumentException) {
+            throw BadRequestException(ErrorResponse(ErrorReason.FLIGHT_TYPE_PARSING_FAILED.name, "Unparsable flight type: $input"))
+        }
+    }
+
     fun create(): RestMethod<FlightResponse> {
         return AuthenticatedPayloadRestMethod(HttpMethod.POST, "/v1/planet/:location/flight", FlightResponse::class.java, CreateFlightRequest::class.java, playerService, validation, { req, res, context, payload ->
             val location = parseLocation(req)
             val planet = getOwnPlanet(planetService, context.player, location)
-            val destination = Location.parse(payload.destination) // TODO: Exception handling
-            val type = FlightType.parse(payload.type) // TODO: Exception handling
+            val destination = parseLocation(payload.destination)
+            val type = parseFlightType(payload.type)
 
             val cargo = payload.cargo?.toResources() ?: Resources.none()
             val sendResult = try {
