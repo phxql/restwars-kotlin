@@ -1,11 +1,16 @@
 buildscript {
     ext.kotlin_version = '1.0.1'
+    ext.h2_version = '1.4.191'
+    ext.jooq_version = '3.7.3'
+
     repositories {
         mavenCentral()
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath("org.jooq:jooq-codegen:$jooq_version")
+        classpath("com.h2database:h2:$h2_version")
     }
 }
 

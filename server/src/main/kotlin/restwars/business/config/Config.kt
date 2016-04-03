@@ -8,13 +8,15 @@ import restwars.business.planet.Resources
 import java.nio.file.Files
 import java.nio.file.Path
 
+data class Database(val url: String, val driver: Class<*>, val username: String, val password: String, val dialect: String)
+
 data class UniverseSize(val maxGalaxies: Int, val maxSystems: Int, val maxPlanets: Int)
 
 data class StarterPlanet(val resources: Resources)
 
 data class NewPlanet(val resources: Resources)
 
-data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int, val calculatePointsEvery: Int, val admin: Admin) {
+data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int, val calculatePointsEvery: Int, val admin: Admin, val database: Database) {
     data class UniverseSizeDto(val maxGalaxies: Int, val maxSystems: Int, val maxPlanets: Int) {
         fun toUniverseSize(): UniverseSize {
             return UniverseSize(maxGalaxies, maxSystems, maxPlanets)
@@ -45,18 +47,27 @@ data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlan
         }
     }
 
+    data class DatabaseDto(val url: String, val driver: String, val username: String, val password: String, val dialect: String) {
+        fun toDatabase(): Database {
+            return Database(url, Class.forName(driver), username, password, dialect)
+        }
+    }
+
     data class ConfigDto(
             val universeSize: UniverseSizeDto,
             val starterPlanet: StarterPlanetDto,
             val newPlanet: NewPlanetDto,
             val roundTime: Int,
             val calculatePointsEvery: Int,
-            val admin: AdminDto
+            val admin: AdminDto,
+            val database: DatabaseDto
     ) {
         fun toConfig(): Config {
-            return Config(universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), newPlanet.toNewPlanet(), roundTime, calculatePointsEvery, admin.toAdmin())
+            return Config(
+                    universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), newPlanet.toNewPlanet(),
+                    roundTime, calculatePointsEvery, admin.toAdmin(), database.toDatabase()
+            )
         }
-
     }
 
     companion object {

@@ -18,7 +18,6 @@ interface PersistentRepository {
 class Persister(
         buildingRepository: PersistentRepository,
         constructionSiteRepository: PersistentRepository,
-        playerRepository: PersistentRepository,
         roundRepository: PersistentRepository,
         hangarRepository: PersistentRepository,
         shipInConstructionRepository: PersistentRepository,
@@ -37,7 +36,6 @@ class Persister(
             buildingRepository to Paths.get("data/buildings.dat"),
             constructionSiteRepository to Paths.get("data/construction-sites.dat"),
             planetRepository to Paths.get("data/planets.dat"),
-            playerRepository to Paths.get("data/players.dat"),
             roundRepository to Paths.get("data/round.dat"),
             hangarRepository to Paths.get("data/hangars.dat"),
             shipInConstructionRepository to Paths.get("data/ships-in-construction.dat"),

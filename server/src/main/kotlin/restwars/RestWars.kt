@@ -1,7 +1,12 @@
-package restwars.rest
+package restwars
 
 import com.codahale.metrics.MetricRegistry
 import com.fasterxml.jackson.core.JsonParseException
+import com.mchange.v2.c3p0.ComboPooledDataSource
+import org.h2.Driver
+import org.jooq.DSLContext
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import restwars.business.*
 import restwars.business.admin.Admin
@@ -11,10 +16,7 @@ import restwars.business.clock.Clock
 import restwars.business.clock.ClockImpl
 import restwars.business.clock.RoundService
 import restwars.business.clock.RoundServiceImpl
-import restwars.business.config.Config
-import restwars.business.config.NewPlanet
-import restwars.business.config.StarterPlanet
-import restwars.business.config.UniverseSize
+import restwars.business.config.*
 import restwars.business.event.EventServiceImpl
 import restwars.business.fight.FightCalculatorImpl
 import restwars.business.fight.FightServiceImpl
@@ -38,6 +40,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import javax.sql.DataSource
 import javax.validation.Validation
 
 val port = 7777
@@ -48,11 +51,15 @@ fun main(args: Array<String>) {
     val commandLine = CommandLine.parse(args)
     val config = loadConfig()
 
+    val dataSource = connectToDatabase(config)
+    FlywayMigrationService(dataSource).migrate()
+    val jooq = createJooq(dataSource, config)
+
     val uuidFactory = UUIDFactoryImpl
     val randomNumberGenerator = RandomNumberGeneratorImpl
     val metricRegistry = MetricRegistry()
 
-    val playerRepository = InMemoryPlayerRepository
+    val playerRepository = JooqPlayerRepository(jooq)
     val planetRepository = InMemoryPlanetRepository(playerRepository)
     val buildingRepository = InMemoryBuildingRepository
     val constructionSiteRepository = InMemoryConstructionSiteRepository
@@ -129,13 +136,28 @@ fun main(args: Array<String>) {
 
     startClock(clock, config)
     val persister = Persister(
-            buildingRepository, constructionSiteRepository, playerRepository, roundRepository, hangarRepository,
+            buildingRepository, constructionSiteRepository, roundRepository, hangarRepository,
             shipInConstructionRepository, flightRepository, planetRepository, fightRepository, pointsRepository,
             detectedFlightRepository, eventRepository
     )
     persister.start()
 
     logger.info("RESTwars started on port {}", port)
+}
+
+private fun createJooq(dataSource: DataSource, config: Config): DSLContext {
+    val dialect = SQLDialect.valueOf(config.database.dialect)
+    return DSL.using(dataSource, dialect)
+}
+
+private fun connectToDatabase(config: Config): DataSource {
+    val pool = ComboPooledDataSource()
+    pool.driverClass = config.database.driver.name
+    pool.jdbcUrl = config.database.url
+    pool.user = config.database.username
+    pool.password = config.database.password
+
+    return pool
 }
 
 private fun buildTournamentService(commandLine: CommandLine, roundService: RoundServiceImpl): TournamentService {
@@ -183,7 +205,10 @@ private fun loadConfig(): Config {
     val configFile = Paths.get("config.yaml")
     if (!Files.exists(configFile)) {
         logger.warn("No config file at ${configFile.toAbsolutePath()} found, using default values")
-        return Config(UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)), 5, 50, Admin("admin", "admin"))
+        return Config(
+                UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)),
+                5, 50, Admin("admin", "admin"), Database("jdbc:h2:./data/restwars", Driver::class.java, "", "", "H2")
+        )
     }
 
     logger.info("Loading config from file ${configFile.toAbsolutePath()}")
