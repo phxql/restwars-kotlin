@@ -65,7 +65,7 @@ fun main(args: Array<String>) {
     val constructionSiteRepository = JooqConstructionSiteRepository(jooq)
     val roundRepository = JooqRoundRepository(jooq)
     val hangarRepository = InMemoryHangarRepository
-    val shipInConstructionRepository = InMemoryShipInConstructionRepository
+    val shipInConstructionRepository = JooqShipInConstructionRepository(jooq)
     val flightRepository = InMemoryFlightRepository
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
     val pointsRepository = InMemoryPointsRepository(playerRepository)
@@ -138,7 +138,7 @@ fun main(args: Array<String>) {
     startClock(clock, config)
     val persister = Persister(
             hangarRepository,
-            shipInConstructionRepository, flightRepository, fightRepository, pointsRepository,
+            flightRepository, fightRepository, pointsRepository,
             detectedFlightRepository, eventRepository
     )
     persister.start()

@@ -1,44 +1,55 @@
 package restwars.storage
 
+import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import restwars.business.ship.*
+import restwars.storage.jooq.Tables.SHIPS_IN_CONSTRUCTION
+import restwars.storage.jooq.tables.records.ShipsInConstructionRecord
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object InMemoryShipInConstructionRepository : ShipInConstructionRepository, PersistentRepository {
-    private val logger = LoggerFactory.getLogger(javaClass)
-    private var shipsInConstruction: MutableList<ShipInConstruction> = CopyOnWriteArrayList()
-
+class JooqShipInConstructionRepository(private val jooq: DSLContext) : ShipInConstructionRepository {
     override fun insert(shipInConstruction: ShipInConstruction) {
-        logger.debug("Inserting {}", shipInConstruction)
-        shipsInConstruction.add(shipInConstruction)
+        jooq.insertInto(SHIPS_IN_CONSTRUCTION, SHIPS_IN_CONSTRUCTION.ID, SHIPS_IN_CONSTRUCTION.PLANET_ID, SHIPS_IN_CONSTRUCTION.TYPE, SHIPS_IN_CONSTRUCTION.DONE)
+                .values(shipInConstruction.id, shipInConstruction.planetId, shipInConstruction.type.name, shipInConstruction.done)
+                .execute()
     }
 
     override fun delete(id: UUID) {
-        logger.debug("Deleting ship in construction with id {}", id)
-        shipsInConstruction.removeAll { it.id == id }
-    }
-
-    override fun findByDone(done: Long): List<ShipInConstruction> {
-        return shipsInConstruction.filter { it.done == done }
+        jooq.deleteFrom(SHIPS_IN_CONSTRUCTION)
+                .where(SHIPS_IN_CONSTRUCTION.ID.eq(id))
+                .execute()
     }
 
     override fun findByPlanetId(planetId: UUID): List<ShipInConstruction> {
-        return shipsInConstruction.filter { it.planetId == planetId }
+        return jooq.selectFrom(SHIPS_IN_CONSTRUCTION)
+                .where(SHIPS_IN_CONSTRUCTION.PLANET_ID.eq(planetId))
+                .fetch()
+                .map { JooqShipInConstructionMapper.fromRecord(it) }
+                .toList()
     }
 
     override fun countByPlanetId(planetId: UUID): Int {
-        return shipsInConstruction.count { it.planetId == planetId }
+        return jooq.fetchCount(jooq.selectFrom(SHIPS_IN_CONSTRUCTION)
+                .where(SHIPS_IN_CONSTRUCTION.PLANET_ID.eq(planetId))
+        )
     }
 
-    override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, shipsInConstruction)
+    override fun findByDone(done: Long): List<ShipInConstruction> {
+        return jooq.selectFrom(SHIPS_IN_CONSTRUCTION)
+                .where(SHIPS_IN_CONSTRUCTION.DONE.eq(done))
+                .fetch()
+                .map { JooqShipInConstructionMapper.fromRecord(it) }
+                .toList()
     }
+}
 
-    @Suppress("UNCHECKED_CAST")
-    override fun load(persister: Persister, path: Path) {
-        shipsInConstruction = persister.loadData(path) as MutableList<ShipInConstruction>
+object JooqShipInConstructionMapper {
+    fun fromRecord(record: ShipsInConstructionRecord): ShipInConstruction {
+        return ShipInConstruction(
+                record.id, record.planetId, ShipType.valueOf(record.type), record.done
+        )
     }
 }
 
