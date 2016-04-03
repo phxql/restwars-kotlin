@@ -63,7 +63,7 @@ fun main(args: Array<String>) {
     val planetRepository = JooqPlanetRepository(jooq)
     val buildingRepository = JooqBuildingRepository(jooq)
     val constructionSiteRepository = JooqConstructionSiteRepository(jooq)
-    val roundRepository = InMemoryRoundRepository
+    val roundRepository = JooqRoundRepository(jooq)
     val hangarRepository = InMemoryHangarRepository
     val shipInConstructionRepository = InMemoryShipInConstructionRepository
     val flightRepository = InMemoryFlightRepository
@@ -134,9 +134,10 @@ fun main(args: Array<String>) {
 
     Spark.awaitInitialization()
 
+    roundService.initialize()
     startClock(clock, config)
     val persister = Persister(
-            roundRepository, hangarRepository,
+            hangarRepository,
             shipInConstructionRepository, flightRepository, fightRepository, pointsRepository,
             detectedFlightRepository, eventRepository
     )

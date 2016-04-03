@@ -31,6 +31,14 @@ class ClockImpl(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun tick() {
+        try {
+            _tick()
+        } catch(e: Exception) {
+            logger.error("Clock crashed!", e)
+        }
+    }
+
+    private fun _tick() {
         lockService.beforeClock()
         try {
             logger.debug("Tick")
@@ -44,12 +52,14 @@ class ClockImpl(
             for (planet in planetService.findAllInhabited()) {
                 var updatedPlanet = planet
                 val buildings = buildingService.findBuildingsByPlanet(updatedPlanet)
-                updatedPlanet = gatherResources(buildings, updatedPlanet)
+                gatherResources(buildings, updatedPlanet)
             }
 
             if (newRound % config.calculatePointsEvery == 0L) {
                 pointsService.calculatePoints()
             }
+
+            logger.info("Now in round $newRound")
         } finally {
             lockService.afterClock()
         }

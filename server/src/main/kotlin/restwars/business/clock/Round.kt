@@ -7,6 +7,8 @@ interface RoundListener {
 }
 
 interface RoundService {
+    fun initialize()
+
     fun currentRound(): Long
 
     fun increaseRound(): Long
@@ -19,6 +21,8 @@ interface RoundService {
 }
 
 interface RoundRepository {
+    fun rowCount(): Int
+
     fun insert(round: Long)
 
     fun update(round: Long)
@@ -29,6 +33,12 @@ interface RoundRepository {
 class RoundServiceImpl(private val roundRepository: RoundRepository) : RoundService {
     private val listeners = ConcurrentLinkedQueue<RoundListener>()
     private val nextRoundMonitor = Object()
+
+    override fun initialize() {
+        if (roundRepository.rowCount() == 0) {
+            roundRepository.insert(0)
+        }
+    }
 
     override fun increaseRound(): Long {
         val newRound = roundRepository.readRound() + 1

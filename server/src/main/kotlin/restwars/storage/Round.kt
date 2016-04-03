@@ -1,33 +1,28 @@
 package restwars.storage
 
-import org.slf4j.LoggerFactory
+import org.jooq.DSLContext
 import restwars.business.clock.RoundRepository
-import java.nio.file.Path
-import java.util.concurrent.atomic.AtomicLong
+import restwars.storage.jooq.Tables.ROUND
 
-object InMemoryRoundRepository : RoundRepository, PersistentRepository {
-    private val logger = LoggerFactory.getLogger(javaClass)
-    private var currentRound = AtomicLong(0)
-
-    override fun update(round: Long) {
-        logger.info("Updating round to {}", round)
-        currentRound.set(round)
-    }
-
-    override fun readRound(): Long {
-        return currentRound.get()
+class JooqRoundRepository(private val jooq: DSLContext) : RoundRepository {
+    override fun rowCount(): Int {
+        return jooq.fetchCount(ROUND)
     }
 
     override fun insert(round: Long) {
-        currentRound.set(round)
+        jooq.insertInto(ROUND, ROUND.ROUND_)
+                .values(round)
+                .execute()
     }
 
-    override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, currentRound.get())
+    override fun update(round: Long) {
+        jooq.update(ROUND)
+                .set(ROUND.ROUND_, round)
+                .execute()
     }
 
-    override fun load(persister: Persister, path: Path) {
-        val round = persister.loadData(path) as Long
-        currentRound.set(round)
+    override fun readRound(): Long {
+        val record = jooq.selectFrom(ROUND).fetchOne()
+        return record.round
     }
 }
