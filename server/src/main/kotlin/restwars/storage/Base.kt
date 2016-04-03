@@ -16,7 +16,6 @@ interface PersistentRepository {
 }
 
 class Persister(
-        hangarRepository: PersistentRepository,
         flightRepository: PersistentRepository,
         fightRepository: PersistentRepository,
         detectedFlightRepository: PersistentRepository
@@ -26,7 +25,6 @@ class Persister(
     private val persistInterval = 5L
 
     private val repositories = mapOf<PersistentRepository, Path>(
-            hangarRepository to Paths.get("data/hangars.dat"),
             flightRepository to Paths.get("data/flights.dat"),
             fightRepository to Paths.get("data/fights.dat"),
             detectedFlightRepository to Paths.get("data/detected-flights.dat")

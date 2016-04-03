@@ -62,7 +62,7 @@ class JooqPlanetRepository(private val jooq: DSLContext) : PlanetRepository {
 }
 
 object JooqPlanetMapper {
-    fun fromRecord(record: Record): Planet = fromRecord(record.into(PlanetsRecord::class.java))
+    fun fromRecord(record: Record): Planet = fromRecord(record.into(PLANETS))
 
     fun fromRecord(record: PlanetsRecord): Planet {
         return Planet(

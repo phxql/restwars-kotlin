@@ -6,6 +6,9 @@ import restwars.business.UUIDFactory
 import restwars.business.config.Config
 import restwars.business.config.UniverseSize
 import restwars.business.player.Player
+import restwars.business.ship.Hangar
+import restwars.business.ship.HangarRepository
+import restwars.business.ship.Ships
 import java.io.Serializable
 import java.util.*
 
@@ -106,7 +109,8 @@ class PlanetServiceImpl(
         private val randomNumberGenerator: RandomNumberGenerator,
         private val planetRepository: PlanetRepository,
         private val config: Config,
-        private val buildingFormulas: BuildingFormulas
+        private val buildingFormulas: BuildingFormulas,
+        private val hangarRepository: HangarRepository
 ) : PlanetService {
     override fun addResources(planet: Planet, resources: Resources): Planet {
         if (resources.isEmpty()) return planet
@@ -143,6 +147,7 @@ class PlanetServiceImpl(
         val id = uuidFactory.create()
         val planet = Planet(id, player.id, location, config.starterPlanet.resources)
         planetRepository.insert(planet)
+        hangarRepository.insert(Hangar(uuidFactory.create(), planet.id, Ships.none()))
 
         return planet
     }
@@ -156,6 +161,8 @@ class PlanetServiceImpl(
 
         val planet = Planet(uuidFactory.create(), playerId, location, config.newPlanet.resources)
         planetRepository.insert(planet)
+        hangarRepository.insert(Hangar(uuidFactory.create(), planet.id, Ships.none()))
+
         return planet
     }
 

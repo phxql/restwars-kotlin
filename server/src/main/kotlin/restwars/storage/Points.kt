@@ -29,7 +29,7 @@ class JooqPointsRepository(private val jooq: DSLContext) : PointsRepository {
 }
 
 object JooqPointsMapper {
-    fun fromRecord(record: Record): Points = fromRecord(record.into(PointsRecord::class.java))
+    fun fromRecord(record: Record): Points = fromRecord(record.into(POINTS))
 
     fun fromRecord(record: PointsRecord): Points {
         return Points(record.id, record.playerId, record.points, record.round)

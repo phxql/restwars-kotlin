@@ -40,7 +40,7 @@ class JooqEventRepository(private val jooq: DSLContext) : EventRepository {
 }
 
 object JooqEventMapper {
-    fun fromRecord(record: Record): Event = fromRecord(record.into(EventsRecord::class.java))
+    fun fromRecord(record: Record): Event = fromRecord(record.into(EVENTS))
 
     fun fromRecord(record: EventsRecord): Event {
         return Event(

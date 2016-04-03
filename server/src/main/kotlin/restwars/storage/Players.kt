@@ -39,7 +39,7 @@ class JooqPlayerRepository(private val jooq: DSLContext) : PlayerRepository {
 }
 
 object JooqPlayerMapper {
-    fun fromRecord(record: Record): Player = fromRecord(record.into(PlayersRecord::class.java))
+    fun fromRecord(record: Record): Player = fromRecord(record.into(PLAYERS))
 
     fun fromRecord(record: PlayersRecord): Player {
         return Player(record.id, record.username, record.password)

@@ -35,6 +35,7 @@ class ClockImpl(
             _tick()
         } catch(e: Exception) {
             logger.error("Clock crashed!", e)
+            throw e
         }
     }
 

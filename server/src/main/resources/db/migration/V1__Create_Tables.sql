@@ -64,7 +64,7 @@ CREATE TABLE events (
 
 CREATE TABLE hangar (
   id        UUID PRIMARY KEY,
-  planet_id UUID NOT NULL REFERENCES planets (id)
+  planet_id UUID NOT NULL UNIQUE REFERENCES planets (id)
 );
 
 CREATE TABLE hangar_ships (

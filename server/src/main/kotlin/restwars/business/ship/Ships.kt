@@ -143,11 +143,11 @@ interface ShipInConstructionRepository {
 }
 
 interface HangarRepository {
-    fun findByPlanetId(planetId: UUID): Hangar?
+    fun findByPlanetId(planetId: UUID): Hangar
 
     fun insert(hangar: Hangar)
 
-    fun updateShips(hangarId: UUID, type: ShipType, newAmount: Int)
+    fun updateShips(hangarId: UUID, type: ShipType, oldAmount: Int, newAmount: Int)
 }
 
 data class BuildResult(val planet: Planet, val shipInConstruction: ShipInConstruction)
@@ -215,13 +215,9 @@ class ShipServiceImpl(
             val hangar = hangarRepository.findByPlanetId(planet.id)
 
             eventService.createShipCompleteEvent(planet.owner, planet.id)
-            if (hangar == null) {
-                val newHangar = Hangar(uuidFactory.create(), shipDone.planetId, Ships(listOf(Ship(shipDone.type, 1))))
-                hangarRepository.insert(newHangar)
-            } else {
-                val newAmount = hangar.ships[shipDone.type] + 1
-                hangarRepository.updateShips(hangar.id, shipDone.type, newAmount)
-            }
+            val oldAmount = hangar.ships[shipDone.type]
+            val newAmount = oldAmount + 1
+            hangarRepository.updateShips(hangar.id, shipDone.type, oldAmount, newAmount)
             shipInConstructionRepository.delete(shipDone.id)
         }
     }
@@ -232,43 +228,35 @@ class ShipServiceImpl(
 
     override fun findShipsByPlanet(planet: Planet): Ships {
         val hangar = hangarRepository.findByPlanetId(planet.id)
-
-        return if (hangar == null) Ships.none() else hangar.ships
+        return hangar.ships
     }
 
     override fun removeShips(planet: Planet, ships: Ships) {
-        val hangar = hangarRepository.findByPlanetId(planet.id) ?: throw IllegalArgumentException("No hangar for planet $planet found")
+        val hangar = hangarRepository.findByPlanetId(planet.id)
 
         for (ship in ships.ships) {
-            val newAmount = hangar.ships[ship.type] - ship.amount
+            val oldAmount = hangar.ships[ship.type]
+            val newAmount = oldAmount - ship.amount
             if (newAmount < 0) throw IllegalStateException("Amount of ships with type ${ship.type} have to be >= 0, would be $newAmount")
 
-            hangarRepository.updateShips(hangar.id, ship.type, newAmount)
+            hangarRepository.updateShips(hangar.id, ship.type, oldAmount, newAmount)
         }
     }
 
     override fun addShips(planet: Planet, ships: Ships) {
         val hangar = hangarRepository.findByPlanetId(planet.id)
-        if (hangar == null) {
-            val newHangar = Hangar(uuidFactory.create(), planet.id, ships)
-            hangarRepository.insert(newHangar)
-        } else {
-            for (ship in ships.ships) {
-                val newAmount = hangar.ships[ship.type] + ship.amount
-                hangarRepository.updateShips(hangar.id, ship.type, newAmount)
-            }
+        for (ship in ships.ships) {
+            val oldAmount = hangar.ships[ship.type]
+            val newAmount = oldAmount + ship.amount
+            hangarRepository.updateShips(hangar.id, ship.type, oldAmount, newAmount)
         }
     }
 
     override fun setShips(planet: Planet, ships: Ships) {
         val hangar = hangarRepository.findByPlanetId(planet.id)
-        if (hangar == null) {
-            val newHangar = Hangar(uuidFactory.create(), planet.id, ships)
-            hangarRepository.insert(newHangar)
-        } else {
-            for (ship in ships.ships) {
-                hangarRepository.updateShips(hangar.id, ship.type, ship.amount)
-            }
+        for (ship in ships.ships) {
+            val oldAmount = hangar.ships.get(ship.type)
+            hangarRepository.updateShips(hangar.id, ship.type, oldAmount, ship.amount)
         }
     }
 
