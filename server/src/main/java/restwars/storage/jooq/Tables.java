@@ -4,9 +4,7 @@
 package restwars.storage.jooq;
 
 
-import restwars.storage.jooq.tables.Buildings;
-import restwars.storage.jooq.tables.Planets;
-import restwars.storage.jooq.tables.Players;
+import restwars.storage.jooq.tables.*;
 
 import javax.annotation.Generated;
 
@@ -38,4 +36,29 @@ public class Tables {
 	 * The table PUBLIC.BUILDINGS
 	 */
 	public static final Buildings BUILDINGS = restwars.storage.jooq.tables.Buildings.BUILDINGS;
+
+	/**
+	 * The table PUBLIC.CONSTRUCTION_SITES
+	 */
+	public static final ConstructionSites CONSTRUCTION_SITES = restwars.storage.jooq.tables.ConstructionSites.CONSTRUCTION_SITES;
+
+	/**
+	 * The table PUBLIC.ROUND
+	 */
+	public static final Round ROUND = restwars.storage.jooq.tables.Round.ROUND;
+
+	/**
+	 * The table PUBLIC.SHIPS_IN_CONSTRUCTION
+	 */
+	public static final ShipsInConstruction SHIPS_IN_CONSTRUCTION = restwars.storage.jooq.tables.ShipsInConstruction.SHIPS_IN_CONSTRUCTION;
+
+	/**
+	 * The table PUBLIC.POINTS
+	 */
+	public static final Points POINTS = restwars.storage.jooq.tables.Points.POINTS;
+
+	/**
+	 * The table PUBLIC.EVENTS
+	 */
+	public static final Events EVENTS = restwars.storage.jooq.tables.Events.EVENTS;
 }

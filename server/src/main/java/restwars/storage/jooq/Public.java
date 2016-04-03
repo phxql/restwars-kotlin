@@ -6,9 +6,7 @@ package restwars.storage.jooq;
 
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
-import restwars.storage.jooq.tables.Buildings;
-import restwars.storage.jooq.tables.Planets;
-import restwars.storage.jooq.tables.Players;
+import restwars.storage.jooq.tables.*;
 
 import javax.annotation.Generated;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -2102955425;
+    private static final long serialVersionUID = -1832235785;
 
     /**
      * The reference instance of <code>PUBLIC</code>
@@ -54,6 +52,11 @@ public class Public extends SchemaImpl {
         return Arrays.<Table<?>>asList(
                 Players.PLAYERS,
                 Planets.PLANETS,
-                Buildings.BUILDINGS);
+                Buildings.BUILDINGS,
+                ConstructionSites.CONSTRUCTION_SITES,
+                Round.ROUND,
+                ShipsInConstruction.SHIPS_IN_CONSTRUCTION,
+                Points.POINTS,
+                Events.EVENTS);
     }
 }
