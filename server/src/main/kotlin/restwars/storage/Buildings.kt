@@ -26,7 +26,7 @@ class JooqBuildingRepository(val jooq: DSLContext) : BuildingRepository {
         return jooq.selectFrom(BUILDINGS)
                 .where(BUILDINGS.PLANET_ID.eq(planetId))
                 .fetch()
-                .map { JooqBuildingMapper.toBuilding(it) }
+                .map { JooqBuildingMapper.fromRecord(it) }
                 .toList()
     }
 
@@ -34,12 +34,12 @@ class JooqBuildingRepository(val jooq: DSLContext) : BuildingRepository {
         val record = jooq.selectFrom(BUILDINGS)
                 .where(BUILDINGS.PLANET_ID.eq(planetId).and(BUILDINGS.TYPE.eq(type.name)))
                 .fetchOne() ?: return null
-        return JooqBuildingMapper.toBuilding(record)
+        return JooqBuildingMapper.fromRecord(record)
     }
 }
 
 object JooqBuildingMapper {
-    fun toBuilding(record: BuildingsRecord): Building {
+    fun fromRecord(record: BuildingsRecord): Building {
         return Building(
                 record.id, record.planetId, BuildingType.valueOf(record.type), record.level
         )
@@ -57,7 +57,7 @@ class JooqConstructionSiteRepository(private val jooq: DSLContext) : Constructio
         return jooq.selectFrom(CONSTRUCTION_SITES)
                 .where(CONSTRUCTION_SITES.DONE.eq(done))
                 .fetch()
-                .map { JooqConstructionSiteMapper.toConstructionSite(it) }
+                .map { JooqConstructionSiteMapper.fromRecord(it) }
                 .toList()
     }
 
@@ -65,7 +65,7 @@ class JooqConstructionSiteRepository(private val jooq: DSLContext) : Constructio
         return jooq.selectFrom(CONSTRUCTION_SITES)
                 .where(CONSTRUCTION_SITES.PLANET_ID.eq(planetId))
                 .fetch()
-                .map { JooqConstructionSiteMapper.toConstructionSite(it) }
+                .map { JooqConstructionSiteMapper.fromRecord(it) }
                 .toList()
     }
 
@@ -80,7 +80,7 @@ class JooqConstructionSiteRepository(private val jooq: DSLContext) : Constructio
         val record = jooq.selectFrom(CONSTRUCTION_SITES)
                 .where(CONSTRUCTION_SITES.PLANET_ID.eq(planetId).and(CONSTRUCTION_SITES.TYPE.eq(type.name)))
                 .fetchOne() ?: return null
-        return JooqConstructionSiteMapper.toConstructionSite(record)
+        return JooqConstructionSiteMapper.fromRecord(record)
     }
 
     override fun delete(id: UUID) {
@@ -91,7 +91,7 @@ class JooqConstructionSiteRepository(private val jooq: DSLContext) : Constructio
 }
 
 object JooqConstructionSiteMapper {
-    fun toConstructionSite(record: ConstructionSitesRecord): ConstructionSite {
+    fun fromRecord(record: ConstructionSitesRecord): ConstructionSite {
         return ConstructionSite(
                 record.id, record.planetId, BuildingType.valueOf(record.type), record.level, record.done
         )

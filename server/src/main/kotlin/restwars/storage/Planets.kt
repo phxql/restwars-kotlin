@@ -12,14 +12,14 @@ class JooqPlanetRepository(private val jooq: DSLContext) : PlanetRepository {
     override fun findByOwnerId(ownerId: UUID): List<Planet> {
         return jooq.selectFrom(PLANETS)
                 .where(PLANETS.OWNER_ID.eq(ownerId))
-                .fetch().map { JooqPlanetMapper.toPlanet(it) }.toList()
+                .fetch().map { JooqPlanetMapper.fromRecord(it) }.toList()
     }
 
     override fun findById(id: UUID): Planet? {
         val record = jooq.selectFrom(PLANETS)
                 .where(PLANETS.ID.eq(id))
                 .fetchOne() ?: return null
-        return JooqPlanetMapper.toPlanet(record)
+        return JooqPlanetMapper.fromRecord(record)
     }
 
     override fun insert(planet: Planet) {
@@ -33,12 +33,12 @@ class JooqPlanetRepository(private val jooq: DSLContext) : PlanetRepository {
         val record = jooq.selectFrom(PLANETS)
                 .where(PLANETS.GALAXY.eq(location.galaxy), PLANETS.SYSTEM.eq(location.system), PLANETS.PLANET.eq(location.planet))
                 .fetchOne() ?: return null
-        return JooqPlanetMapper.toPlanet(record)
+        return JooqPlanetMapper.fromRecord(record)
     }
 
     override fun findAllInhabited(): List<Planet> {
         return jooq.selectFrom(PLANETS)
-                .fetch().map { JooqPlanetMapper.toPlanet(it) }.toList()
+                .fetch().map { JooqPlanetMapper.fromRecord(it) }.toList()
     }
 
     override fun updateResources(planetId: UUID, resources: Resources) {
@@ -56,15 +56,15 @@ class JooqPlanetRepository(private val jooq: DSLContext) : PlanetRepository {
                 .where(PLANETS.GALAXY.between(galaxyMin, galaxyMax)
                         .and(PLANETS.SYSTEM.between(systemMin, systemMax))
                         .and(PLANETS.PLANET.between(planetMin, planetMax))
-                ).map { PlanetWithPlayer(JooqPlanetMapper.toPlanet(it), JooqPlayerMapper.fromRecord(it)) }
+                ).map { PlanetWithPlayer(JooqPlanetMapper.fromRecord(it), JooqPlayerMapper.fromRecord(it)) }
                 .toList()
     }
 }
 
 object JooqPlanetMapper {
-    fun toPlanet(record: Record): Planet = toPlanet(record.into(PlanetsRecord::class.java))
+    fun fromRecord(record: Record): Planet = fromRecord(record.into(PlanetsRecord::class.java))
 
-    fun toPlanet(record: PlanetsRecord): Planet {
+    fun fromRecord(record: PlanetsRecord): Planet {
         return Planet(
                 record.id, record.ownerId, Location(record.galaxy, record.system, record.planet),
                 Resources(record.crystal, record.gas, record.energy)
