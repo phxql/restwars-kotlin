@@ -18,7 +18,7 @@ This is a client written in Kotlin for RESTwars.
     <dependency>
         <groupId>de.mkammerer.restwars</groupId>
         <artifactId>kotlin-client</artifactId>
-        <version>0.0.1</version>
+        <version>0.2.0</version>
     </dependency>
 </dependencies>
 ```
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.mkammerer.restwars:kotlin-client:0.0.1'
+    compile 'de.mkammerer.restwars:kotlin-client:0.2.0'
 }
 ```
 
