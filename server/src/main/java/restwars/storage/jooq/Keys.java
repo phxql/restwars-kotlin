@@ -45,6 +45,11 @@ public class Keys {
 	public static final UniqueKey<PointsRecord> CONSTRAINT_8 = UniqueKeys0.CONSTRAINT_8;
 	public static final UniqueKey<EventsRecord> CONSTRAINT_7A = UniqueKeys0.CONSTRAINT_7A;
 	public static final UniqueKey<HangarRecord> CONSTRAINT_7E9 = UniqueKeys0.CONSTRAINT_7E9;
+	public static final UniqueKey<HangarRecord> CONSTRAINT_7E95 = UniqueKeys0.CONSTRAINT_7E95;
+	public static final UniqueKey<FlightsRecord> CONSTRAINT_F = UniqueKeys0.CONSTRAINT_F;
+	public static final UniqueKey<FightsRecord> CONSTRAINT_7B = UniqueKeys0.CONSTRAINT_7B;
+	public static final UniqueKey<DetectedFlightsRecord> CONSTRAINT_2 = UniqueKeys0.CONSTRAINT_2;
+	public static final UniqueKey<DetectedFlightsRecord> CONSTRAINT_2A = UniqueKeys0.CONSTRAINT_2A;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
@@ -57,8 +62,16 @@ public class Keys {
 	public static final ForeignKey<PointsRecord, PlayersRecord> CONSTRAINT_8C = ForeignKeys0.CONSTRAINT_8C;
 	public static final ForeignKey<EventsRecord, PlayersRecord> CONSTRAINT_7A9 = ForeignKeys0.CONSTRAINT_7A9;
 	public static final ForeignKey<EventsRecord, PlanetsRecord> CONSTRAINT_7A9A = ForeignKeys0.CONSTRAINT_7A9A;
-	public static final ForeignKey<HangarRecord, PlanetsRecord> CONSTRAINT_7E95 = ForeignKeys0.CONSTRAINT_7E95;
+	public static final ForeignKey<HangarRecord, PlanetsRecord> CONSTRAINT_7E956 = ForeignKeys0.CONSTRAINT_7E956;
 	public static final ForeignKey<HangarShipsRecord, HangarRecord> CONSTRAINT_7E1 = ForeignKeys0.CONSTRAINT_7E1;
+	public static final ForeignKey<FlightsRecord, PlayersRecord> CONSTRAINT_FC = ForeignKeys0.CONSTRAINT_FC;
+	public static final ForeignKey<FlightShipsRecord, FlightsRecord> CONSTRAINT_50 = ForeignKeys0.CONSTRAINT_50;
+	public static final ForeignKey<FightsRecord, PlayersRecord> CONSTRAINT_7B9 = ForeignKeys0.CONSTRAINT_7B9;
+	public static final ForeignKey<FightsRecord, PlayersRecord> CONSTRAINT_7B99 = ForeignKeys0.CONSTRAINT_7B99;
+	public static final ForeignKey<FightsRecord, PlanetsRecord> CONSTRAINT_7B994 = ForeignKeys0.CONSTRAINT_7B994;
+	public static final ForeignKey<FightShipsRecord, FightsRecord> CONSTRAINT_B = ForeignKeys0.CONSTRAINT_B;
+	public static final ForeignKey<DetectedFlightsRecord, FlightsRecord> CONSTRAINT_2AD = ForeignKeys0.CONSTRAINT_2AD;
+	public static final ForeignKey<DetectedFlightsRecord, PlayersRecord> CONSTRAINT_2AD5 = ForeignKeys0.CONSTRAINT_2AD5;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
@@ -74,6 +87,11 @@ public class Keys {
 		public static final UniqueKey<PointsRecord> CONSTRAINT_8 = createUniqueKey(Points.POINTS, Points.POINTS.ID);
 		public static final UniqueKey<EventsRecord> CONSTRAINT_7A = createUniqueKey(Events.EVENTS, Events.EVENTS.ID);
 		public static final UniqueKey<HangarRecord> CONSTRAINT_7E9 = createUniqueKey(Hangar.HANGAR, Hangar.HANGAR.ID);
+		public static final UniqueKey<HangarRecord> CONSTRAINT_7E95 = createUniqueKey(Hangar.HANGAR, Hangar.HANGAR.PLANET_ID);
+		public static final UniqueKey<FlightsRecord> CONSTRAINT_F = createUniqueKey(Flights.FLIGHTS, Flights.FLIGHTS.ID);
+		public static final UniqueKey<FightsRecord> CONSTRAINT_7B = createUniqueKey(Fights.FIGHTS, Fights.FIGHTS.ID);
+		public static final UniqueKey<DetectedFlightsRecord> CONSTRAINT_2 = createUniqueKey(DetectedFlights.DETECTED_FLIGHTS, DetectedFlights.DETECTED_FLIGHTS.ID);
+		public static final UniqueKey<DetectedFlightsRecord> CONSTRAINT_2A = createUniqueKey(DetectedFlights.DETECTED_FLIGHTS, DetectedFlights.DETECTED_FLIGHTS.FLIGHT_ID);
 	}
 
 	private static class ForeignKeys0 extends AbstractKeys {
@@ -84,7 +102,15 @@ public class Keys {
 		public static final ForeignKey<PointsRecord, PlayersRecord> CONSTRAINT_8C = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Points.POINTS, Points.POINTS.PLAYER_ID);
 		public static final ForeignKey<EventsRecord, PlayersRecord> CONSTRAINT_7A9 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Events.EVENTS, Events.EVENTS.PLAYER_ID);
 		public static final ForeignKey<EventsRecord, PlanetsRecord> CONSTRAINT_7A9A = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Events.EVENTS, Events.EVENTS.PLANET_ID);
-		public static final ForeignKey<HangarRecord, PlanetsRecord> CONSTRAINT_7E95 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Hangar.HANGAR, Hangar.HANGAR.PLANET_ID);
+		public static final ForeignKey<HangarRecord, PlanetsRecord> CONSTRAINT_7E956 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Hangar.HANGAR, Hangar.HANGAR.PLANET_ID);
 		public static final ForeignKey<HangarShipsRecord, HangarRecord> CONSTRAINT_7E1 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_7E9, HangarShips.HANGAR_SHIPS, HangarShips.HANGAR_SHIPS.HANGAR_ID);
+		public static final ForeignKey<FlightsRecord, PlayersRecord> CONSTRAINT_FC = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Flights.FLIGHTS, Flights.FLIGHTS.PLAYER_ID);
+		public static final ForeignKey<FlightShipsRecord, FlightsRecord> CONSTRAINT_50 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_F, FlightShips.FLIGHT_SHIPS, FlightShips.FLIGHT_SHIPS.FLIGHT_ID);
+		public static final ForeignKey<FightsRecord, PlayersRecord> CONSTRAINT_7B9 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Fights.FIGHTS, Fights.FIGHTS.ATTACKER_ID);
+		public static final ForeignKey<FightsRecord, PlayersRecord> CONSTRAINT_7B99 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, Fights.FIGHTS, Fights.FIGHTS.DEFENDER_ID);
+		public static final ForeignKey<FightsRecord, PlanetsRecord> CONSTRAINT_7B994 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D5, Fights.FIGHTS, Fights.FIGHTS.PLANET_ID);
+		public static final ForeignKey<FightShipsRecord, FightsRecord> CONSTRAINT_B = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_7B, FightShips.FIGHT_SHIPS, FightShips.FIGHT_SHIPS.FIGHT_ID);
+		public static final ForeignKey<DetectedFlightsRecord, FlightsRecord> CONSTRAINT_2AD = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_F, DetectedFlights.DETECTED_FLIGHTS, DetectedFlights.DETECTED_FLIGHTS.FLIGHT_ID);
+		public static final ForeignKey<DetectedFlightsRecord, PlayersRecord> CONSTRAINT_2AD5 = createForeignKey(restwars.storage.jooq.Keys.CONSTRAINT_D, DetectedFlights.DETECTED_FLIGHTS, DetectedFlights.DETECTED_FLIGHTS.PLAYER_ID);
 	}
 }

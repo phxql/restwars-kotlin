@@ -71,4 +71,29 @@ public class Tables {
 	 * The table PUBLIC.HANGAR_SHIPS
 	 */
 	public static final HangarShips HANGAR_SHIPS = restwars.storage.jooq.tables.HangarShips.HANGAR_SHIPS;
+
+	/**
+	 * The table PUBLIC.FLIGHTS
+	 */
+	public static final Flights FLIGHTS = restwars.storage.jooq.tables.Flights.FLIGHTS;
+
+	/**
+	 * The table PUBLIC.FLIGHT_SHIPS
+	 */
+	public static final FlightShips FLIGHT_SHIPS = restwars.storage.jooq.tables.FlightShips.FLIGHT_SHIPS;
+
+	/**
+	 * The table PUBLIC.FIGHTS
+	 */
+	public static final Fights FIGHTS = restwars.storage.jooq.tables.Fights.FIGHTS;
+
+	/**
+	 * The table PUBLIC.FIGHT_SHIPS
+	 */
+	public static final FightShips FIGHT_SHIPS = restwars.storage.jooq.tables.FightShips.FIGHT_SHIPS;
+
+	/**
+	 * The table PUBLIC.DETECTED_FLIGHTS
+	 */
+	public static final DetectedFlights DETECTED_FLIGHTS = restwars.storage.jooq.tables.DetectedFlights.DETECTED_FLIGHTS;
 }
