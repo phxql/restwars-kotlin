@@ -73,4 +73,57 @@ CREATE TABLE hangar_ships (
   amount    INT         NOT NULL
 );
 
-CREATE UNIQUE INDEX hangar_ships_hangar_amount ON hangar_ships (hangar_id, type);
+CREATE UNIQUE INDEX hangar_ships_hangar_type ON hangar_ships (hangar_id, type);
+
+CREATE TABLE flights (
+  id                 UUID PRIMARY KEY,
+  player_id          UUID        NOT NULL REFERENCES players (id),
+  start_galaxy       INT         NOT NULL,
+  start_system       INT         NOT NULL,
+  start_planet       INT         NOT NULL,
+  destination_galaxy INT         NOT NULL,
+  destination_system INT         NOT NULL,
+  destination_planet INT         NOT NULL,
+  started_in_round   BIGINT      NOT NULL,
+  direction          VARCHAR(50) NOT NULL,
+  type               VARCHAR(50) NOT NULL,
+  cargo_crystal      INT         NOT NULL,
+  cargo_gas          INT         NOT NULL,
+  detected           BOOL        NOT NULL,
+  speed              DOUBLE      NOT NULL
+);
+
+CREATE TABLE flight_ships (
+  flight_id UUID        NOT NULL REFERENCES flights (id),
+  type      VARCHAR(50) NOT NULL,
+  amount    INT         NOT NULL
+);
+
+CREATE UNIQUE INDEX flight_ships_flight_type ON flight_ships (flight_id, type);
+
+CREATE TABLE fights (
+  id           UUID PRIMARY KEY,
+  attacker_id  UUID   NOT NULL REFERENCES players (id),
+  defender_id  UUID   NOT NULL REFERENCES players (id),
+  planet_id    UUID   NOT NULL REFERENCES planets (id),
+  round        BIGINT NOT NULL,
+  loot_crystal INT    NOT NULL,
+  loot_gas     INT    NOT NULL
+);
+
+CREATE TABLE fight_ships (
+  fight_id  UUID        NOT NULL REFERENCES fights (id),
+  ship_type VARCHAR(50) NOT NULL,
+  type      VARCHAR(50) NOT NULL,
+  amount    INT         NOT NULL
+);
+
+CREATE UNIQUE INDEX fight_ships_fight_type ON fight_ships (fight_id, ship_type, type);
+
+CREATE TABLE detected_flights (
+  id                       UUID PRIMARY KEY,
+  flight_id                UUID UNIQUE NOT NULL REFERENCES flights (id),
+  player_id                UUID        NOT NULL REFERENCES players (id),
+  detected_in_round        BIGINT      NOT NULL,
+  approximated_flight_size BIGINT      NOT NULL
+);
