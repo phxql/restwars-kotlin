@@ -85,6 +85,7 @@ CREATE TABLE flights (
   destination_system INT         NOT NULL,
   destination_planet INT         NOT NULL,
   started_in_round   BIGINT      NOT NULL,
+  arrival_in_round   BIGINT      NOT NULL,
   direction          VARCHAR(50) NOT NULL,
   type               VARCHAR(50) NOT NULL,
   cargo_crystal      INT         NOT NULL,
