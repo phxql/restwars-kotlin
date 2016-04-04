@@ -69,7 +69,7 @@ fun main(args: Array<String>) {
     val flightRepository = JooqFlightRepository(jooq)
     val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
     val pointsRepository = JooqPointsRepository(jooq)
-    val detectedFlightRepository = InMemoryDetectedFlightRepository(flightRepository)
+    val detectedFlightRepository = JooqDetectedFlightRepository(jooq)
     val eventRepository = JooqEventRepository(jooq)
 
     val resourceFormulas = ResourceFormulasImpl
@@ -137,7 +137,7 @@ fun main(args: Array<String>) {
     roundService.initialize()
     startClock(clock, config)
     val persister = Persister(
-            fightRepository, detectedFlightRepository
+            fightRepository
     )
     persister.start()
 

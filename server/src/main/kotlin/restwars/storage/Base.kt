@@ -16,16 +16,14 @@ interface PersistentRepository {
 }
 
 class Persister(
-        fightRepository: PersistentRepository,
-        detectedFlightRepository: PersistentRepository
+        fightRepository: PersistentRepository
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Persister") })
     private val persistInterval = 5L
 
     private val repositories = mapOf<PersistentRepository, Path>(
-            fightRepository to Paths.get("data/fights.dat"),
-            detectedFlightRepository to Paths.get("data/detected-flights.dat")
+            fightRepository to Paths.get("data/fights.dat")
     )
 
     fun start() {

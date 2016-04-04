@@ -2,18 +2,15 @@ package restwars.storage
 
 import org.jooq.DSLContext
 import org.jooq.Record
-import org.slf4j.LoggerFactory
 import restwars.business.flight.*
 import restwars.business.planet.Location
 import restwars.business.planet.Resources
 import restwars.business.ship.Ship
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
-import restwars.storage.jooq.Tables.FLIGHTS
-import restwars.storage.jooq.Tables.FLIGHT_SHIPS
-import java.nio.file.Path
+import restwars.storage.jooq.Tables.*
+import restwars.storage.jooq.tables.records.DetectedFlightsRecord
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 
 class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
     override fun insert(flight: Flight) {
@@ -69,6 +66,11 @@ class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
         jooq
                 .deleteFrom(FLIGHT_SHIPS)
                 .where(FLIGHT_SHIPS.FLIGHT_ID.eq(id))
+                .execute()
+
+        jooq
+                .deleteFrom(DETECTED_FLIGHTS)
+                .where(DETECTED_FLIGHTS.FLIGHT_ID.eq(id))
                 .execute()
 
         jooq
@@ -174,42 +176,40 @@ object JooqFlightMapper {
     }
 }
 
-class InMemoryDetectedFlightRepository(
-        private val flightRepository: FlightRepository
-) : DetectedFlightRepository, PersistentRepository {
-    private val logger = LoggerFactory.getLogger(javaClass)
-    private var detectedFlights: MutableList<DetectedFlight> = CopyOnWriteArrayList()
-
+class JooqDetectedFlightRepository(private val jooq: DSLContext) : DetectedFlightRepository {
     override fun insert(detectedFlight: DetectedFlight) {
-        logger.debug("Inserting {}", detectedFlight)
-        detectedFlights.add(detectedFlight)
+        jooq
+                .insertInto(DETECTED_FLIGHTS, DETECTED_FLIGHTS.ID, DETECTED_FLIGHTS.FLIGHT_ID, DETECTED_FLIGHTS.PLAYER_ID, DETECTED_FLIGHTS.DETECTED_IN_ROUND, DETECTED_FLIGHTS.APPROXIMATED_FLIGHT_SIZE)
+                .values(detectedFlight.id, detectedFlight.flightId, detectedFlight.playerId, detectedFlight.detectedInRound, detectedFlight.approximatedFleetSize)
+                .execute()
     }
 
     override fun findWithPlayer(playerId: UUID): List<DetectedFlightWithFlight> {
-        return detectedFlights.filter { it.playerId == playerId }.map {
-            val flight = flightRepository.findWithId(it.flightId) ?: throw AssertionError("Flight with id ${it.flightId} not found")
-            DetectedFlightWithFlight(it, flight)
-        }
+        val records = jooq.selectFrom(DETECTED_FLIGHTS.join(FLIGHTS).on(FLIGHTS.ID.eq(DETECTED_FLIGHTS.FLIGHT_ID)))
+                .where(DETECTED_FLIGHTS.PLAYER_ID.eq(playerId))
+                .fetchGroups(FLIGHTS.ID)
+
+        return records.values
+                .map { DetectedFlightWithFlight(JooqDetectedFlightMapper.fromRecord(it[0]), JooqFlightMapper.fromRecords(it)) }
     }
 
     override fun findWithPlayerSince(playerId: UUID, since: Long): List<DetectedFlightWithFlight> {
-        return detectedFlights.filter { it.playerId == playerId && it.detectedInRound >= since }.map {
-            val flight = flightRepository.findWithId(it.flightId) ?: throw AssertionError("Flight with id ${it.flightId} not found")
-            DetectedFlightWithFlight(it, flight)
-        }
-    }
+        val records = jooq.selectFrom(DETECTED_FLIGHTS.join(FLIGHTS).on(FLIGHTS.ID.eq(DETECTED_FLIGHTS.FLIGHT_ID)))
+                .where(DETECTED_FLIGHTS.PLAYER_ID.eq(playerId).and(DETECTED_FLIGHTS.DETECTED_IN_ROUND.ge(since)))
+                .fetchGroups(FLIGHTS.ID)
 
-    override fun deleteWithFlightId(flightId: UUID) {
-        detectedFlights.removeAll { it.flightId == flightId }
+        return records.values
+                .map { DetectedFlightWithFlight(JooqDetectedFlightMapper.fromRecord(it[0]), JooqFlightMapper.fromRecords(it)) }
     }
+}
 
-    override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, detectedFlights)
-    }
+object JooqDetectedFlightMapper {
+    fun fromRecord(record: Record): DetectedFlight = fromRecord(record.into(DETECTED_FLIGHTS))
 
-    @Suppress("UNCHECKED_CAST")
-    override fun load(persister: Persister, path: Path) {
-        detectedFlights = persister.loadData(path) as MutableList<DetectedFlight>
+    fun fromRecord(record: DetectedFlightsRecord): DetectedFlight {
+        return DetectedFlight(
+                record.id, record.flightId, record.playerId, record.detectedInRound, record.approximatedFlightSize
+        )
     }
 }
 
