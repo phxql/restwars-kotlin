@@ -155,6 +155,8 @@ class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
 
 object JooqFlightMapper {
     fun fromRecords(records: List<Record>): Flight {
+        assert(records.isNotEmpty())
+
         val flightRecords = records.map { it.into(FLIGHTS) }
         val flightShipsRecords = records.map { it.into(FLIGHT_SHIPS) }
         val flight = flightRecords[0]

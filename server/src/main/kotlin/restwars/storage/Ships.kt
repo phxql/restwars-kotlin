@@ -2,13 +2,10 @@ package restwars.storage
 
 import org.jooq.DSLContext
 import org.jooq.Record
-import org.slf4j.LoggerFactory
 import restwars.business.ship.*
 import restwars.storage.jooq.Tables.*
 import restwars.storage.jooq.tables.records.ShipsInConstructionRecord
-import java.nio.file.Path
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 
 class JooqShipInConstructionRepository(private val jooq: DSLContext) : ShipInConstructionRepository {
     override fun insert(shipInConstruction: ShipInConstruction) {
@@ -117,38 +114,5 @@ object JooqHangarMapper {
         }
 
         return Hangar(id, planetId, ships)
-    }
-}
-
-object InMemoryHangarRepository : HangarRepository, PersistentRepository {
-    private val logger = LoggerFactory.getLogger(javaClass)
-    private var hangars: MutableList<Hangar> = CopyOnWriteArrayList()
-
-    override fun findByPlanetId(planetId: UUID): Hangar {
-        return hangars.find { it.planetId == planetId }!!
-    }
-
-    override fun insert(hangar: Hangar) {
-        logger.debug("Inserting {}", hangar)
-        hangars.add(hangar)
-    }
-
-    override fun updateShips(hangarId: UUID, type: ShipType, oldAmount: Int, newAmount: Int) {
-        logger.debug("Updating ships in hangar with id {}: type {}, new amount: {}", hangarId, type, newAmount)
-
-        val index = hangars.indexOfFirst { it.id == hangarId }
-        if (index == -1) throw IllegalStateException("No hangar with id $hangarId found")
-
-        val hangar = hangars[index]
-        hangars[index] = hangar.copy(ships = hangar.ships.with(type, newAmount))
-    }
-
-    override fun persist(persister: Persister, path: Path) {
-        persister.saveData(path, hangars)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun load(persister: Persister, path: Path) {
-        hangars = persister.loadData(path) as MutableList<Hangar>
     }
 }

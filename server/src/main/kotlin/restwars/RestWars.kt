@@ -67,7 +67,7 @@ fun main(args: Array<String>) {
     val hangarRepository = JooqHangarRepository(jooq)
     val shipInConstructionRepository = JooqShipInConstructionRepository(jooq)
     val flightRepository = JooqFlightRepository(jooq)
-    val fightRepository = InMemoryFightRepository(playerRepository, planetRepository)
+    val fightRepository = JooqFightRepository(jooq)
     val pointsRepository = JooqPointsRepository(jooq)
     val detectedFlightRepository = JooqDetectedFlightRepository(jooq)
     val eventRepository = JooqEventRepository(jooq)
@@ -136,10 +136,6 @@ fun main(args: Array<String>) {
 
     roundService.initialize()
     startClock(clock, config)
-    val persister = Persister(
-            fightRepository
-    )
-    persister.start()
 
     logger.info("RESTwars started on port {}", port)
 }
