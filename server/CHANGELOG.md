@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Implemented a storage backend based on a H2 database.
+
 ## [0.2.0] - 2016-04-03
 ### Added
 - Started writing a changelog.
