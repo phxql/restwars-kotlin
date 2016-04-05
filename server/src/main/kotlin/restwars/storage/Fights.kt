@@ -64,8 +64,8 @@ class JooqFightRepository(private val jooq: DSLContext) : FightRepository {
     }
 
     private fun buildSelect(): SelectWhereStep<Record> {
-        val attacker = PLAYERS.`as`("attacker")
-        val defender = PLAYERS.`as`("defender")
+        val attacker = PLAYERS.`as`(JooqFightMapper.attackerAlias)
+        val defender = PLAYERS.`as`(JooqFightMapper.defenderAlias)
         return jooq
                 .selectFrom(
                         FIGHTS.leftJoin(FIGHT_SHIPS).on(FIGHT_SHIPS.FIGHT_ID.eq(FIGHTS.ID))
@@ -105,6 +105,9 @@ class JooqFightRepository(private val jooq: DSLContext) : FightRepository {
 }
 
 object JooqFightMapper {
+    val attackerAlias = "attacker"
+    val defenderAlias = "defender"
+
     private data class FightShips(val attacker: Ships, val defender: Ships, val remainingAttacker: Ships, val remainingDefender: Ships) {
         companion object {
             fun none() = FightShips(Ships.none(), Ships.none(), Ships.none(), Ships.none())
@@ -116,8 +119,8 @@ object JooqFightMapper {
 
         val fightRecords = records.map { it.into(FIGHTS) }
         val planetRecords = records.map { it.into(PLANETS) }
-        val attackerRecords = records.map { it.into(PLAYERS.`as`("attacker")) }
-        val defenderRecords = records.map { it.into(PLAYERS.`as`("defender")) }
+        val attackerRecords = records.map { it.into(PLAYERS.`as`(attackerAlias)) }
+        val defenderRecords = records.map { it.into(PLAYERS.`as`(defenderAlias)) }
         val fightShipsRecords = records.map { it.into(FIGHT_SHIPS) }
 
         val fightRecord = fightRecords[0]
