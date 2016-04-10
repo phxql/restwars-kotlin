@@ -14,6 +14,7 @@ data class ShipResponse(val type: String, val amount: Int) : Result {
     companion object {}
 }
 
+// TODO: ShipsResponse should be a list!
 data class ShipsResponse(val ships: List<ShipResponse>) : Result {
     companion object {}
 }
