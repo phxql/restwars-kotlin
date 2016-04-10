@@ -4,8 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Implemented COLONIZE_FAILED event.
+
 ### Changed
 - Implemented a storage backend based on a H2 database.
+- Ships in flights are now calculated into the points.
 
 ## [0.2.0] - 2016-04-03
 ### Added

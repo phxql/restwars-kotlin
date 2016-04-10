@@ -4,11 +4,14 @@ import org.slf4j.LoggerFactory
 import restwars.business.ShipFormulas
 import restwars.business.UUIDFactory
 import restwars.business.clock.RoundService
+import restwars.business.flight.Flight
+import restwars.business.flight.FlightService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
 import restwars.business.player.Player
 import restwars.business.player.PlayerService
 import restwars.business.ship.ShipService
+import restwars.business.ship.Ships
 import restwars.business.sumByLong
 import java.io.Serializable
 import java.util.*
@@ -36,7 +39,8 @@ class PointsServiceImpl(
         private val shipService: ShipService,
         private val shipFormulas: ShipFormulas,
         private val pointsRepository: PointsRepository,
-        private val uuidFactory: UUIDFactory
+        private val uuidFactory: UUIDFactory,
+        private val flightService: FlightService
 ) : PointsService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -44,12 +48,22 @@ class PointsServiceImpl(
         logger.info("Calculating points...")
 
         val planets = planetService.findAllInhabited()
+        val players = playerService.findAll()
         val pointsByPlayer = mutableMapOf<UUID, Long>()
 
         for (planet in planets) {
             var points = pointsByPlayer.getOrElse(planet.owner, { 0L })
             points += calculatePointsForPlanet(planet)
             pointsByPlayer[planet.owner] = points
+        }
+
+        for (player in players) {
+            var points = pointsByPlayer.getOrElse(player.id, { 0L })
+            val flights = flightService.findWithPlayer(player)
+            for (flight in flights) {
+                points += calculatePointsForFlight(flight)
+            }
+            pointsByPlayer[player.id] = points
         }
 
         val round = roundService.currentRound()
@@ -60,9 +74,16 @@ class PointsServiceImpl(
         logger.debug("Done calculating points")
     }
 
+    private fun calculatePointsForFlight(flight: Flight): Long {
+        return calculatePointsForShips(flight.ships)
+    }
+
     private fun calculatePointsForPlanet(planet: Planet): Long {
         val ships = shipService.findShipsByPlanet(planet)
+        return calculatePointsForShips(ships)
+    }
 
+    private fun calculatePointsForShips(ships: Ships): Long {
         val shipPoints = ships.ships.sumByLong { shipFormulas.calculatePoints(it.type) * it.amount }
         return shipPoints
     }
