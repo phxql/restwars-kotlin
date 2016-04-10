@@ -87,6 +87,7 @@ class ColonizeFlightHandler(
         if (planet != null) {
             logger.debug("Planet at {} is already colonized", flight.destination)
             flightService.createReturnFlight(flight, flight.ships, flight.cargo)
+            eventService.createColonizedFailedEvent(flight.playerId, planet.id)
             return
         }
 
