@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Implemented COLONIZE_FAILED event.
+- Added docker images.
 
 ### Changed
 - Implemented a storage backend based on a H2 database.

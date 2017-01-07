@@ -18,3 +18,8 @@
 
 1. Run `./gradlew clean build distTar`
 1. Check `build/distributions/`
+
+## Run with docker
+
+1. `docker run -itp 7777:7777 docker.io/phxql/restwars`
+1. Open browser at [http://localhost:7777/v1/restwars](http://localhost:7777/v1/restwars)
