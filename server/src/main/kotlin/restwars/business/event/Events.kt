@@ -9,7 +9,7 @@ import java.util.*
 
 enum class EventType {
     BUILDING_COMPLETE, SHIP_COMPLETE, FLIGHT_DETECTED, PLANET_COLONIZED, FIGHT_HAPPENED, SHIPS_TRANSFERRED,
-    RESOURCES_TRANSFERRED, SHIPS_RETURNED
+    RESOURCES_TRANSFERRED, SHIPS_RETURNED, COLONIZE_FAILED
 }
 
 data class Event(
@@ -38,6 +38,8 @@ interface EventService {
     fun createResourcesTransferredEvent(playerId: UUID, planetId: UUID): Event
 
     fun createShipsReturnedEvent(playerId: UUID, planetId: UUID): Event
+
+    fun createColonizedFailedEvent(playerId: UUID, planetId: UUID): Event
 
     fun findWithPlayer(player: Player, since: Long?): List<EventWithPlanet>
 }
@@ -95,6 +97,10 @@ class EventServiceImpl(
 
     override fun createShipsReturnedEvent(playerId: UUID, planetId: UUID): Event {
         return createAndInsertEvent(planetId, playerId, EventType.SHIPS_RETURNED)
+    }
+
+    override fun createColonizedFailedEvent(playerId: UUID, planetId: UUID): Event {
+        return createAndInsertEvent(planetId, playerId, EventType.COLONIZE_FAILED)
     }
 
     private fun createAndInsertEvent(planetId: UUID, playerId: UUID, type: EventType): Event {
