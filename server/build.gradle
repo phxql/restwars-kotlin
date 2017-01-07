@@ -56,7 +56,7 @@ processResources {
     ]
 }
 
-task('generateJooq') << {
+task('generateJooq').doLast {
     def writer = new StringWriter()
     new MarkupBuilder(writer)
             .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.7.0.xsd') {

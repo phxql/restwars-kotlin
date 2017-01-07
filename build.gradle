@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.1'
+    ext.kotlin_version = '1.0.5-2'
     ext.h2_version = '1.4.191'
     ext.jooq_version = '3.7.3'
 
@@ -56,5 +56,5 @@ subprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
+    gradleVersion = '3.3'
 }
