@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.0.5-2'
-    ext.h2_version = '1.4.191'
-    ext.jooq_version = '3.7.3'
+    ext.h2_version = '1.4.193'
+    ext.jooq_version = '3.9.0'
 
     repositories {
         mavenCentral()
