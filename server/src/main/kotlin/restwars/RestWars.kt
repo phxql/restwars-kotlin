@@ -38,6 +38,7 @@ import spark.Route
 import spark.Spark
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
@@ -334,5 +335,13 @@ private fun addExceptionHandler() {
 
         res.status(e.statusCode)
         res.body(Json.toJson(res, e.response))
+    })
+
+    Spark.exception(Exception::class.java, { e, req, res ->
+        val errorUUID = UUID.randomUUID()
+
+        logger.error("Unhandled exception $errorUUID occurred", e)
+        res.status(StatusCode.INTERNAL_SERVER_ERROR)
+        res.body(Json.toJson(res, ErrorResponse(ErrorReason.INTERNAL_SERVER_ERROR.name, "Error ID: $errorUUID")))
     })
 }

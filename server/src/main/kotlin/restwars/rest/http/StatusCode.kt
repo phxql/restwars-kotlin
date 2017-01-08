@@ -1,19 +1,13 @@
 package restwars.rest.http
 
 object StatusCode {
-    val CREATED = 201
-
-    val BAD_REQUEST = 400
-
-    val UNAUTHORIZED = 401
-
-    val FORBIDDEN = 403
-
-    val NOT_FOUND = 404
-
-    val CONFLICT = 409
-
-    val UNPROCESSABLE_ENTITY = 422
-
-    val SERVICE_UNAVAILABLE = 503
+    const val CREATED = 201
+    const val BAD_REQUEST = 400
+    const val UNAUTHORIZED = 401
+    const val FORBIDDEN = 403
+    const val NOT_FOUND = 404
+    const val CONFLICT = 409
+    const val UNPROCESSABLE_ENTITY = 422
+    const val SERVICE_UNAVAILABLE = 503
+    const val INTERNAL_SERVER_ERROR = 500
 }
