@@ -377,8 +377,8 @@ The flight started from 1.2.3 and is a colonize flight to 4.5.6. The flight will
 * `400 Bad Request` if not enough resources are available to start the flight.
 * `400 Bad Request` if not enough ships are available.
 
-List all flights
-~~~~~~~~~~~~~~~~
+List all own flights
+~~~~~~~~~~~~~~~~~~~~
 
 Lists all flights for the player. Needs authentication.
 
@@ -389,8 +389,8 @@ Response:
 [source,json]
 include::responses/flights.json[]
 
-List all flights with destination
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+List all own flights with destination
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Lists all flights with a given destination. Needs authentication.
 
@@ -401,8 +401,8 @@ Response:
 [source,json]
 include::responses/flights.json[]
 
-List all flights with start
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+List all own flights with start
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Lists all flights with a given start. Needs authentication.
 
