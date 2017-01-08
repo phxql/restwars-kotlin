@@ -427,19 +427,6 @@ Optional query parameters:
 [source,json]
 include::responses/detected-flights.json[]
 
-Attack mechanics
-~~~~~~~~~~~~~~~~
-
-When a planet is attacked, all ships residing at the planet automatically defend.
-
-To ensure a fair fight, the calculation is being done in two steps:
-
-1. The attack points of the attacking ships are accumulated. One by one, random defending ships which have less or equal defense points than the cumulated attack points of the defending ships are marked for destruction and taken out of the fight and their defense value is subtracted from the cumulated attack points. This process is repeated until there are either no more defending ships or the remaining attack value of the attacking ships is no longer sufficient to destroy a ship.
-
-2. The same process is now carried out in reverse. All defending ships initially present on the attacked planet are now attacking the assailants ships.
-
-Finally, all attacking and defending ships which were marked for destruction or being destroyed. If there are remaining attacker ships, they will now loot the planet. They will therefore take at most an amount equal to half their available cargo size of crystal and gas each. They can not take more than what is available on the planet at the beginning of the fight.
-
 Events
 ------
 
