@@ -94,8 +94,8 @@ interface Restwars {
     @RequestLine("GET /v1/metadata/ship")
     fun listShipMetadata(): ShipsMetadataResponse
 
-    @RequestLine("GET /v1/metadata/building")
-    fun listBuildingMetadata(): BuildingsMetadataResponse
+    @RequestLine("GET /v1/metadata/building?level={level}")
+    fun listBuildingMetadata(@Param("level") level: Int): BuildingsMetadataResponse
 
     @RequestLine("GET /v1/tournament/wait")
     fun waitForTournamentStart(): SuccessResponse

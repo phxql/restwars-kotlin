@@ -247,7 +247,7 @@ class FlightServiceImpl(
         val planet = planetService.findByLocation(flight.start)
         if (planet == null) {
             // TODO: What happens if the planet is no more?
-            return;
+            return
         }
         // TODO: What happens if the planet changed the owner?
 
