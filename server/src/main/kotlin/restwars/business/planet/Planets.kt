@@ -143,6 +143,7 @@ class PlanetServiceImpl(
             val planet = randomNumberGenerator.nextInt(1, config.universeSize.maxPlanets)
             location = Location(galaxy, system, planet)
         } while (planetRepository.findByLocation(location) != null)
+        // TODO: Fix bug #54. Break loop if whole universe is occupied.
 
         val id = uuidFactory.create()
         val planet = Planet(id, player.id, location, config.starterPlanet.resources)
