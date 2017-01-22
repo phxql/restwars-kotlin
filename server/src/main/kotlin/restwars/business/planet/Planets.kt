@@ -100,9 +100,13 @@ interface PlanetRepository {
     fun updateResources(planetId: UUID, resources: Resources)
 
     fun findInRangeWithOwner(galaxyMin: Int, galaxyMax: Int, systemMin: Int, systemMax: Int, planetMin: Int, planetMax: Int): List<PlanetWithPlayer>
+
+    fun countInhabited(): Int
 }
 
 class PlanetAlreadyExistsException(val location: Location) : Exception("Planet at location $location already exists")
+
+class UniverseFullException() : Exception("Universe is full")
 
 class PlanetServiceImpl(
         private val uuidFactory: UUIDFactory,
@@ -135,6 +139,12 @@ class PlanetServiceImpl(
     override fun findByOwner(owner: Player): List<Planet> = planetRepository.findByOwnerId(owner.id)
 
     override fun createStarterPlanet(player: Player): Planet {
+        val totalPlanets = config.universeSize.maxPlanets * config.universeSize.maxSystems * config.universeSize.maxGalaxies
+
+        if (planetRepository.countInhabited() == totalPlanets) {
+            throw UniverseFullException()
+        }
+
         // Find location which isn't already occupied
         var location: Location
         do {
@@ -143,7 +153,6 @@ class PlanetServiceImpl(
             val planet = randomNumberGenerator.nextInt(1, config.universeSize.maxPlanets)
             location = Location(galaxy, system, planet)
         } while (planetRepository.findByLocation(location) != null)
-        // TODO: Fix bug #54. Break loop if whole universe is occupied.
 
         val id = uuidFactory.create()
         val planet = Planet(id, player.id, location, config.starterPlanet.resources)

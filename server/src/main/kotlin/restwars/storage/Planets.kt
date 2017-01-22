@@ -9,6 +9,10 @@ import restwars.storage.jooq.tables.records.PlanetsRecord
 import java.util.*
 
 class JooqPlanetRepository(private val jooq: DSLContext) : PlanetRepository {
+    override fun countInhabited(): Int {
+        return jooq.fetchCount(PLANETS)
+    }
+
     override fun findByOwnerId(ownerId: UUID): List<Planet> {
         return jooq.selectFrom(PLANETS)
                 .where(PLANETS.OWNER_ID.eq(ownerId))

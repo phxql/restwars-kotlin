@@ -2,6 +2,7 @@ package restwars.rest.controller
 
 import restwars.business.building.BuildingService
 import restwars.business.planet.PlanetService
+import restwars.business.planet.UniverseFullException
 import restwars.business.player.PlayerService
 import restwars.business.player.UsernameNotUniqueException
 import restwars.rest.api.*
@@ -22,7 +23,11 @@ class PlayerController(
             } catch(ex: UsernameNotUniqueException) {
                 throw StatusCodeException(StatusCode.CONFLICT, ErrorResponse(ErrorReason.USERNAME_ALREADY_EXISTS.name, ex.message ?: ""))
             }
-            val planet = planetService.createStarterPlanet(player)
+            val planet = try {
+                planetService.createStarterPlanet(player)
+            } catch(ex: UniverseFullException) {
+                throw StatusCodeException(StatusCode.CONFLICT, ErrorResponse(ErrorReason.UNIVERSE_FULL.name, ex.message ?: ""))
+            }
             buildingService.createStarterBuildings(planet)
 
             res.status(StatusCode.CREATED)
