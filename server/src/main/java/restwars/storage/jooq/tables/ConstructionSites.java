@@ -29,7 +29,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class ConstructionSites extends TableImpl<ConstructionSitesRecord> {
 
-    private static final long serialVersionUID = -386767608;
+    private static final long serialVersionUID = 110678695;
 
     /**
      * The reference instance of <code>PUBLIC.CONSTRUCTION_SITES</code>
@@ -55,9 +55,9 @@ public class ConstructionSites extends TableImpl<ConstructionSitesRecord> {
     public final TableField<ConstructionSitesRecord, UUID> PLANET_ID = createField("PLANET_ID", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>PUBLIC.CONSTRUCTION_SITES.TYPE</code>.
+     * The column <code>PUBLIC.CONSTRUCTION_SITES.BUILDING_TYPE</code>.
      */
-    public final TableField<ConstructionSitesRecord, String> TYPE = createField("TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
+    public final TableField<ConstructionSitesRecord, String> BUILDING_TYPE = createField("BUILDING_TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
 
     /**
      * The column <code>PUBLIC.CONSTRUCTION_SITES.LEVEL</code>.

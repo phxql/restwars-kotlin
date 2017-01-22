@@ -9,7 +9,7 @@ import java.util.*
 
 class JooqShipInConstructionRepository(private val jooq: DSLContext) : ShipInConstructionRepository {
     override fun insert(shipInConstruction: ShipInConstruction) {
-        jooq.insertInto(SHIPS_IN_CONSTRUCTION, SHIPS_IN_CONSTRUCTION.ID, SHIPS_IN_CONSTRUCTION.PLANET_ID, SHIPS_IN_CONSTRUCTION.TYPE, SHIPS_IN_CONSTRUCTION.DONE)
+        jooq.insertInto(SHIPS_IN_CONSTRUCTION, SHIPS_IN_CONSTRUCTION.ID, SHIPS_IN_CONSTRUCTION.PLANET_ID, SHIPS_IN_CONSTRUCTION.SHIP_TYPE, SHIPS_IN_CONSTRUCTION.DONE)
                 .values(shipInConstruction.id, shipInConstruction.planetId, shipInConstruction.type.name, shipInConstruction.done)
                 .execute()
     }
@@ -46,7 +46,7 @@ class JooqShipInConstructionRepository(private val jooq: DSLContext) : ShipInCon
 object JooqShipInConstructionMapper {
     fun fromRecord(record: ShipsInConstructionRecord): ShipInConstruction {
         return ShipInConstruction(
-                record.id, record.planetId, ShipType.valueOf(record.type), record.done
+                record.id, record.planetId, ShipType.valueOf(record.shipType), record.done
         )
     }
 }
@@ -69,7 +69,7 @@ class JooqHangarRepository(private val jooq: DSLContext) : HangarRepository {
 
         for (ship in hangar.ships.ships) {
             if (ship.amount > 0) {
-                jooq.insertInto(HANGAR_SHIPS, HANGAR_SHIPS.HANGAR_ID, HANGAR_SHIPS.TYPE, HANGAR_SHIPS.AMOUNT)
+                jooq.insertInto(HANGAR_SHIPS, HANGAR_SHIPS.HANGAR_ID, HANGAR_SHIPS.SHIP_TYPE, HANGAR_SHIPS.AMOUNT)
                         .values(hangar.id, ship.type.name, ship.amount)
                         .execute()
             }
@@ -82,18 +82,18 @@ class JooqHangarRepository(private val jooq: DSLContext) : HangarRepository {
         if (newAmount == 0) {
             // Delete row
             jooq.deleteFrom(HANGAR_SHIPS)
-                    .where(HANGAR_SHIPS.HANGAR_ID.eq(hangarId).and(HANGAR_SHIPS.TYPE.eq(type.name)))
+                    .where(HANGAR_SHIPS.HANGAR_ID.eq(hangarId).and(HANGAR_SHIPS.SHIP_TYPE.eq(type.name)))
                     .execute()
         } else if (oldAmount == 0) {
             // Insert new row
-            jooq.insertInto(HANGAR_SHIPS, HANGAR_SHIPS.HANGAR_ID, HANGAR_SHIPS.TYPE, HANGAR_SHIPS.AMOUNT)
+            jooq.insertInto(HANGAR_SHIPS, HANGAR_SHIPS.HANGAR_ID, HANGAR_SHIPS.SHIP_TYPE, HANGAR_SHIPS.AMOUNT)
                     .values(hangarId, type.name, newAmount)
                     .execute()
         } else {
             // Update row
             jooq.update(HANGAR_SHIPS)
                     .set(HANGAR_SHIPS.AMOUNT, newAmount)
-                    .where(HANGAR_SHIPS.HANGAR_ID.eq(hangarId).and(HANGAR_SHIPS.TYPE.eq(type.name)))
+                    .where(HANGAR_SHIPS.HANGAR_ID.eq(hangarId).and(HANGAR_SHIPS.SHIP_TYPE.eq(type.name)))
                     .execute()
         }
     }
@@ -106,11 +106,11 @@ object JooqHangarMapper {
         val id = hangarRecords[0].id
         val planetId = hangarRecords[0].planetId
 
-        val ships = if (hangarShipRecords[0].type == null) {
+        val ships = if (hangarShipRecords[0].shipType == null) {
             // Happens if the LEFT JOIN has no rows in hangar_ships
             Ships.none()
         } else {
-            Ships(hangarShipRecords.map { Ship(ShipType.valueOf(it.type), it.amount) })
+            Ships(hangarShipRecords.map { Ship(ShipType.valueOf(it.shipType), it.amount) })
         }
 
         return Hangar(id, planetId, ships)

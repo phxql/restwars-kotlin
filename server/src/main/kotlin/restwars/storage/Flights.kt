@@ -18,7 +18,7 @@ class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
                 .insertInto(
                         FLIGHTS, FLIGHTS.ID, FLIGHTS.PLAYER_ID, FLIGHTS.START_GALAXY, FLIGHTS.START_SYSTEM, FLIGHTS.START_PLANET,
                         FLIGHTS.DESTINATION_GALAXY, FLIGHTS.DESTINATION_SYSTEM, FLIGHTS.DESTINATION_PLANET, FLIGHTS.STARTED_IN_ROUND,
-                        FLIGHTS.ARRIVAL_IN_ROUND, FLIGHTS.DIRECTION, FLIGHTS.TYPE, FLIGHTS.CARGO_CRYSTAL, FLIGHTS.CARGO_GAS,
+                        FLIGHTS.ARRIVAL_IN_ROUND, FLIGHTS.DIRECTION, FLIGHTS.FLIGHT_TYPE, FLIGHTS.CARGO_CRYSTAL, FLIGHTS.CARGO_GAS,
                         FLIGHTS.DETECTED, FLIGHTS.SPEED
                 )
                 .values(
@@ -36,7 +36,7 @@ class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
         for (ship in ships.ships) {
             if (ship.amount > 0) {
                 jooq
-                        .insertInto(FLIGHT_SHIPS, FLIGHT_SHIPS.FLIGHT_ID, FLIGHT_SHIPS.TYPE, FLIGHT_SHIPS.AMOUNT)
+                        .insertInto(FLIGHT_SHIPS, FLIGHT_SHIPS.FLIGHT_ID, FLIGHT_SHIPS.SHIP_TYPE, FLIGHT_SHIPS.AMOUNT)
                         .values(flightId, ship.type.name, ship.amount)
                         .execute()
             }
@@ -161,18 +161,18 @@ object JooqFlightMapper {
         val flightShipsRecords = records.map { it.into(FLIGHT_SHIPS) }
         val flight = flightRecords[0]
 
-        val ships = if (flightShipsRecords[0].type == null) {
+        val ships = if (flightShipsRecords[0].shipType == null) {
             // Happens if the LEFT JOIN has no rows in flight_ships
             Ships.none()
         } else {
-            Ships(flightShipsRecords.map { Ship(ShipType.valueOf(it.type), it.amount) })
+            Ships(flightShipsRecords.map { Ship(ShipType.valueOf(it.shipType), it.amount) })
         }
 
         return Flight(
                 flight.id, flight.playerId, Location(flight.startGalaxy, flight.startSystem, flight.startPlanet),
                 Location(flight.destinationGalaxy, flight.destinationSystem, flight.destinationPlanet),
                 flight.startedInRound, flight.arrivalInRound, ships, FlightDirection.valueOf(flight.direction),
-                FlightType.valueOf(flight.type), Resources(flight.cargoCrystal, flight.cargoGas, 0), flight.detected,
+                FlightType.valueOf(flight.flightType), Resources(flight.cargoCrystal, flight.cargoGas, 0), flight.detected,
                 flight.speed
         )
     }

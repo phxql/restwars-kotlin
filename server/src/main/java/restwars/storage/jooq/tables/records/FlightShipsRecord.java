@@ -27,7 +27,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class FlightShipsRecord extends TableRecordImpl<FlightShipsRecord> implements Record3<UUID, String, Integer> {
 
-    private static final long serialVersionUID = -470315546;
+    private static final long serialVersionUID = -1482732839;
 
     /**
      * Setter for <code>PUBLIC.FLIGHT_SHIPS.FLIGHT_ID</code>.
@@ -44,16 +44,16 @@ public class FlightShipsRecord extends TableRecordImpl<FlightShipsRecord> implem
     }
 
     /**
-     * Setter for <code>PUBLIC.FLIGHT_SHIPS.TYPE</code>.
+     * Setter for <code>PUBLIC.FLIGHT_SHIPS.SHIP_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setShipType(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.FLIGHT_SHIPS.TYPE</code>.
+     * Getter for <code>PUBLIC.FLIGHT_SHIPS.SHIP_TYPE</code>.
      */
-    public String getType() {
+    public String getShipType() {
         return (String) get(1);
     }
 
@@ -104,7 +104,7 @@ public class FlightShipsRecord extends TableRecordImpl<FlightShipsRecord> implem
      */
     @Override
     public Field<String> field2() {
-        return FlightShips.FLIGHT_SHIPS.TYPE;
+        return FlightShips.FLIGHT_SHIPS.SHIP_TYPE;
     }
 
     /**
@@ -128,7 +128,7 @@ public class FlightShipsRecord extends TableRecordImpl<FlightShipsRecord> implem
      */
     @Override
     public String value2() {
-        return getType();
+        return getShipType();
     }
 
     /**
@@ -153,7 +153,7 @@ public class FlightShipsRecord extends TableRecordImpl<FlightShipsRecord> implem
      */
     @Override
     public FlightShipsRecord value2(String value) {
-        setType(value);
+        setShipType(value);
         return this;
     }
 
@@ -191,11 +191,11 @@ public class FlightShipsRecord extends TableRecordImpl<FlightShipsRecord> implem
     /**
      * Create a detached, initialised FlightShipsRecord
      */
-    public FlightShipsRecord(UUID flightId, String type, Integer amount) {
+    public FlightShipsRecord(UUID flightId, String shipType, Integer amount) {
         super(FlightShips.FLIGHT_SHIPS);
 
         set(0, flightId);
-        set(1, type);
+        set(1, shipType);
         set(2, amount);
     }
 }

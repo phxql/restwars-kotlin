@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.0.5-2'
     ext.h2_version = '1.4.193'
     ext.jooq_version = '3.9.0'
+    ext.flyway_version = '4.0.3'
 
     repositories {
         mavenCentral()
@@ -10,6 +11,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath("org.jooq:jooq-codegen:$jooq_version")
+        classpath("org.flywaydb:flyway-core:$flyway_version")
         classpath("com.h2database:h2:$h2_version")
     }
 }

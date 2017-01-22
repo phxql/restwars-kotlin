@@ -29,7 +29,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Events extends TableImpl<EventsRecord> {
 
-    private static final long serialVersionUID = 2024563999;
+    private static final long serialVersionUID = -233096540;
 
     /**
      * The reference instance of <code>PUBLIC.EVENTS</code>
@@ -50,9 +50,9 @@ public class Events extends TableImpl<EventsRecord> {
     public final TableField<EventsRecord, UUID> ID = createField("ID", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>PUBLIC.EVENTS.TYPE</code>.
+     * The column <code>PUBLIC.EVENTS.EVENT_TYPE</code>.
      */
-    public final TableField<EventsRecord, String> TYPE = createField("TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
+    public final TableField<EventsRecord, String> EVENT_TYPE = createField("EVENT_TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
 
     /**
      * The column <code>PUBLIC.EVENTS.ROUND</code>.

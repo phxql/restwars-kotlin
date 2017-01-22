@@ -28,7 +28,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements Record16<UUID, UUID, Integer, Integer, Integer, Integer, Integer, Integer, Long, Long, String, String, Integer, Integer, Boolean, Double> {
 
-    private static final long serialVersionUID = -22728329;
+    private static final long serialVersionUID = 959300374;
 
     /**
      * Setter for <code>PUBLIC.FLIGHTS.ID</code>.
@@ -185,16 +185,16 @@ public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements
     }
 
     /**
-     * Setter for <code>PUBLIC.FLIGHTS.TYPE</code>.
+     * Setter for <code>PUBLIC.FLIGHTS.FLIGHT_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setFlightType(String value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.FLIGHTS.TYPE</code>.
+     * Getter for <code>PUBLIC.FLIGHTS.FLIGHT_TYPE</code>.
      */
-    public String getType() {
+    public String getFlightType() {
         return (String) get(11);
     }
 
@@ -379,7 +379,7 @@ public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements
      */
     @Override
     public Field<String> field12() {
-        return Flights.FLIGHTS.TYPE;
+        return Flights.FLIGHTS.FLIGHT_TYPE;
     }
 
     /**
@@ -507,7 +507,7 @@ public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements
      */
     @Override
     public String value12() {
-        return getType();
+        return getFlightType();
     }
 
     /**
@@ -646,7 +646,7 @@ public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements
      */
     @Override
     public FlightsRecord value12(String value) {
-        setType(value);
+        setFlightType(value);
         return this;
     }
 
@@ -724,7 +724,7 @@ public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements
     /**
      * Create a detached, initialised FlightsRecord
      */
-    public FlightsRecord(UUID id, UUID playerId, Integer startGalaxy, Integer startSystem, Integer startPlanet, Integer destinationGalaxy, Integer destinationSystem, Integer destinationPlanet, Long startedInRound, Long arrivalInRound, String direction, String type, Integer cargoCrystal, Integer cargoGas, Boolean detected, Double speed) {
+    public FlightsRecord(UUID id, UUID playerId, Integer startGalaxy, Integer startSystem, Integer startPlanet, Integer destinationGalaxy, Integer destinationSystem, Integer destinationPlanet, Long startedInRound, Long arrivalInRound, String direction, String flightType, Integer cargoCrystal, Integer cargoGas, Boolean detected, Double speed) {
         super(Flights.FLIGHTS);
 
         set(0, id);
@@ -738,7 +738,7 @@ public class FlightsRecord extends UpdatableRecordImpl<FlightsRecord> implements
         set(8, startedInRound);
         set(9, arrivalInRound);
         set(10, direction);
-        set(11, type);
+        set(11, flightType);
         set(12, cargoCrystal);
         set(13, cargoGas);
         set(14, detected);

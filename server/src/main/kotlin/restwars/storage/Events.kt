@@ -13,7 +13,7 @@ import java.util.*
 
 class JooqEventRepository(private val jooq: DSLContext) : EventRepository {
     override fun insert(event: Event) {
-        jooq.insertInto(EVENTS, EVENTS.ID, EVENTS.PLANET_ID, EVENTS.PLAYER_ID, EVENTS.TYPE, EVENTS.ROUND)
+        jooq.insertInto(EVENTS, EVENTS.ID, EVENTS.PLANET_ID, EVENTS.PLAYER_ID, EVENTS.EVENT_TYPE, EVENTS.ROUND)
                 .values(event.id, event.planetId, event.playerId, event.type.name, event.round)
                 .execute()
     }
@@ -40,7 +40,7 @@ object JooqEventMapper {
 
     fun fromRecord(record: EventsRecord): Event {
         return Event(
-                record.id, EventType.valueOf(record.type), record.round, record.playerId, record.planetId
+                record.id, EventType.valueOf(record.eventType), record.round, record.playerId, record.planetId
         )
     }
 }

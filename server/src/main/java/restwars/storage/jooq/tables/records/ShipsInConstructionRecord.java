@@ -28,7 +28,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class ShipsInConstructionRecord extends UpdatableRecordImpl<ShipsInConstructionRecord> implements Record4<UUID, UUID, String, Long> {
 
-    private static final long serialVersionUID = -1323275671;
+    private static final long serialVersionUID = 166315814;
 
     /**
      * Setter for <code>PUBLIC.SHIPS_IN_CONSTRUCTION.ID</code>.
@@ -59,16 +59,16 @@ public class ShipsInConstructionRecord extends UpdatableRecordImpl<ShipsInConstr
     }
 
     /**
-     * Setter for <code>PUBLIC.SHIPS_IN_CONSTRUCTION.TYPE</code>.
+     * Setter for <code>PUBLIC.SHIPS_IN_CONSTRUCTION.SHIP_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setShipType(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.SHIPS_IN_CONSTRUCTION.TYPE</code>.
+     * Getter for <code>PUBLIC.SHIPS_IN_CONSTRUCTION.SHIP_TYPE</code>.
      */
-    public String getType() {
+    public String getShipType() {
         return (String) get(2);
     }
 
@@ -139,7 +139,7 @@ public class ShipsInConstructionRecord extends UpdatableRecordImpl<ShipsInConstr
      */
     @Override
     public Field<String> field3() {
-        return ShipsInConstruction.SHIPS_IN_CONSTRUCTION.TYPE;
+        return ShipsInConstruction.SHIPS_IN_CONSTRUCTION.SHIP_TYPE;
     }
 
     /**
@@ -171,7 +171,7 @@ public class ShipsInConstructionRecord extends UpdatableRecordImpl<ShipsInConstr
      */
     @Override
     public String value3() {
-        return getType();
+        return getShipType();
     }
 
     /**
@@ -205,7 +205,7 @@ public class ShipsInConstructionRecord extends UpdatableRecordImpl<ShipsInConstr
      */
     @Override
     public ShipsInConstructionRecord value3(String value) {
-        setType(value);
+        setShipType(value);
         return this;
     }
 
@@ -244,12 +244,12 @@ public class ShipsInConstructionRecord extends UpdatableRecordImpl<ShipsInConstr
     /**
      * Create a detached, initialised ShipsInConstructionRecord
      */
-    public ShipsInConstructionRecord(UUID id, UUID planetId, String type, Long done) {
+    public ShipsInConstructionRecord(UUID id, UUID planetId, String shipType, Long done) {
         super(ShipsInConstruction.SHIPS_IN_CONSTRUCTION);
 
         set(0, id);
         set(1, planetId);
-        set(2, type);
+        set(2, shipType);
         set(3, done);
     }
 }

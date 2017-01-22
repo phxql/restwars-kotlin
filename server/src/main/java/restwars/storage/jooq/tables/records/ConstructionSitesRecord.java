@@ -28,7 +28,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class ConstructionSitesRecord extends UpdatableRecordImpl<ConstructionSitesRecord> implements Record5<UUID, UUID, String, Integer, Long> {
 
-    private static final long serialVersionUID = -531000499;
+    private static final long serialVersionUID = 861941100;
 
     /**
      * Setter for <code>PUBLIC.CONSTRUCTION_SITES.ID</code>.
@@ -59,16 +59,16 @@ public class ConstructionSitesRecord extends UpdatableRecordImpl<ConstructionSit
     }
 
     /**
-     * Setter for <code>PUBLIC.CONSTRUCTION_SITES.TYPE</code>.
+     * Setter for <code>PUBLIC.CONSTRUCTION_SITES.BUILDING_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setBuildingType(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.CONSTRUCTION_SITES.TYPE</code>.
+     * Getter for <code>PUBLIC.CONSTRUCTION_SITES.BUILDING_TYPE</code>.
      */
-    public String getType() {
+    public String getBuildingType() {
         return (String) get(2);
     }
 
@@ -153,7 +153,7 @@ public class ConstructionSitesRecord extends UpdatableRecordImpl<ConstructionSit
      */
     @Override
     public Field<String> field3() {
-        return ConstructionSites.CONSTRUCTION_SITES.TYPE;
+        return ConstructionSites.CONSTRUCTION_SITES.BUILDING_TYPE;
     }
 
     /**
@@ -193,7 +193,7 @@ public class ConstructionSitesRecord extends UpdatableRecordImpl<ConstructionSit
      */
     @Override
     public String value3() {
-        return getType();
+        return getBuildingType();
     }
 
     /**
@@ -235,7 +235,7 @@ public class ConstructionSitesRecord extends UpdatableRecordImpl<ConstructionSit
      */
     @Override
     public ConstructionSitesRecord value3(String value) {
-        setType(value);
+        setBuildingType(value);
         return this;
     }
 
@@ -284,12 +284,12 @@ public class ConstructionSitesRecord extends UpdatableRecordImpl<ConstructionSit
     /**
      * Create a detached, initialised ConstructionSitesRecord
      */
-    public ConstructionSitesRecord(UUID id, UUID planetId, String type, Integer level, Long done) {
+    public ConstructionSitesRecord(UUID id, UUID planetId, String buildingType, Integer level, Long done) {
         super(ConstructionSites.CONSTRUCTION_SITES);
 
         set(0, id);
         set(1, planetId);
-        set(2, type);
+        set(2, buildingType);
         set(3, level);
         set(4, done);
     }

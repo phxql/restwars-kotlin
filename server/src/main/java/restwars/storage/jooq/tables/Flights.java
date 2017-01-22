@@ -29,7 +29,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Flights extends TableImpl<FlightsRecord> {
 
-    private static final long serialVersionUID = 1200467323;
+    private static final long serialVersionUID = 662532560;
 
     /**
      * The reference instance of <code>PUBLIC.FLIGHTS</code>
@@ -100,9 +100,9 @@ public class Flights extends TableImpl<FlightsRecord> {
     public final TableField<FlightsRecord, String> DIRECTION = createField("DIRECTION", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
 
     /**
-     * The column <code>PUBLIC.FLIGHTS.TYPE</code>.
+     * The column <code>PUBLIC.FLIGHTS.FLIGHT_TYPE</code>.
      */
-    public final TableField<FlightsRecord, String> TYPE = createField("TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
+    public final TableField<FlightsRecord, String> FLIGHT_TYPE = createField("FLIGHT_TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
 
     /**
      * The column <code>PUBLIC.FLIGHTS.CARGO_CRYSTAL</code>.

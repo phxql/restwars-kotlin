@@ -20,21 +20,21 @@ CREATE UNIQUE INDEX planets_location ON planets (galaxy, system, planet);
 CREATE TABLE buildings (
   id        UUID PRIMARY KEY,
   planet_id UUID        NOT NULL REFERENCES planets (id),
-  type      VARCHAR(50) NOT NULL,
+  building_type      VARCHAR(50) NOT NULL,
   level     INT         NOT NULL
 );
 
-CREATE UNIQUE INDEX planets_type_planet ON buildings (type, planet_id);
+CREATE UNIQUE INDEX planets_type_planet ON buildings (building_type, planet_id);
 
 CREATE TABLE construction_sites (
   id        UUID PRIMARY KEY,
   planet_id UUID        NOT NULL REFERENCES planets (id),
-  type      VARCHAR(50) NOT NULL,
+  building_type      VARCHAR(50) NOT NULL,
   level     INT         NOT NULL,
   done      BIGINT      NOT NULL
 );
 
-CREATE UNIQUE INDEX construction_sites_type_planet ON construction_sites (type, planet_id);
+CREATE UNIQUE INDEX construction_sites_type_planet ON construction_sites (building_type, planet_id);
 
 CREATE TABLE round (
   round BIGINT NOT NULL
@@ -43,7 +43,7 @@ CREATE TABLE round (
 CREATE TABLE ships_in_construction (
   id        UUID PRIMARY KEY,
   planet_id UUID        NOT NULL REFERENCES planets (id),
-  type      VARCHAR(50) NOT NULL,
+  ship_type      VARCHAR(50) NOT NULL,
   done      BIGINT      NOT NULL
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE points (
 
 CREATE TABLE events (
   id        UUID PRIMARY KEY,
-  type      VARCHAR(50) NOT NULL,
+  event_type      VARCHAR(50) NOT NULL,
   round     BIGINT      NOT NULL,
   player_id UUID        NOT NULL REFERENCES players (id),
   planet_id UUID        NOT NULL REFERENCES planets (id)
@@ -69,11 +69,11 @@ CREATE TABLE hangar (
 
 CREATE TABLE hangar_ships (
   hangar_id UUID        NOT NULL REFERENCES hangar (id),
-  type      VARCHAR(50) NOT NULL,
+  ship_type      VARCHAR(50) NOT NULL,
   amount    INT         NOT NULL
 );
 
-CREATE UNIQUE INDEX hangar_ships_hangar_type ON hangar_ships (hangar_id, type);
+CREATE UNIQUE INDEX hangar_ships_hangar_type ON hangar_ships (hangar_id, ship_type);
 
 CREATE TABLE flights (
   id                 UUID PRIMARY KEY,
@@ -87,7 +87,7 @@ CREATE TABLE flights (
   started_in_round   BIGINT      NOT NULL,
   arrival_in_round   BIGINT      NOT NULL,
   direction          VARCHAR(50) NOT NULL,
-  type               VARCHAR(50) NOT NULL,
+  flight_type               VARCHAR(50) NOT NULL,
   cargo_crystal      INT         NOT NULL,
   cargo_gas          INT         NOT NULL,
   detected           BOOL        NOT NULL,
@@ -96,11 +96,11 @@ CREATE TABLE flights (
 
 CREATE TABLE flight_ships (
   flight_id UUID        NOT NULL REFERENCES flights (id),
-  type      VARCHAR(50) NOT NULL,
+  ship_type      VARCHAR(50) NOT NULL,
   amount    INT         NOT NULL
 );
 
-CREATE UNIQUE INDEX flight_ships_flight_type ON flight_ships (flight_id, type);
+CREATE UNIQUE INDEX flight_ships_flight_type ON flight_ships (flight_id, ship_type);
 
 CREATE TABLE fights (
   id           UUID PRIMARY KEY,

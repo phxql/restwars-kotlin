@@ -27,7 +27,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class HangarShipsRecord extends TableRecordImpl<HangarShipsRecord> implements Record3<UUID, String, Integer> {
 
-    private static final long serialVersionUID = 2004847764;
+    private static final long serialVersionUID = -275074111;
 
     /**
      * Setter for <code>PUBLIC.HANGAR_SHIPS.HANGAR_ID</code>.
@@ -44,16 +44,16 @@ public class HangarShipsRecord extends TableRecordImpl<HangarShipsRecord> implem
     }
 
     /**
-     * Setter for <code>PUBLIC.HANGAR_SHIPS.TYPE</code>.
+     * Setter for <code>PUBLIC.HANGAR_SHIPS.SHIP_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setShipType(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.HANGAR_SHIPS.TYPE</code>.
+     * Getter for <code>PUBLIC.HANGAR_SHIPS.SHIP_TYPE</code>.
      */
-    public String getType() {
+    public String getShipType() {
         return (String) get(1);
     }
 
@@ -104,7 +104,7 @@ public class HangarShipsRecord extends TableRecordImpl<HangarShipsRecord> implem
      */
     @Override
     public Field<String> field2() {
-        return HangarShips.HANGAR_SHIPS.TYPE;
+        return HangarShips.HANGAR_SHIPS.SHIP_TYPE;
     }
 
     /**
@@ -128,7 +128,7 @@ public class HangarShipsRecord extends TableRecordImpl<HangarShipsRecord> implem
      */
     @Override
     public String value2() {
-        return getType();
+        return getShipType();
     }
 
     /**
@@ -153,7 +153,7 @@ public class HangarShipsRecord extends TableRecordImpl<HangarShipsRecord> implem
      */
     @Override
     public HangarShipsRecord value2(String value) {
-        setType(value);
+        setShipType(value);
         return this;
     }
 
@@ -191,11 +191,11 @@ public class HangarShipsRecord extends TableRecordImpl<HangarShipsRecord> implem
     /**
      * Create a detached, initialised HangarShipsRecord
      */
-    public HangarShipsRecord(UUID hangarId, String type, Integer amount) {
+    public HangarShipsRecord(UUID hangarId, String shipType, Integer amount) {
         super(HangarShips.HANGAR_SHIPS);
 
         set(0, hangarId);
-        set(1, type);
+        set(1, shipType);
         set(2, amount);
     }
 }

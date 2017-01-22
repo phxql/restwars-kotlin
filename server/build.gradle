@@ -33,7 +33,7 @@ dependencies {
     runtime 'ch.qos.logback:logback-classic:1.1.8'
 
     // Database
-    compile 'org.flywaydb:flyway-core:4.0.3'
+    compile "org.flywaydb:flyway-core:$flyway_version"
     compile "com.h2database:h2:$h2_version"
     compile 'com.mchange:c3p0:0.9.5.2'
     compile "org.jooq:jooq:$jooq_version"
@@ -45,6 +45,7 @@ dependencies {
 
 import groovy.xml.MarkupBuilder
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.flywaydb.core.Flyway
 import org.jooq.util.GenerationTool
 
 import javax.xml.bind.JAXB
@@ -57,12 +58,20 @@ processResources {
 }
 
 task('generateJooq').doLast {
+    // Create in-memory database with schema
+    def flyway = new Flyway()
+    flyway.setDataSource('jdbc:h2:mem:jooq;DB_CLOSE_DELAY=-1', '', '')
+    def file = new File("server/src/main/resources/db/migration")
+    flyway.setLocations("filesystem:$file.absolutePath")
+    flyway.migrate()
+
+    // Generate jooq classes
     def writer = new StringWriter()
     new MarkupBuilder(writer)
             .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.9.0.xsd') {
         jdbc() {
             driver('org.h2.Driver')
-            url('jdbc:h2:./server/data/restwars')
+            url('jdbc:h2:mem:jooq;DB_CLOSE_DELAY=-1')
             user('')
             password('')
         }

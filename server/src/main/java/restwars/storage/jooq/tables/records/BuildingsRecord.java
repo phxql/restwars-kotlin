@@ -28,7 +28,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class BuildingsRecord extends UpdatableRecordImpl<BuildingsRecord> implements Record4<UUID, UUID, String, Integer> {
 
-    private static final long serialVersionUID = 1675987999;
+    private static final long serialVersionUID = 156546652;
 
     /**
      * Setter for <code>PUBLIC.BUILDINGS.ID</code>.
@@ -59,16 +59,16 @@ public class BuildingsRecord extends UpdatableRecordImpl<BuildingsRecord> implem
     }
 
     /**
-     * Setter for <code>PUBLIC.BUILDINGS.TYPE</code>.
+     * Setter for <code>PUBLIC.BUILDINGS.BUILDING_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setBuildingType(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.BUILDINGS.TYPE</code>.
+     * Getter for <code>PUBLIC.BUILDINGS.BUILDING_TYPE</code>.
      */
-    public String getType() {
+    public String getBuildingType() {
         return (String) get(2);
     }
 
@@ -139,7 +139,7 @@ public class BuildingsRecord extends UpdatableRecordImpl<BuildingsRecord> implem
      */
     @Override
     public Field<String> field3() {
-        return Buildings.BUILDINGS.TYPE;
+        return Buildings.BUILDINGS.BUILDING_TYPE;
     }
 
     /**
@@ -171,7 +171,7 @@ public class BuildingsRecord extends UpdatableRecordImpl<BuildingsRecord> implem
      */
     @Override
     public String value3() {
-        return getType();
+        return getBuildingType();
     }
 
     /**
@@ -205,7 +205,7 @@ public class BuildingsRecord extends UpdatableRecordImpl<BuildingsRecord> implem
      */
     @Override
     public BuildingsRecord value3(String value) {
-        setType(value);
+        setBuildingType(value);
         return this;
     }
 
@@ -244,12 +244,12 @@ public class BuildingsRecord extends UpdatableRecordImpl<BuildingsRecord> implem
     /**
      * Create a detached, initialised BuildingsRecord
      */
-    public BuildingsRecord(UUID id, UUID planetId, String type, Integer level) {
+    public BuildingsRecord(UUID id, UUID planetId, String buildingType, Integer level) {
         super(Buildings.BUILDINGS);
 
         set(0, id);
         set(1, planetId);
-        set(2, type);
+        set(2, buildingType);
         set(3, level);
     }
 }

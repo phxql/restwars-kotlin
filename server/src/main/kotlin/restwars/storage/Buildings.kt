@@ -10,7 +10,7 @@ import java.util.*
 
 class JooqBuildingRepository(val jooq: DSLContext) : BuildingRepository {
     override fun insert(building: Building) {
-        jooq.insertInto(BUILDINGS, BUILDINGS.ID, BUILDINGS.PLANET_ID, BUILDINGS.TYPE, BUILDINGS.LEVEL)
+        jooq.insertInto(BUILDINGS, BUILDINGS.ID, BUILDINGS.PLANET_ID, BUILDINGS.BUILDING_TYPE, BUILDINGS.LEVEL)
                 .values(building.id, building.planetId, building.type.name, building.level)
                 .execute()
     }
@@ -32,7 +32,7 @@ class JooqBuildingRepository(val jooq: DSLContext) : BuildingRepository {
 
     override fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): Building? {
         val record = jooq.selectFrom(BUILDINGS)
-                .where(BUILDINGS.PLANET_ID.eq(planetId).and(BUILDINGS.TYPE.eq(type.name)))
+                .where(BUILDINGS.PLANET_ID.eq(planetId).and(BUILDINGS.BUILDING_TYPE.eq(type.name)))
                 .fetchOne() ?: return null
         return JooqBuildingMapper.fromRecord(record)
     }
@@ -41,14 +41,14 @@ class JooqBuildingRepository(val jooq: DSLContext) : BuildingRepository {
 object JooqBuildingMapper {
     fun fromRecord(record: BuildingsRecord): Building {
         return Building(
-                record.id, record.planetId, BuildingType.valueOf(record.type), record.level
+                record.id, record.planetId, BuildingType.valueOf(record.buildingType), record.level
         )
     }
 }
 
 class JooqConstructionSiteRepository(private val jooq: DSLContext) : ConstructionSiteRepository {
     override fun insert(constructionSite: ConstructionSite) {
-        jooq.insertInto(CONSTRUCTION_SITES, CONSTRUCTION_SITES.ID, CONSTRUCTION_SITES.PLANET_ID, CONSTRUCTION_SITES.TYPE, CONSTRUCTION_SITES.LEVEL, CONSTRUCTION_SITES.DONE)
+        jooq.insertInto(CONSTRUCTION_SITES, CONSTRUCTION_SITES.ID, CONSTRUCTION_SITES.PLANET_ID, CONSTRUCTION_SITES.BUILDING_TYPE, CONSTRUCTION_SITES.LEVEL, CONSTRUCTION_SITES.DONE)
                 .values(constructionSite.id, constructionSite.planetId, constructionSite.type.name, constructionSite.level, constructionSite.done)
                 .execute()
     }
@@ -78,7 +78,7 @@ class JooqConstructionSiteRepository(private val jooq: DSLContext) : Constructio
 
     override fun findByPlanetIdAndType(planetId: UUID, type: BuildingType): ConstructionSite? {
         val record = jooq.selectFrom(CONSTRUCTION_SITES)
-                .where(CONSTRUCTION_SITES.PLANET_ID.eq(planetId).and(CONSTRUCTION_SITES.TYPE.eq(type.name)))
+                .where(CONSTRUCTION_SITES.PLANET_ID.eq(planetId).and(CONSTRUCTION_SITES.BUILDING_TYPE.eq(type.name)))
                 .fetchOne() ?: return null
         return JooqConstructionSiteMapper.fromRecord(record)
     }
@@ -93,7 +93,7 @@ class JooqConstructionSiteRepository(private val jooq: DSLContext) : Constructio
 object JooqConstructionSiteMapper {
     fun fromRecord(record: ConstructionSitesRecord): ConstructionSite {
         return ConstructionSite(
-                record.id, record.planetId, BuildingType.valueOf(record.type), record.level, record.done
+                record.id, record.planetId, BuildingType.valueOf(record.buildingType), record.level, record.done
         )
     }
 }

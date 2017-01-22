@@ -28,7 +28,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class EventsRecord extends UpdatableRecordImpl<EventsRecord> implements Record5<UUID, String, Long, UUID, UUID> {
 
-    private static final long serialVersionUID = -780806028;
+    private static final long serialVersionUID = 1152750957;
 
     /**
      * Setter for <code>PUBLIC.EVENTS.ID</code>.
@@ -45,16 +45,16 @@ public class EventsRecord extends UpdatableRecordImpl<EventsRecord> implements R
     }
 
     /**
-     * Setter for <code>PUBLIC.EVENTS.TYPE</code>.
+     * Setter for <code>PUBLIC.EVENTS.EVENT_TYPE</code>.
      */
-    public void setType(String value) {
+    public void setEventType(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>PUBLIC.EVENTS.TYPE</code>.
+     * Getter for <code>PUBLIC.EVENTS.EVENT_TYPE</code>.
      */
-    public String getType() {
+    public String getEventType() {
         return (String) get(1);
     }
 
@@ -145,7 +145,7 @@ public class EventsRecord extends UpdatableRecordImpl<EventsRecord> implements R
      */
     @Override
     public Field<String> field2() {
-        return Events.EVENTS.TYPE;
+        return Events.EVENTS.EVENT_TYPE;
     }
 
     /**
@@ -185,7 +185,7 @@ public class EventsRecord extends UpdatableRecordImpl<EventsRecord> implements R
      */
     @Override
     public String value2() {
-        return getType();
+        return getEventType();
     }
 
     /**
@@ -226,7 +226,7 @@ public class EventsRecord extends UpdatableRecordImpl<EventsRecord> implements R
      */
     @Override
     public EventsRecord value2(String value) {
-        setType(value);
+        setEventType(value);
         return this;
     }
 
@@ -284,11 +284,11 @@ public class EventsRecord extends UpdatableRecordImpl<EventsRecord> implements R
     /**
      * Create a detached, initialised EventsRecord
      */
-    public EventsRecord(UUID id, String type, Long round, UUID playerId, UUID planetId) {
+    public EventsRecord(UUID id, String eventType, Long round, UUID playerId, UUID planetId) {
         super(Events.EVENTS);
 
         set(0, id);
-        set(1, type);
+        set(1, eventType);
         set(2, round);
         set(3, playerId);
         set(4, planetId);

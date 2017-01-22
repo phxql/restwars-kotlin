@@ -29,7 +29,7 @@ import java.util.UUID;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class HangarShips extends TableImpl<HangarShipsRecord> {
 
-    private static final long serialVersionUID = 1492166024;
+    private static final long serialVersionUID = -1485865561;
 
     /**
      * The reference instance of <code>PUBLIC.HANGAR_SHIPS</code>
@@ -50,9 +50,9 @@ public class HangarShips extends TableImpl<HangarShipsRecord> {
     public final TableField<HangarShipsRecord, UUID> HANGAR_ID = createField("HANGAR_ID", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>PUBLIC.HANGAR_SHIPS.TYPE</code>.
+     * The column <code>PUBLIC.HANGAR_SHIPS.SHIP_TYPE</code>.
      */
-    public final TableField<HangarShipsRecord, String> TYPE = createField("TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
+    public final TableField<HangarShipsRecord, String> SHIP_TYPE = createField("SHIP_TYPE", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
 
     /**
      * The column <code>PUBLIC.HANGAR_SHIPS.AMOUNT</code>.
