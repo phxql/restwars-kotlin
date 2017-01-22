@@ -50,7 +50,7 @@ val logger = LoggerFactory.getLogger("restwars.rest.RestWars")
 
 fun main(args: Array<String>) {
     val commandLine = CommandLine.parse(args)
-    val config = loadConfig()
+    val config = loadConfig(commandLine.configFile)
 
     val dataSource = connectToDatabase(config)
     FlywayMigrationService(dataSource).migrate()
@@ -167,7 +167,7 @@ private fun buildTournamentService(commandLine: CommandLine, roundService: Round
     return tournamentService
 }
 
-data class CommandLine(val startRound: Long?) {
+data class CommandLine(val startRound: Long?, val configFile: String?) {
     companion object {
         fun parse(args: Array<String>): CommandLine {
             // TODO: Use something like Commons CLI for commandline parsing
@@ -177,7 +177,12 @@ data class CommandLine(val startRound: Long?) {
                 args[tournamentIndex + 1].toLong()
             } else null
 
-            return CommandLine(tournamentRound)
+            val configFileIndex = args.indexOf("--config")
+            val configFile = if (configFileIndex > -1) {
+                args[configFileIndex + 1]
+            } else null
+
+            return CommandLine(tournamentRound, configFile)
         }
     }
 }
@@ -197,18 +202,18 @@ private fun startClock(clock: Clock, config: Config) {
     }, config.roundTime.toLong(), config.roundTime.toLong(), TimeUnit.SECONDS)
 }
 
-private fun loadConfig(): Config {
-    val configFile = Paths.get("config.yaml")
-    if (!Files.exists(configFile)) {
-        logger.warn("No config file at ${configFile.toAbsolutePath()} found, using default values")
+private fun loadConfig(configFile: String?): Config {
+    val effectiveConfigFile = Paths.get(configFile ?: "config.yaml")
+    if (!Files.exists(effectiveConfigFile)) {
+        logger.warn("No config file at ${effectiveConfigFile.toAbsolutePath()} found, using default values")
         return Config(
                 UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)),
                 5, 50, Admin("admin", "admin"), Database("jdbc:h2:./data/restwars", Driver::class.java, "", "", "H2")
         )
     }
 
-    logger.info("Loading config from file ${configFile.toAbsolutePath()}")
-    return Config.loadFromFile(configFile)
+    logger.info("Loading config from file ${effectiveConfigFile.toAbsolutePath()}")
+    return Config.loadFromFile(effectiveConfigFile)
 }
 
 private fun configureSpark() {

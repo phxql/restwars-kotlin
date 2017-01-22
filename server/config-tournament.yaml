@@ -1,8 +1,8 @@
 # Size of the universe
 universeSize:
-  maxGalaxies: 3
-  maxSystems: 3
-  maxPlanets: 3
+  maxGalaxies: 4
+  maxSystems: 4
+  maxPlanets: 4
 
 # Starter planet settings
 starterPlanet:
@@ -34,7 +34,7 @@ admin:
 database:
   # In-memory database:
   # url: jdbc:h2:mem:restwars
-  url: jdbc:h2:./data/restwars
+  url: jdbc:h2:./data/restwars-tournament
   driver: org.h2.Driver
   dialect: H2
   username: ''
