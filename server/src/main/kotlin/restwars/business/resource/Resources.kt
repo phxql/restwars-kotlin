@@ -13,10 +13,10 @@ interface ResourceService {
 object ResourceServiceImpl : ResourceService {
     override fun calculateGatheredResources(type: BuildingType, level: Int): Resources {
         return when (type) {
-            BuildingType.COMMAND_CENTER -> Resources.energy(5)
-            BuildingType.CRYSTAL_MINE -> Resources.crystal(10 + (level - 1) * 5)
-            BuildingType.GAS_REFINERY -> Resources.gas((5 + (level - 1) * 2.5).ceil())
-            BuildingType.SOLAR_PANELS -> Resources.energy(40 + (level - 1) * 20)
+            BuildingType.COMMAND_CENTER -> Resources.energy(2)
+            BuildingType.CRYSTAL_MINE -> Resources.crystal((5 + (level - 1) * 2.5).ceil())
+            BuildingType.GAS_REFINERY -> Resources.gas((2.5 + (level - 1) * 1.25).ceil())
+            BuildingType.SOLAR_PANELS -> Resources.energy(20 + (level - 1) * 10)
             else -> Resources.none()
         }
     }
