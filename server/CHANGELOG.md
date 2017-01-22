@@ -7,10 +7,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Implemented COLONIZE_FAILED event.
 - Added docker images.
+- Added level parameter to building metadata endpoint.
 
 ### Changed
 - Implemented a storage backend based on a H2 database.
 - Ships in flights are now calculated into the points.
+- \#53 Fixed a typo in ship metadata response: `attackPoint` -> `attackPoints`
+- \#59 Lowered the resource generation rate for all buildings by 50%
+
+### Fixed
+- \#51 Fixed a bug where detected flights could not be retrieved
+- \#54 Fixed a bug where the server stuck in an endless loop when the universe is full and a new player is created.
 
 ## [0.2.0] - 2016-04-03
 ### Added
