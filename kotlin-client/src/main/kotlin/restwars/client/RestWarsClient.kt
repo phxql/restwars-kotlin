@@ -34,7 +34,7 @@ open class RestWarsClient(val hostname: String, val port: Int) {
 
     fun listShipMetadata(): ShipsMetadataResponse = client.listShipMetadata()
 
-    fun listBuildingMetadat(level: Int = 1): BuildingsMetadataResponse = client.listBuildingMetadata(level)
+    fun listBuildingMetadata(level: Int = 1): BuildingsMetadataResponse = client.listBuildingMetadata(level)
 
     fun waitForTournamentStart(): SuccessResponse = client.waitForTournamentStart()
 
