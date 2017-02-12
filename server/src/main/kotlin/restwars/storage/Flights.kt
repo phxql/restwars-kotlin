@@ -63,18 +63,15 @@ class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
     }
 
     override fun delete(id: UUID) {
-        jooq
-                .deleteFrom(FLIGHT_SHIPS)
+        jooq.deleteFrom(FLIGHT_SHIPS)
                 .where(FLIGHT_SHIPS.FLIGHT_ID.eq(id))
                 .execute()
 
-        jooq
-                .deleteFrom(DETECTED_FLIGHTS)
+        jooq.deleteFrom(DETECTED_FLIGHTS)
                 .where(DETECTED_FLIGHTS.FLIGHT_ID.eq(id))
                 .execute()
 
-        jooq
-                .deleteFrom(FLIGHTS)
+        jooq.deleteFrom(FLIGHTS)
                 .where(FLIGHTS.ID.eq(id))
                 .execute()
 
@@ -127,7 +124,7 @@ class JooqFlightRepository(private val jooq: DSLContext) : FlightRepository {
     override fun findUndetectedFlights(): List<Flight> {
         val records = jooq
                 .selectFrom(FLIGHTS.leftJoin(FLIGHT_SHIPS).on(FLIGHT_SHIPS.FLIGHT_ID.eq(FLIGHTS.ID)))
-                .where(FLIGHTS.DETECTED.eq(false))
+                .where(FLIGHTS.DETECTED.eq(false).and(FLIGHTS.FLIGHT_TYPE.eq(FlightType.ATTACK.name)))
                 .fetchGroups(FLIGHTS.ID)
 
         return records.values.map { JooqFlightMapper.fromRecords(it) }
@@ -188,7 +185,10 @@ class JooqDetectedFlightRepository(private val jooq: DSLContext) : DetectedFligh
 
     override fun findWithPlayer(playerId: UUID): List<DetectedFlightWithFlight> {
         val records = jooq.selectFrom(DETECTED_FLIGHTS.join(FLIGHTS).on(FLIGHTS.ID.eq(DETECTED_FLIGHTS.FLIGHT_ID)))
-                .where(DETECTED_FLIGHTS.PLAYER_ID.eq(playerId))
+                .where(
+                        DETECTED_FLIGHTS.PLAYER_ID.eq(playerId)
+                                .and(FLIGHTS.FLIGHT_TYPE.eq(FlightType.ATTACK.name))
+                )
                 .fetchGroups(FLIGHTS.ID)
 
         return records.values
@@ -197,8 +197,16 @@ class JooqDetectedFlightRepository(private val jooq: DSLContext) : DetectedFligh
 
     override fun findWithPlayerSince(playerId: UUID, since: Long): List<DetectedFlightWithFlight> {
         val records = jooq.selectFrom(DETECTED_FLIGHTS.join(FLIGHTS).on(FLIGHTS.ID.eq(DETECTED_FLIGHTS.FLIGHT_ID)))
-                .where(DETECTED_FLIGHTS.PLAYER_ID.eq(playerId).and(DETECTED_FLIGHTS.DETECTED_IN_ROUND.ge(since)))
+                .where(
+                        DETECTED_FLIGHTS.PLAYER_ID.eq(playerId)
+                                .and(DETECTED_FLIGHTS.DETECTED_IN_ROUND.ge(since))
+                                .and(FLIGHTS.FLIGHT_TYPE.eq(FlightType.ATTACK.name))
+                )
                 .fetchGroups(FLIGHTS.ID)
+
+        if (records.isNotEmpty()) {
+            println("Foo")
+        }
 
         return records.values
                 .map { DetectedFlightWithFlight(JooqDetectedFlightMapper.fromRecord(it[0]), JooqFlightMapper.fromRecords(it)) }

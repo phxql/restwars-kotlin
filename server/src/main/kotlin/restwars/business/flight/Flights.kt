@@ -111,6 +111,9 @@ interface FlightRepository {
 
     fun findWithPlayer(playerId: UUID): List<Flight>
 
+    /**
+     * Finds all undetected flights.
+     */
     fun findUndetectedFlights(): List<Flight>
 
     fun updateDetected(flightId: UUID, detected: Boolean)
@@ -309,7 +312,7 @@ class FlightServiceImpl(
         logger.debug("Detected flight {}", flight)
 
         val fleetSize = flight.ships.amount()
-        val detectedFlight = DetectedFlight(uuidFactory.create(), flight.id, flight.playerId, round, fleetSize)
+        val detectedFlight = DetectedFlight(uuidFactory.create(), flight.id, destination.owner, round, fleetSize)
         detectedFlightRepository.insert(detectedFlight)
 
         flightRepository.updateDetected(flight.id, true)
