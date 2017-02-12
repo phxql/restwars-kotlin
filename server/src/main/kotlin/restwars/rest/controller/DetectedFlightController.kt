@@ -16,12 +16,8 @@ class DetectedFlightController(
     fun byPlayer(): RestMethod<DetectedFlightsResponse> {
         return AuthenticatedRestMethod(HttpMethod.GET, "/v1/flight/detected", DetectedFlightsResponse::class.java, playerService, { req, res, context ->
             val since = req.queryParams("since")?.toLong()
-
-            DetectedFlightsResponse.fromFlights(listOf())
-
-            // TODO: Fix bug #51
-//            val flights = flightService.findDetectedFlightsWithPlayer(context.player, since)
-//            DetectedFlightsResponse.fromFlights(flights)
+            val flights = flightService.findDetectedFlightsWithPlayer(context.player, since)
+            DetectedFlightsResponse.fromFlights(flights)
         })
     }
 }
