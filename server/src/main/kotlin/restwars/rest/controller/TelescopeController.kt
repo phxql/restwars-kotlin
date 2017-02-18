@@ -20,7 +20,7 @@ class TelescopeController(
         val buildingService: BuildingService
 ) : ControllerHelper {
     fun scan(): RestMethod<ScanResponse> {
-        return AuthenticatedRestMethod(HttpMethod.POST, "/v1/planet/:location/telescope/scan", ScanResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/telescope/scan", ScanResponse::class.java, playerService, { req, res, context ->
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)

@@ -76,9 +76,9 @@ class PayloadRestMethod<T : Result, U : Any>(
 }
 
 /**
- * A REST method which only allows authenticated requests.
+ * A REST method which only allows authenticated requests and does only read operations.
  */
-class AuthenticatedRestMethod<T : Result>(
+class AuthenticatedRestReadMethod<T : Result>(
         override val verb: HttpMethod,
         override val path: String,
         override val responseClass: Class<T>,
@@ -87,14 +87,40 @@ class AuthenticatedRestMethod<T : Result>(
 ) : RestMethod<T> {
     override fun invoke(req: Request, res: Response): T {
         val context = RequestContext.build(req, playerService)
-        return func(req, res, context)
+        playerService.beforeReadRequest(context.player)
+        try {
+            return func(req, res, context)
+        } finally {
+            playerService.afterReadRequest(context.player)
+        }
     }
 }
 
 /**
- * A REST method which only allows authenticated requests with a payload.
+ * A REST method which only allows authenticated requests and does only write operations.
  */
-class AuthenticatedPayloadRestMethod<T : Result, U : Any>(
+class AuthenticatedRestWriteMethod<T : Result>(
+        override val verb: HttpMethod,
+        override val path: String,
+        override val responseClass: Class<T>,
+        private val playerService: PlayerService,
+        val func: (res: Request, req: Response, context: RequestContext) -> T
+) : RestMethod<T> {
+    override fun invoke(req: Request, res: Response): T {
+        val context = RequestContext.build(req, playerService)
+        playerService.beforeWriteRequest(context.player)
+        try {
+            return func(req, res, context)
+        } finally {
+            playerService.afterWriteRequest(context.player)
+        }
+    }
+}
+
+/**
+ * A REST method which only allows authenticated requests with a payload and does only write operations.
+ */
+class AuthenticatedPayloadRestWriteMethod<T : Result, U : Any>(
         override val verb: HttpMethod,
         override val path: String,
         override val responseClass: Class<T>,
@@ -106,7 +132,12 @@ class AuthenticatedPayloadRestMethod<T : Result, U : Any>(
     override fun invoke(req: Request, res: Response): T {
         val payload = validate(validatorFactory, Json.fromJson(req, requestClass))
         val context = RequestContext.build(req, playerService)
-        return func(req, res, context, payload)
+        playerService.beforeWriteRequest(context.player)
+        try {
+            return func(req, res, context, payload)
+        } finally {
+            playerService.afterWriteRequest(context.player)
+        }
     }
 }
 

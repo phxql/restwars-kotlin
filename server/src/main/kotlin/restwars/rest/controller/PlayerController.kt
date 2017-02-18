@@ -36,7 +36,7 @@ class PlayerController(
     }
 
     fun get(): RestMethod<PlayerResponse> {
-        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/player", PlayerResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/player", PlayerResponse::class.java, playerService, { req, res, context ->
             PlayerResponse(context.player.username)
         })
     }

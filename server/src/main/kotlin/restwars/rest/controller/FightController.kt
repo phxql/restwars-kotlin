@@ -4,7 +4,7 @@ import restwars.business.fight.FightService
 import restwars.business.planet.PlanetService
 import restwars.business.player.PlayerService
 import restwars.rest.api.*
-import restwars.rest.base.AuthenticatedRestMethod
+import restwars.rest.base.AuthenticatedRestReadMethod
 import restwars.rest.base.ControllerHelper
 import restwars.rest.base.HttpMethod
 import restwars.rest.base.RestMethod
@@ -17,7 +17,7 @@ class FightController(
         val fightService: FightService
 ) : ControllerHelper {
     fun byPlayer(): RestMethod<FightsResponse> {
-        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/player/fight", FightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/player/fight", FightsResponse::class.java, playerService, { req, res, context ->
             val since = req.queryParams("since")?.toLong()
 
             val fights = fightService.findWithPlayer(context.player, since)
@@ -35,11 +35,11 @@ class FightController(
     }
 
     fun byPlanet(): RestMethod<FightsResponse> {
-        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/planet/:location/fight", FightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/fight", FightsResponse::class.java, playerService, { req, res, context ->
             val location = parseLocation(req)
             val since = req.queryParams("since")?.toLong()
 
-            val planet = planetService.findByLocation(location) ?: return@AuthenticatedRestMethod FightsResponse(listOf())
+            val planet = planetService.findByLocation(location) ?: return@AuthenticatedRestReadMethod FightsResponse(listOf())
             val fights = fightService.findWithPlayerAndPlanet(context.player, planet, since)
 
             FightsResponse(fights.map {

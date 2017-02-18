@@ -3,6 +3,9 @@ package restwars.business.player
 import restwars.business.UUIDFactory
 import java.io.Serializable
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.locks.ReadWriteLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 data class Player(
         val id: UUID,
@@ -15,6 +18,14 @@ abstract class CreatePlayerException(message: String) : Exception(message)
 class UsernameNotUniqueException(username: String) : CreatePlayerException("User with username '$username' already exists")
 
 interface PlayerService {
+    fun beforeReadRequest(player: Player)
+
+    fun afterReadRequest(player: Player)
+
+    fun beforeWriteRequest(player: Player)
+
+    fun afterWriteRequest(player: Player)
+
     /**
      * Creates a new player.
      *
@@ -41,6 +52,8 @@ class PlayerServiceImpl(
         private val uuidFactory: UUIDFactory,
         private val playerRepository: PlayerRepository
 ) : PlayerService {
+    private val locks = ConcurrentHashMap<UUID, ReadWriteLock>()
+
     override fun login(username: String, password: String): Player? {
         val player = playerRepository.findByUsername(username) ?: return null
 
@@ -59,5 +72,27 @@ class PlayerServiceImpl(
 
     override fun findAll(): List<Player> {
         return playerRepository.findAll()
+    }
+
+    override fun beforeReadRequest(player: Player) {
+        val lock = getOrCreateLock(player)
+        lock.readLock().lock()
+    }
+
+    override fun afterReadRequest(player: Player) {
+        locks[player.id]?.readLock()?.unlock()
+    }
+
+    override fun beforeWriteRequest(player: Player) {
+        val lock = getOrCreateLock(player)
+        lock.writeLock().lock()
+    }
+
+    override fun afterWriteRequest(player: Player) {
+        locks[player.id]?.writeLock()?.unlock()
+    }
+
+    private fun getOrCreateLock(player: Player): ReadWriteLock {
+        return locks.computeIfAbsent(player.id, { id -> ReentrantReadWriteLock() })
     }
 }

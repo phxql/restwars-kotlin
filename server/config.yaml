@@ -33,8 +33,8 @@ admin:
 # Database configuration
 database:
   # In-memory database:
-  # url: jdbc:h2:mem:restwars
-  url: jdbc:h2:./data/restwars
+  url: jdbc:h2:mem:restwars
+  # url: jdbc:h2:./data/restwars
   driver: org.h2.Driver
   dialect: H2
   username: ''

@@ -19,7 +19,7 @@ class BuildingController(
         val buildingService: BuildingService
 ) : ControllerHelper {
     fun listOnPlanet(): RestMethod<BuildingsResponse> {
-        return AuthenticatedRestMethod(HttpMethod.GET, "/v1/planet/:location/building", BuildingsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/building", BuildingsResponse::class.java, playerService, { req, res, context ->
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
@@ -30,7 +30,7 @@ class BuildingController(
     }
 
     fun build(): RestMethod<ConstructionSiteResponse> {
-        return AuthenticatedPayloadRestMethod(HttpMethod.POST, "/v1/planet/:location/building", ConstructionSiteResponse::class.java, BuildBuildingRequest::class.java, playerService, validation, { req, res, context, payload ->
+        return AuthenticatedPayloadRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/building", ConstructionSiteResponse::class.java, BuildBuildingRequest::class.java, playerService, validation, { req, res, context, payload ->
             val type = BuildingType.parse(payload.type)
             val location = parseLocation(req)
 
