@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - \#51 Fixed a bug where detected flights could not be retrieved
 - \#54 Fixed a bug where the server stuck in an endless loop when the universe is full and a new player is created.
+- \#61 Fixed a bug where concurrent requests were not handled correctly.
 
 ## [0.2.0] - 2016-04-03
 ### Added
