@@ -12,13 +12,14 @@ import java.util.*
 class FightCalculatorImplTest {
     @Test
     fun testName() {
-        val calculator = FightCalculatorImpl(UUIDFactoryImpl, ShipFormulasImpl(ResourceFormulasImpl), RandomNumberGeneratorImpl)
+        val calculator = FightCalculatorImpl2(UUIDFactoryImpl, ShipFormulasImpl(ResourceFormulasImpl), RandomNumberGeneratorImpl)
         val attacker = UUID.randomUUID()
         val defender = UUID.randomUUID()
         val planet = UUID.randomUUID()
         val round = 1L
 
-        val fight = calculator.attack(attacker, defender, planet, Ships.of(ShipType.MOSQUITO, 10), Ships.of(ShipType.COLONY, 1), round)
-        println(fight)
+        println(calculator.attack(attacker, defender, planet, Ships.of(ShipType.MOSQUITO, 10), Ships.of(ShipType.COLONY, 1), round))
+        println(calculator.attack(attacker, defender, planet, Ships.of(ShipType.MOSQUITO, 10), Ships.of(ShipType.MOSQUITO, 10), round))
+        println(calculator.attack(attacker, defender, planet, Ships.of(ShipType.MOSQUITO, 10), Ships.of(ShipType.MOSQUITO, 13), round))
     }
 }

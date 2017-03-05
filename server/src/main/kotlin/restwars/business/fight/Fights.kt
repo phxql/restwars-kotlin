@@ -8,6 +8,7 @@ import restwars.business.clock.RoundService
 import restwars.business.planet.Planet
 import restwars.business.planet.Resources
 import restwars.business.player.Player
+import restwars.business.ship.Ship
 import restwars.business.ship.ShipType
 import restwars.business.ship.Ships
 import java.io.Serializable
@@ -111,7 +112,7 @@ class FightCalculatorImpl(
         while (attackerAttackPoints > 0) {
             val destroyableShips = findDestroyableShips(remainingDefendingShips, attackerAttackPoints);
             if (destroyableShips.isEmpty()) {
-                break;
+                break
             }
 
             val shipToDestroy = randomNumberGenerator.nextElement(destroyableShips)
@@ -131,5 +132,64 @@ class FightCalculatorImpl(
      */
     private fun findDestroyableShips(ships: Ships, attackPoints: Int): List<ShipType> {
         return ships.ships.filter { it.amount > 0 && shipFormulas.calculateDefendPoints(it.type) <= attackPoints }.map { it.type }
+    }
+}
+
+class FightCalculatorImpl2(
+        private val uuidFactory: UUIDFactory,
+        private val shipFormulas: ShipFormulas,
+        private val randomNumberGenerator: RandomNumberGenerator
+) : FightCalculator {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    override fun attack(attackerId: UUID, defenderId: UUID, planetId: UUID, attackerShips: Ships, defenderShips: Ships, round: Long): Fight {
+        var remainingAttackerShips = attackerShips
+        var remainingDefenderShips = defenderShips
+
+        var attackerShipTurns = attackerShips
+        var defenderShipTurns = defenderShips
+
+        while (true) {
+            val attackerShip = findNextShip(attackerShipTurns)
+            val defenderLoss = if (attackerShip != null) {
+                attackerShipTurns -= Ships.of(attackerShip, 1)
+                val shipsToDestroy = findDestroyableShips(remainingDefenderShips, shipFormulas.calculateAttackPoints(attackerShip))
+                if (shipsToDestroy.isNotEmpty()) {
+                    randomNumberGenerator.nextElement(shipsToDestroy)
+                } else null
+            } else null
+
+            val defenderShip = findNextShip(defenderShipTurns)
+            val attackerLoss = if (defenderShip != null) {
+                defenderShipTurns -= Ships.of(defenderShip, 1)
+                val shipsToDestroy = findDestroyableShips(remainingAttackerShips, shipFormulas.calculateAttackPoints(defenderShip))
+                if (shipsToDestroy.isNotEmpty()) {
+                    randomNumberGenerator.nextElement(shipsToDestroy)
+                } else null
+            } else null
+
+            if (defenderLoss != null) {
+                if (logger.isTraceEnabled) logger.trace("Attackers {} destroys defenders {}", attackerShip, defenderLoss)
+                remainingDefenderShips -= Ships.of(defenderLoss, 1)
+            }
+            if (attackerLoss != null) {
+                if (logger.isTraceEnabled) logger.trace("Defenders {} destroys attackers {}", defenderShip, attackerLoss)
+                remainingAttackerShips -= Ships.of(attackerLoss, 1)
+            }
+            if (attackerLoss == null && defenderLoss == null) break
+        }
+
+        return Fight(uuidFactory.create(), attackerId, defenderId, planetId, attackerShips, defenderShips, remainingAttackerShips, remainingDefenderShips, round, Resources.none())
+    }
+
+    private fun findNextShip(ships: Ships): ShipType? {
+        return ships.ships.firstOrNull { it.amount > 0 }?.type
+    }
+
+    /**
+     * Returns a list of ship types which can be destroyed with the given [attackPoints].
+     */
+    private fun findDestroyableShips(ships: Ships, attackPoints: Int): List<ShipType> {
+        return ships.ships.filter { it.amount > 0 && shipFormulas.calculateDefendPoints(it.type) <= attackPoints }.map(Ship::type)
     }
 }
