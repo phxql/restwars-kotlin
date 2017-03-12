@@ -9,7 +9,7 @@
       "energy" : 40
     },
     "flightCostModifier" : 1.0,
-    "attackPoint" : 14,
+    "attackPoints" : 14,
     "defensePoints" : 1,
     "cargoSpace" : 50
   }, {
@@ -22,7 +22,7 @@
       "energy" : 80
     },
     "flightCostModifier" : 1.2,
-    "attackPoint" : 1,
+    "attackPoints" : 1,
     "defensePoints" : 30,
     "cargoSpace" : 500
   } ]
