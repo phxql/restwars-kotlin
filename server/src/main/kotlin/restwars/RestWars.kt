@@ -34,8 +34,6 @@ import restwars.rest.base.*
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
-import spark.Route
-import spark.Spark
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -43,6 +41,8 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 import javax.validation.Validation
+import spark.*
+
 
 val port = 7777
 
@@ -132,6 +132,7 @@ fun main(args: Array<String>) {
             buildingMetadataController, tournamentService, tournamentController, pointsController,
             detectedFlightController, eventController, metricController
     )
+    enableCors()
 
     Spark.awaitInitialization()
 
@@ -139,6 +140,22 @@ fun main(args: Array<String>) {
     startClock(clock, config)
 
     logger.info("RESTwars started on port {}", port)
+}
+
+private fun enableCors() {
+    Spark.options("/*") { request, response ->
+        val accessControlRequestHeaders = request.headers("Access-Control-Request-Headers")
+        if (accessControlRequestHeaders != null) response.header("Access-Control-Allow-Headers", accessControlRequestHeaders)
+
+        val accessControlRequestMethod = request.headers("Access-Control-Request-Method")
+        if (accessControlRequestMethod != null) response.header("Access-Control-Allow-Methods", accessControlRequestMethod)
+
+        "OK"
+    }
+
+    Spark.before(Filter { request, response ->
+        response.header("Access-Control-Allow-Origin", "*")
+    })
 }
 
 private fun createJooq(dataSource: DataSource, config: Config): DSLContext {
