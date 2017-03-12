@@ -34,6 +34,9 @@ import restwars.rest.base.*
 import restwars.rest.controller.*
 import restwars.rest.http.StatusCode
 import restwars.storage.*
+import spark.Filter
+import spark.Route
+import spark.Spark
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -41,7 +44,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 import javax.validation.Validation
-import spark.*
 
 
 val port = 7777
@@ -143,18 +145,17 @@ fun main(args: Array<String>) {
 }
 
 private fun enableCors() {
-    Spark.options("/*") { request, response ->
-        val accessControlRequestHeaders = request.headers("Access-Control-Request-Headers")
-        if (accessControlRequestHeaders != null) response.header("Access-Control-Allow-Headers", accessControlRequestHeaders)
-
-        val accessControlRequestMethod = request.headers("Access-Control-Request-Method")
-        if (accessControlRequestMethod != null) response.header("Access-Control-Allow-Methods", accessControlRequestMethod)
-
-        "OK"
-    }
-
     Spark.before(Filter { request, response ->
-        response.header("Access-Control-Allow-Origin", "*")
+        val headers = request.headers("Access-Control-Request-Headers")
+        if (headers != null) response.header("Access-Control-Allow-Headers", headers)
+
+        val method = request.headers("Access-Control-Request-Method")
+        if (method != null) response.header("Access-Control-Allow-Methods", method)
+
+        val origin = request.headers("Origin")
+        if (origin == null) response.header("Access-Control-Allow-Origin", "*") else response.header("Access-Control-Allow-Origin", origin)
+
+        response.header("Access-Control-Allow-Credentials", "true")
     })
 }
 

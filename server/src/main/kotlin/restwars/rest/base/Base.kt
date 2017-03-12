@@ -59,8 +59,12 @@ class RequestContext(val player: Player) {
          * @return Account, if the ticket was valid.
          */
         private fun extractFromHeader(header: String, playerService: PlayerService): Player? {
-            val authorization = BasicAuthorization.parse(header)
-            return playerService.login(authorization.username, authorization.password)
+            try {
+                val authorization = BasicAuthorization.parse(header)
+                return playerService.login(authorization.username, authorization.password)
+            } catch (e: ParseException) {
+                return null
+            }
         }
     }
 }
