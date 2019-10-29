@@ -52,7 +52,7 @@ val logger = LoggerFactory.getLogger("restwars.rest.RestWars")
 
 fun main(args: Array<String>) {
     val commandLine = CommandLine.parse(args)
-    val config = loadConfig(commandLine.configFile)
+    val config = loadGameConfig(commandLine.configFile)
 
     val dataSource = connectToDatabase(config)
     FlywayMigrationService(dataSource).migrate()
@@ -220,7 +220,7 @@ private fun startClock(clock: Clock, gameConfig: GameConfig) {
     }, gameConfig.roundTime.toLong(), gameConfig.roundTime.toLong(), TimeUnit.SECONDS)
 }
 
-private fun loadConfig(configFile: String?): GameConfig {
+private fun loadGameConfig(configFile: String?): GameConfig {
     val effectiveConfigFile = Paths.get(configFile ?: "config.yaml")
     if (!Files.exists(effectiveConfigFile)) {
         logger.warn("No config file at ${effectiveConfigFile.toAbsolutePath()} found, using default values")
