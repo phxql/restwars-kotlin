@@ -223,7 +223,7 @@ private fun startClock(clock: Clock, gameConfig: GameConfig) {
 private fun loadGameConfig(configFile: String?): GameConfig {
     val effectiveConfigFile = Paths.get(configFile ?: "config.yaml")
     if (!Files.exists(effectiveConfigFile)) {
-        logger.warn("No config file at ${effectiveConfigFile.toAbsolutePath()} found, using default values")
+        logger.warn("No game config file at ${effectiveConfigFile.toAbsolutePath()} found, using default values")
         return GameConfig(
                 UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)),
                 5, 50, Admin("admin", "admin"), Database("jdbc:h2:./data/restwars", Driver::class.java, "", "", "H2")
@@ -232,6 +232,32 @@ private fun loadGameConfig(configFile: String?): GameConfig {
 
     logger.info("Loading config from file ${effectiveConfigFile.toAbsolutePath()}")
     return GameConfig.loadFromFile(effectiveConfigFile)
+}
+
+private fun loadBalancingConfig(configFile: String?): BalancingConfig {
+    val effectiveConfigFile = Paths.get(configFile ?: "balancing-config.yaml")
+    if (!Files.exists(effectiveConfigFile)) {
+        logger.warn("No balance config file at ${effectiveConfigFile.toAbsolutePath()} found, using default values")
+        return (BalancingConfig(
+                BuildingsProperties(
+                        commandCenterProperties = BuildingProperties(BuildingBuildTime(50, 25), BuildingBuildCost(Resources(200, 100, 800), Resources(100, 50, 400))),
+                        crystalMineProperties = BuildingProperties(BuildingBuildTime(30, 10), BuildingBuildCost(Resources(100, 50, 400), Resources(50, 25, 200))),
+                        gasRefineryProperties = BuildingProperties(BuildingBuildTime(30, 10), BuildingBuildCost(Resources(100, 50, 400), Resources(50, 25, 200))),
+                        solarPanelsProperties = BuildingProperties(BuildingBuildTime(30, 10), BuildingBuildCost(Resources(100, 50, 400), Resources(50, 25, 200))),
+                        telescopeProperties = BuildingProperties(BuildingBuildTime(50, 10), BuildingBuildCost(Resources(100, 50, 400), Resources(50, 25, 200))),
+                        shipyardProperties = BuildingProperties(BuildingBuildTime(100, 50), BuildingBuildCost(Resources(300, 150, 1200), Resources(150, 75, 600))),
+                        buildTimeAttenuation = 0.05),
+                ShipsProperties(
+                        mosquitoProperties = ShipProperties(10, Resources(100, 20, 270), 1.0, 1.0, 14, 10, 10),
+                        colonyProperties = ShipProperties(60, Resources(350, 150, 1750), 0.5, 2.0, 0, 75, 500),
+                        muleProperties = ShipProperties(20, Resources(200, 100, 1225), 1.0, 1.5, 0, 20, 750),
+                        buildTimeAttenuation = 0.05),
+                ScoringProperties(4, 8))
+                )
+    }
+
+    logger.info("Loading config from file ${effectiveConfigFile.toAbsolutePath()}")
+    return BalancingConfig.loadFromFile(effectiveConfigFile)
 }
 
 private fun configureSpark() {
