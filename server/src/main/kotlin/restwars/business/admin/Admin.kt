@@ -1,6 +1,6 @@
 package restwars.business.admin
 
-import restwars.business.config.Config
+import restwars.business.config.GameConfig
 
 data class Admin(val username: String, val password: String)
 
@@ -8,9 +8,9 @@ interface AdminService {
     fun login(username: String, password: String): Boolean
 }
 
-class AdminServiceImpl(private val config: Config) : AdminService {
+class AdminServiceImpl(private val gameConfig: GameConfig) : AdminService {
     override fun login(username: String, password: String): Boolean {
         // TODO: Mitigate timing attacks
-        return username == config.admin.username && password == config.admin.password
+        return username == gameConfig.admin.username && password == gameConfig.admin.password
     }
 }

@@ -159,17 +159,17 @@ private fun enableCors() {
     })
 }
 
-private fun createJooq(dataSource: DataSource, config: Config): DSLContext {
-    val dialect = SQLDialect.valueOf(config.database.dialect)
+private fun createJooq(dataSource: DataSource, gameConfig: GameConfig): DSLContext {
+    val dialect = SQLDialect.valueOf(gameConfig.database.dialect)
     return DSL.using(dataSource, dialect)
 }
 
-private fun connectToDatabase(config: Config): DataSource {
+private fun connectToDatabase(gameConfig: GameConfig): DataSource {
     val pool = ComboPooledDataSource()
-    pool.driverClass = config.database.driver.name
-    pool.jdbcUrl = config.database.url
-    pool.user = config.database.username
-    pool.password = config.database.password
+    pool.driverClass = gameConfig.database.driver.name
+    pool.jdbcUrl = gameConfig.database.url
+    pool.user = gameConfig.database.username
+    pool.password = gameConfig.database.password
 
     return pool
 }
@@ -213,25 +213,25 @@ fun registerWebsockets(roundService: RoundService, tournamentService: Tournament
     Spark.webSocket("/v1/tournament/websocket", TournamentWebsocketController::class.java)
 }
 
-private fun startClock(clock: Clock, config: Config) {
+private fun startClock(clock: Clock, gameConfig: GameConfig) {
     val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Clock") })
     executor.scheduleAtFixedRate({
         clock.tick()
-    }, config.roundTime.toLong(), config.roundTime.toLong(), TimeUnit.SECONDS)
+    }, gameConfig.roundTime.toLong(), gameConfig.roundTime.toLong(), TimeUnit.SECONDS)
 }
 
-private fun loadConfig(configFile: String?): Config {
+private fun loadConfig(configFile: String?): GameConfig {
     val effectiveConfigFile = Paths.get(configFile ?: "config.yaml")
     if (!Files.exists(effectiveConfigFile)) {
         logger.warn("No config file at ${effectiveConfigFile.toAbsolutePath()} found, using default values")
-        return Config(
+        return GameConfig(
                 UniverseSize(1, 3, 3), StarterPlanet(Resources(200, 100, 800)), NewPlanet(Resources(100, 50, 400)),
                 5, 50, Admin("admin", "admin"), Database("jdbc:h2:./data/restwars", Driver::class.java, "", "", "H2")
         )
     }
 
     logger.info("Loading config from file ${effectiveConfigFile.toAbsolutePath()}")
-    return Config.loadFromFile(effectiveConfigFile)
+    return GameConfig.loadFromFile(effectiveConfigFile)
 }
 
 private fun configureSpark() {

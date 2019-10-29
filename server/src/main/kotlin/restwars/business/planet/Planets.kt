@@ -3,7 +3,7 @@ package restwars.business.planet
 import restwars.business.BuildingFormulas
 import restwars.business.RandomNumberGenerator
 import restwars.business.UUIDFactory
-import restwars.business.config.Config
+import restwars.business.config.GameConfig
 import restwars.business.config.UniverseSize
 import restwars.business.player.Player
 import restwars.business.ship.Hangar
@@ -112,7 +112,7 @@ class PlanetServiceImpl(
         private val uuidFactory: UUIDFactory,
         private val randomNumberGenerator: RandomNumberGenerator,
         private val planetRepository: PlanetRepository,
-        private val config: Config,
+        private val gameConfig: GameConfig,
         private val buildingFormulas: BuildingFormulas,
         private val hangarRepository: HangarRepository
 ) : PlanetService {
@@ -139,7 +139,7 @@ class PlanetServiceImpl(
     override fun findByOwner(owner: Player): List<Planet> = planetRepository.findByOwnerId(owner.id)
 
     override fun createStarterPlanet(player: Player): Planet {
-        val totalPlanets = config.universeSize.maxPlanets * config.universeSize.maxSystems * config.universeSize.maxGalaxies
+        val totalPlanets = gameConfig.universeSize.maxPlanets * gameConfig.universeSize.maxSystems * gameConfig.universeSize.maxGalaxies
 
         if (planetRepository.countInhabited() == totalPlanets) {
             throw UniverseFullException()
@@ -148,14 +148,14 @@ class PlanetServiceImpl(
         // Find location which isn't already occupied
         var location: Location
         do {
-            val galaxy = randomNumberGenerator.nextInt(1, config.universeSize.maxGalaxies)
-            val system = randomNumberGenerator.nextInt(1, config.universeSize.maxSystems)
-            val planet = randomNumberGenerator.nextInt(1, config.universeSize.maxPlanets)
+            val galaxy = randomNumberGenerator.nextInt(1, gameConfig.universeSize.maxGalaxies)
+            val system = randomNumberGenerator.nextInt(1, gameConfig.universeSize.maxSystems)
+            val planet = randomNumberGenerator.nextInt(1, gameConfig.universeSize.maxPlanets)
             location = Location(galaxy, system, planet)
         } while (planetRepository.findByLocation(location) != null)
 
         val id = uuidFactory.create()
-        val planet = Planet(id, player.id, location, config.starterPlanet.resources)
+        val planet = Planet(id, player.id, location, gameConfig.starterPlanet.resources)
         planetRepository.insert(planet)
         hangarRepository.insert(Hangar(uuidFactory.create(), planet.id, Ships.none()))
 
@@ -169,7 +169,7 @@ class PlanetServiceImpl(
     override fun createPlanet(playerId: UUID, location: Location): Planet {
         if (findByLocation(location) != null) throw PlanetAlreadyExistsException(location)
 
-        val planet = Planet(uuidFactory.create(), playerId, location, config.newPlanet.resources)
+        val planet = Planet(uuidFactory.create(), playerId, location, gameConfig.newPlanet.resources)
         planetRepository.insert(planet)
         hangarRepository.insert(Hangar(uuidFactory.create(), planet.id, Ships.none()))
 
@@ -185,9 +185,9 @@ class PlanetServiceImpl(
         val galaxyMin = location.galaxy
         val galaxyMax = location.galaxy
         val systemMin = Math.max(location.system - range, 1)
-        val systemMax = Math.min(location.system + range, config.universeSize.maxSystems)
+        val systemMax = Math.min(location.system + range, gameConfig.universeSize.maxSystems)
         val planetMin = 1
-        val planetMax = config.universeSize.maxPlanets
+        val planetMax = gameConfig.universeSize.maxPlanets
 
         return planetRepository.findInRangeWithOwner(galaxyMin, galaxyMax, systemMin, systemMax, planetMin, planetMax)
     }
