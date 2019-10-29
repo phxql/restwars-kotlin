@@ -18,7 +18,7 @@ data class BuildingsProperties(val commandCenterProperties: BuildingProperties,
                                val shipyardProperties: BuildingProperties,
                                val buildTimeAttenuation: Double)
 
-data class ShipProperties(val buildTime: Int, val buildCost: Resources, val flightSpeed: Int, val flightCost: Int, val attackPoints: Int, val defendPoints: Int, val cargoSpace: Int)
+data class ShipProperties(val buildTime: Int, val buildCost: Resources, val flightSpeed: Double, val flightCost: Double, val attackPoints: Int, val defendPoints: Int, val cargoSpace: Int)
 data class ShipsProperties(val mosquitoProperties: ShipProperties, val colonyProperties: ShipProperties, val muleProperties: ShipProperties, val buildTimeAttenuation: Double)
 
 data class ScoringProperties(val crystalMultiplier: Int, val gasMultiplier: Int)
@@ -54,7 +54,7 @@ data class BalancingConfig(val buildingsProperties: BuildingsProperties, val shi
         }
     }
 
-    data class ShipPropertiesDto(val buildTime: Int, val buildCost: GameConfig.ResourcesDto, val flightSpeed: Int, val flightCost: Int, val attackPoints: Int, val defendPoints: Int, val cargoSpace: Int) {
+    data class ShipPropertiesDto(val buildTime: Int, val buildCost: GameConfig.ResourcesDto, val flightSpeed: Double, val flightCost: Double, val attackPoints: Int, val defendPoints: Int, val cargoSpace: Int) {
         fun toShipProperties(): ShipProperties {
             return ShipProperties(buildTime, buildCost.toResources(), flightSpeed, flightCost, attackPoints, defendPoints, cargoSpace)
         }
