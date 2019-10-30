@@ -52,11 +52,11 @@ val logger = LoggerFactory.getLogger("restwars.rest.RestWars")
 
 fun main(args: Array<String>) {
     val commandLine = CommandLine.parse(args)
-    val config = loadGameConfig(commandLine.configFile)
+    val gameConfig = loadGameConfig(commandLine.configFile)
 
-    val dataSource = connectToDatabase(config)
+    val dataSource = connectToDatabase(gameConfig)
     FlywayMigrationService(dataSource).migrate()
-    val jooq = createJooq(dataSource, config)
+    val jooq = createJooq(dataSource, gameConfig)
 
     val uuidFactory = UUIDFactoryImpl
     val randomNumberGenerator = RandomNumberGeneratorImpl
@@ -78,12 +78,12 @@ fun main(args: Array<String>) {
     val resourceFormulas = ResourceFormulasImpl
     val buildingFormulas = BuildingFormulasImpl
     val shipFormulas = ShipFormulasImpl(resourceFormulas)
-    val locationFormulas = LocationFormulasImpl(config.universeSize)
+    val locationFormulas = LocationFormulasImpl(gameConfig.universeSize)
 
     val roundService = RoundServiceImpl(roundRepository)
     val eventService = EventServiceImpl(uuidFactory, roundService, eventRepository)
     val playerService = PlayerServiceImpl(uuidFactory, playerRepository)
-    val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, config, buildingFormulas, hangarRepository)
+    val planetService = PlanetServiceImpl(uuidFactory, randomNumberGenerator, planetRepository, gameConfig, buildingFormulas, hangarRepository)
     val buildingService = BuildingServiceImpl(uuidFactory, buildingRepository, constructionSiteRepository, buildingFormulas, roundService, planetRepository, eventService)
     val resourceService = ResourceServiceImpl
     val lockService = LockServiceImpl
@@ -96,12 +96,12 @@ fun main(args: Array<String>) {
     val attackFlightHandler = AttackFlightHandler(planetService, fightService, shipService, eventService)
     val transferFlightHandler = TransferFlightHandler(planetService, shipService, eventService)
     val transportFlightHandler = TransportFlightHandler(planetService, eventService)
-    val flightService = FlightServiceImpl(config, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService, buildingService, buildingFormulas, detectedFlightRepository, eventService)
+    val flightService = FlightServiceImpl(gameConfig, roundService, uuidFactory, flightRepository, shipFormulas, locationFormulas, shipService, colonizeFlightHandler, attackFlightHandler, transferFlightHandler, transportFlightHandler, planetService, buildingService, buildingFormulas, detectedFlightRepository, eventService)
     val tournamentService = buildTournamentService(commandLine, roundService)
     val pointsService = PointsServiceImpl(roundService, playerService, planetService, shipService, shipFormulas, pointsRepository, uuidFactory, flightService)
-    val adminService = AdminServiceImpl(config)
+    val adminService = AdminServiceImpl(gameConfig)
 
-    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService, pointsService, config)
+    val clock = ClockImpl(planetService, resourceService, buildingService, lockService, roundService, shipService, flightService, pointsService, gameConfig)
 
     val validatorFactory = Validation.buildDefaultValidatorFactory()
     val playerController = PlayerController(validatorFactory, playerService, planetService, buildingService)
@@ -111,8 +111,8 @@ fun main(args: Array<String>) {
     val shipController = ShipController(validatorFactory, playerService, planetService, shipService)
     val shipyardController = ShipyardController(validatorFactory, playerService, planetService, shipService)
     val applicationInformationController = ApplicationInformationController(applicationInformationService)
-    val configurationController = ConfigurationController(config)
-    val roundController = RoundController(roundService, config)
+    val configurationController = ConfigurationController(gameConfig)
+    val roundController = RoundController(roundService, gameConfig)
     val flightController = FlightController(validatorFactory, playerService, planetService, flightService)
     val telescopeController = TelescopeController(validatorFactory, playerService, planetService, buildingService)
     val fightController = FightController(validatorFactory, playerService, planetService, fightService)
@@ -139,7 +139,7 @@ fun main(args: Array<String>) {
     Spark.awaitInitialization()
 
     roundService.initialize()
-    startClock(clock, config)
+    startClock(clock, gameConfig)
 
     logger.info("RESTwars started on port {}", port)
 }
