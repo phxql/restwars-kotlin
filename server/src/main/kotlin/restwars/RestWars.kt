@@ -76,9 +76,9 @@ fun main(args: Array<String>) {
     val detectedFlightRepository = JooqDetectedFlightRepository(jooq)
     val eventRepository = JooqEventRepository(jooq)
 
-    val resourceFormulas = ResourceFormulasImpl
-    val buildingFormulas = BuildingFormulasImpl
-    val shipFormulas = ShipFormulasImpl(resourceFormulas)
+    val resourceFormulas = ResourceFormulasImpl(balancingConfig)
+    val buildingFormulas = BuildingFormulasImpl(balancingConfig)
+    val shipFormulas = ShipFormulasImpl(resourceFormulas, balancingConfig)
     val locationFormulas = LocationFormulasImpl(gameConfig.universeSize)
 
     val roundService = RoundServiceImpl(roundRepository)
@@ -202,7 +202,7 @@ data class CommandLine(val startRound: Long?, val configFile: String?, val balan
             } else null
 
             val balancingConfigFileIndex = args.indexOf("--balancing")
-            val balancingConfigFile = if (gameConfigFileIndex > -1) {
+            val balancingConfigFile = if (balancingConfigFileIndex > -1) {
                 args[gameConfigFileIndex + 1]
             } else null
 
@@ -258,7 +258,7 @@ private fun loadBalancingConfig(configFile: String?): BalancingConfig {
                         colonyProperties = ShipProperties(60, Resources(350, 150, 1750), 0.5, 2.0, 0, 75, 500),
                         muleProperties = ShipProperties(20, Resources(200, 100, 1225), 1.0, 1.5, 0, 20, 750),
                         buildTimeAttenuation = 0.05),
-                ScoringProperties(4, 8))
+                ScoringProperties(4L, 8L))
                 )
     }
 

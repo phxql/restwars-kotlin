@@ -21,7 +21,7 @@ data class BuildingsProperties(val commandCenterProperties: BuildingProperties,
 data class ShipProperties(val buildTime: Int, val buildCost: Resources, val flightSpeed: Double, val flightCost: Double, val attackPoints: Int, val defendPoints: Int, val cargoSpace: Int)
 data class ShipsProperties(val mosquitoProperties: ShipProperties, val colonyProperties: ShipProperties, val muleProperties: ShipProperties, val buildTimeAttenuation: Double)
 
-data class ScoringProperties(val crystalMultiplier: Int, val gasMultiplier: Int)
+data class ScoringProperties(val crystalMultiplier: Long, val gasMultiplier: Long)
 
 data class BalancingConfig(val buildingsProperties: BuildingsProperties, val shipsProperties: ShipsProperties, val scoringProperties: ScoringProperties) {
 
@@ -66,7 +66,7 @@ data class BalancingConfig(val buildingsProperties: BuildingsProperties, val shi
         }
     }
 
-    data class ScoringPropertiesDto(val crystalMultiplier: Int, val gasMultiplier: Int) {
+    data class ScoringPropertiesDto(val crystalMultiplier: Long, val gasMultiplier: Long) {
         fun toScoringProperties(): ScoringProperties {
             return ScoringProperties(crystalMultiplier, gasMultiplier)
         }
