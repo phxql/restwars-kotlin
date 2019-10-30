@@ -214,7 +214,7 @@ fun registerWebsockets(roundService: RoundService, tournamentService: Tournament
 }
 
 private fun startClock(clock: Clock, gameConfig: GameConfig) {
-    val executor = Executors.newSingleThreadScheduledExecutor({ runnable -> Thread(runnable, "Clock") })
+    val executor = Executors.newSingleThreadScheduledExecutor { runnable -> Thread(runnable, "Clock") }
     executor.scheduleAtFixedRate({
         clock.tick()
     }, gameConfig.roundTime.toLong(), gameConfig.roundTime.toLong(), TimeUnit.SECONDS)
