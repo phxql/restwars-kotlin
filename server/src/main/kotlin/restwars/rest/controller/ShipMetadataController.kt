@@ -14,7 +14,7 @@ class ShipMetadataController(
         private val shipFormulas: ShipFormulas
 ) {
     fun get(): RestMethod<ShipsMetadataResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/metadata/ship", ShipsMetadataResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/metadata/ship", ShipsMetadataResponse::class.java) { _, _ ->
             ShipsMetadataResponse(ShipType.values().map {
                 ShipMetadataResponse(
                         it.name, shipFormulas.calculateBuildTime(it), shipFormulas.calculateFlightSpeed(it),
@@ -23,6 +23,6 @@ class ShipMetadataController(
                         shipFormulas.calculateDefendPoints(it), shipFormulas.calculateCargoSpace(it)
                 )
             })
-        })
+        }
     }
 }

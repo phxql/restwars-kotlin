@@ -18,13 +18,13 @@ class ConstructionSiteController(
         val buildingService: BuildingService
 ) : ControllerHelper {
     fun listOnPlanet(): RestMethod<ConstructionSitesResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/construction-site", ConstructionSitesResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/construction-site", ConstructionSitesResponse::class.java, playerService) { req, _, context ->
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
             val constructionSites = buildingService.findConstructionSitesByPlanet(planet)
 
             ConstructionSitesResponse.fromConstructionSites(constructionSites)
-        })
+        }
     }
 }
