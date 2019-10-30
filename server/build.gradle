@@ -36,6 +36,8 @@ dependencies {
     compile "org.flywaydb:flyway-core:$flyway_version"
     compile "com.h2database:h2:$h2_version"
     compile 'com.mchange:c3p0:0.9.5.2'
+
+    // needed by old jooq version, removed in java 9
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
     compile "org.jooq:jooq:$jooq_version"
 
