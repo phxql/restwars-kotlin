@@ -25,7 +25,7 @@ data class Location(val galaxy: Int, val system: Int, val planet: Int) : Seriali
 
     companion object {
         fun parse(input: String): Location {
-            val parts = input.split(delimiters = '.')
+            val parts = input.split('.')
             if (parts.size != 3) throw IllegalArgumentException("Unable to parse location from '$input'")
 
             return Location(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
