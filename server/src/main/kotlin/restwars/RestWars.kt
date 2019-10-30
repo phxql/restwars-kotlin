@@ -262,7 +262,7 @@ private fun loadBalancingConfig(configFile: String?): BalancingConfig {
                 )
     }
 
-    logger.info("Loading config from file ${effectiveConfigFile.toAbsolutePath()}")
+    logger.info("Loading balancing config from file ${effectiveConfigFile.toAbsolutePath()}")
     return BalancingConfig.loadFromFile(effectiveConfigFile)
 }
 
