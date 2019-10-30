@@ -53,6 +53,7 @@ val logger = LoggerFactory.getLogger("restwars.rest.RestWars")
 fun main(args: Array<String>) {
     val commandLine = CommandLine.parse(args)
     val gameConfig = loadGameConfig(commandLine.configFile)
+    val balancingConfig = loadBalancingConfig(commandLine.balancingFile)
 
     val dataSource = connectToDatabase(gameConfig)
     FlywayMigrationService(dataSource).migrate()
@@ -185,7 +186,7 @@ private fun buildTournamentService(commandLine: CommandLine, roundService: Round
     return tournamentService
 }
 
-data class CommandLine(val startRound: Long?, val configFile: String?) {
+data class CommandLine(val startRound: Long?, val configFile: String?, val balancingFile: String?) {
     companion object {
         fun parse(args: Array<String>): CommandLine {
             // TODO: Use something like Commons CLI for commandline parsing
@@ -195,12 +196,17 @@ data class CommandLine(val startRound: Long?, val configFile: String?) {
                 args[tournamentIndex + 1].toLong()
             } else null
 
-            val configFileIndex = args.indexOf("--config")
-            val configFile = if (configFileIndex > -1) {
-                args[configFileIndex + 1]
+            val gameConfigFileIndex = args.indexOf("--config")
+            val gameConfigFile = if (gameConfigFileIndex > -1) {
+                args[gameConfigFileIndex + 1]
             } else null
 
-            return CommandLine(tournamentRound, configFile)
+            val balancingConfigFileIndex = args.indexOf("--balancing")
+            val balancingConfigFile = if (gameConfigFileIndex > -1) {
+                args[gameConfigFileIndex + 1]
+            } else null
+
+            return CommandLine(tournamentRound, gameConfigFile, balancingConfigFile)
         }
     }
 }
