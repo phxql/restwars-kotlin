@@ -1,83 +1,82 @@
-# Building properties
- buildingsProperties:
-   commandCenterProperties:
-     buildTime:
-       baseTime: 50
-       gainPerLevel: 25
-     buildCost:
-       baseCost:
-         crystal: 200
-         gas: 100
-         energy: 800
-       gainPerLevel:
-         crystal: 100
-         gas: 50
-         energy: 400
-   crystalMineProperties:
-     buildTime:
-       baseTime: 30
-       gainPerLevel: 10
-     buildCost:
-       baseCost:
-         crystal: 100
-         gas: 50
-         energy: 400
-       gainPerLevel:
-         crystal: 50
-         gas: 25
-         energy: 200
-   gasRefineryProperties:
-     buildTime:
-       baseTime: 30
-       gainPerLevel: 10
-     buildCost:
-       baseCost:
-         crystal: 100
-         gas: 50
-         energy: 400
-       gainPerLevel:
-         crystal: 50
-         gas: 25
-         energy: 200
-   solarPanelsProperties:
-     buildTime:
-       baseTime: 30
-       gainPerLevel: 10
-     buildCost:
-       baseCost:
-         crystal: 100
-         gas: 50
-         energy: 400
-       gainPerLevel:
-         crystal: 50
-         gas: 25
-         energy: 200
-   telescopeProperties:
-     buildTime:
-       baseTime: 50
-       gainPerLevel: 10
-     buildCost:
-       baseCost:
-         crystal: 100
-         gas: 50
-         energy: 400
-       gainPerLevel:
-         crystal: 50
-         gas: 25
-         energy: 200
-   shipyardProperties:
-     buildTime:
-       baseTime: 100
-       gainPerLevel: 50
-     buildCost:
-       baseCost:
-         crystal: 300
-         gas: 150
-         energy: 1200
-       gainPerLevel:
-         crystal: 150
-         gas: 75
-         energy: 600
+buildingsProperties:
+  commandCenterProperties:
+    buildTime:
+      baseTime: 50
+      gainPerLevel: 25
+    buildCost:
+      baseCost:
+        crystal: 200
+        gas: 100
+        energy: 800
+      gainPerLevel:
+        crystal: 100
+        gas: 50
+        energy: 400
+  crystalMineProperties:
+    buildTime:
+      baseTime: 30
+      gainPerLevel: 10
+    buildCost:
+      baseCost:
+        crystal: 100
+        gas: 50
+        energy: 400
+      gainPerLevel:
+        crystal: 50
+        gas: 25
+        energy: 200
+  gasRefineryProperties:
+    buildTime:
+      baseTime: 30
+      gainPerLevel: 10
+    buildCost:
+      baseCost:
+        crystal: 100
+        gas: 50
+        energy: 400
+      gainPerLevel:
+        crystal: 50
+        gas: 25
+        energy: 200
+  solarPanelsProperties:
+    buildTime:
+      baseTime: 30
+      gainPerLevel: 10
+    buildCost:
+      baseCost:
+        crystal: 100
+        gas: 50
+        energy: 400
+      gainPerLevel:
+        crystal: 50
+        gas: 25
+        energy: 200
+  telescopeProperties:
+    buildTime:
+      baseTime: 50
+      gainPerLevel: 10
+    buildCost:
+      baseCost:
+        crystal: 100
+        gas: 50
+        energy: 400
+      gainPerLevel:
+        crystal: 50
+        gas: 25
+        energy: 200
+  shipyardProperties:
+    buildTime:
+      baseTime: 100
+      gainPerLevel: 50
+    buildCost:
+      baseCost:
+        crystal: 300
+        gas: 150
+        energy: 1200
+      gainPerLevel:
+        crystal: 150
+        gas: 75
+        energy: 600
   buildTimeAttenuation: 0.05
 
 shipsProperties:
@@ -117,5 +116,5 @@ shipsProperties:
   buildTimeAttenuation: 0.05
 
 scoringProperties:
-  crystalMultiplier: 4L
-  gasMultiplier: 8L
+  crystalMultiplier: 4
+  gasMultiplier: 8

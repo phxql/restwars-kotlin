@@ -72,9 +72,9 @@ data class BalancingConfig(val buildingsProperties: BuildingsProperties, val shi
         }
     }
 
-    data class BalancingConfigDto(val buildingsProperties: BuildingsPropertiesDto, val shipProperties: ShipsPropertiesDto, val scoringProperties: ScoringPropertiesDto) {
+    data class BalancingConfigDto(val buildingsProperties: BuildingsPropertiesDto, val shipsProperties: ShipsPropertiesDto, val scoringProperties: ScoringPropertiesDto) {
         fun toBalancingConfig(): BalancingConfig {
-            return BalancingConfig(buildingsProperties.toBuildingsProperties(), shipProperties.toShipsPropertiesDto(), scoringProperties.toScoringProperties())
+            return BalancingConfig(buildingsProperties.toBuildingsProperties(), shipsProperties.toShipsPropertiesDto(), scoringProperties.toScoringProperties())
         }
     }
 
