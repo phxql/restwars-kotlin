@@ -11,9 +11,9 @@ class PointsController(
         private val pointsService: PointsService
 ) {
     fun get(): RestMethod<PointsResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/points", PointsResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/points", PointsResponse::class.java) { _, _ ->
             val points = pointsService.listMostRecentPoints()
             PointsResponse.fromPoints(points)
-        })
+        }
     }
 }

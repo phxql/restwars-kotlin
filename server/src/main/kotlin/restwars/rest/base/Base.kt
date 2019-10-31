@@ -74,7 +74,7 @@ class ParseException(message: String) : Exception(message)
 data class BasicAuthorization(val username: String, val password: String) {
     companion object {
         fun parse(header: String): BasicAuthorization {
-            val parts = header.split(delimiters = ' ', limit = 2)
+            val parts = header.split(' ', limit = 2)
             if (parts.size != 2) {
                 throw ParseException("Expected 2 parts, found ${parts.size}")
             }
@@ -83,7 +83,7 @@ data class BasicAuthorization(val username: String, val password: String) {
             }
 
             val decoded = String(Base64.getDecoder().decode(parts[1]), Charsets.UTF_8);
-            val credentials = decoded.split(delimiters = ':', limit = 2)
+            val credentials = decoded.split(':', limit = 2)
             if (credentials.size != 2) {
                 throw ParseException("Expected 2 credential parts, found ${credentials.size}")
             }

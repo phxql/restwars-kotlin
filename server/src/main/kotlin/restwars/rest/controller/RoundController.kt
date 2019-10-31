@@ -13,20 +13,21 @@ import restwars.rest.base.RestMethod
 import restwars.rest.base.SimpleRestMethod
 
 class RoundController(
-        val roundService: RoundService, val gameConfig: GameConfig
+
+        val roundService: RoundService, private val gameConfig: GameConfig
 ) : ControllerHelper {
     fun get(): RestMethod<RoundWithRoundTimeResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/round", RoundWithRoundTimeResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/round", RoundWithRoundTimeResponse::class.java) { _, _ ->
             val currentRound = roundService.currentRound()
             RoundWithRoundTimeResponse(currentRound, gameConfig.roundTime)
-        })
+        }
     }
 
     fun wait(): RestMethod<RoundResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/round/wait", RoundResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/round/wait", RoundResponse::class.java) { req, res ->
             val round = roundService.blockUntilNextRound()
             RoundResponse(round)
-        })
+        }
     }
 }
 

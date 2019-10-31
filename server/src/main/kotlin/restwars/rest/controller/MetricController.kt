@@ -19,10 +19,10 @@ class MetricController(
     private val durationUnit = TimeUnit.MILLISECONDS
 
     fun all(): RestMethod<MetricsResponse> {
-        return AdminRestMethod(HttpMethod.GET, "/v1/admin/metric", MetricsResponse::class.java, adminService, { req, res ->
+        return AdminRestMethod(HttpMethod.GET, "/v1/admin/metric", MetricsResponse::class.java, adminService) { _, _ ->
             MetricsResponse(
                     metricRegistry.timers.map { TimerResponse.fromTimer(it.key, rateUnit, durationUnit, it.value) }
             )
-        })
+        }
     }
 }

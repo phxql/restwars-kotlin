@@ -270,7 +270,6 @@ class FlightServiceImpl(
             FlightType.ATTACK -> attackFlightHandler.handleFlight(flight, this)
             FlightType.TRANSFER -> transferFlightHandler.handleFlight(flight, this)
             FlightType.TRANSPORT -> transportFlightHandler.handleFlight(flight, this)
-            else -> throw AssertionError("Unhandled flight type: ${flight.type}")
         }
     }
 

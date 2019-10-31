@@ -20,7 +20,7 @@ class TelescopeController(
         val buildingService: BuildingService
 ) : ControllerHelper {
     fun scan(): RestMethod<ScanResponse> {
-        return AuthenticatedRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/telescope/scan", ScanResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/telescope/scan", ScanResponse::class.java, playerService) { req, _, context ->
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
@@ -31,6 +31,6 @@ class TelescopeController(
             } catch(ex: NoTelescopeException) {
                 throw StatusCodeException(StatusCode.BAD_REQUEST, ErrorResponse(ErrorReason.NO_TELESCOPE.name, ex.message ?: ""))
             }
-        })
+        }
     }
 }

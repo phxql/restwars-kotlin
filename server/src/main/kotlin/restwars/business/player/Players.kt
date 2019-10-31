@@ -93,6 +93,6 @@ class PlayerServiceImpl(
     }
 
     private fun getOrCreateLock(player: Player): ReadWriteLock {
-        return locks.computeIfAbsent(player.id, { id -> ReentrantReadWriteLock() })
+        return locks.computeIfAbsent(player.id) { ReentrantReadWriteLock() }
     }
 }

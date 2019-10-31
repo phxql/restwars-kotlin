@@ -12,10 +12,10 @@ import restwars.rest.base.SimpleRestMethod
 
 class TournamentController(private val tournamentService: TournamentService) {
     fun wait(): RestMethod<SuccessResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/tournament/wait", SuccessResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/tournament/wait", SuccessResponse::class.java) { _, _ ->
             tournamentService.blockUntilStart()
             SuccessResponse("Tournament has started")
-        })
+        }
     }
 }
 

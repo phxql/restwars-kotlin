@@ -7,9 +7,9 @@ import restwars.rest.base.SimpleRestMethod
 
 object RootController {
     fun get(): RestMethod<SuccessResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/", SuccessResponse::class.java, { res, req ->
+        return SimpleRestMethod(HttpMethod.GET, "/", SuccessResponse::class.java) { _, _ ->
             SuccessResponse("RESTwars is running")
-        })
+        }
     }
 }
 
