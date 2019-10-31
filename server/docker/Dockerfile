@@ -9,5 +9,5 @@ EXPOSE 7777
 WORKDIR /
 CMD /server-*/bin/server
 
-ADD config.yaml /
+ADD gameConfig.yaml /
 ADD restwars.tar /

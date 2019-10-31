@@ -8,7 +8,7 @@ import restwars.business.UUIDFactory
 import restwars.business.building.BuildingService
 import restwars.business.building.BuildingType
 import restwars.business.clock.RoundService
-import restwars.business.config.Config
+import restwars.business.config.GameConfig
 import restwars.business.event.EventService
 import restwars.business.planet.*
 import restwars.business.player.Player
@@ -134,7 +134,7 @@ interface FlightTypeHandler {
 }
 
 class FlightServiceImpl(
-        private val config: Config,
+        private val gameConfig: GameConfig,
         private val roundService: RoundService,
         private val uuidFactory: UUIDFactory,
         private val flightRepository: FlightRepository,
@@ -157,7 +157,7 @@ class FlightServiceImpl(
         // Flights which where start = location are forbidden
         if (start.location == destination) throw SameStartAndDestinationException()
         // Check that the location is contained in the universe
-        if (!destination.isValid(config.universeSize)) throw InvalidLocationException(destination)
+        if (!destination.isValid(gameConfig.universeSize)) throw InvalidLocationException(destination)
         // Empty flights are forbidden
         if (ships.isEmpty()) throw NoShipsException()
         // Colony flights must have a colony ship

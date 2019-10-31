@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import restwars.business.LockService
 import restwars.business.building.Building
 import restwars.business.building.BuildingService
-import restwars.business.config.Config
+import restwars.business.config.GameConfig
 import restwars.business.flight.FlightService
 import restwars.business.planet.Planet
 import restwars.business.planet.PlanetService
@@ -26,7 +26,7 @@ class ClockImpl(
         private val shipService: ShipService,
         private val flightService: FlightService,
         private val pointsService: PointsService,
-        private val config: Config
+        private val gameConfig: GameConfig
 ) : Clock {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -56,7 +56,7 @@ class ClockImpl(
                 gatherResources(buildings, updatedPlanet)
             }
 
-            if (newRound % config.calculatePointsEvery == 0L) {
+            if (newRound % gameConfig.calculatePointsEvery == 0L) {
                 pointsService.calculatePoints()
             }
 

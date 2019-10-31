@@ -7,6 +7,7 @@ import restwars.rest.base.HttpMethod
 import restwars.rest.base.RestMethod
 import restwars.rest.base.SimpleRestMethod
 
+
 class ConfigurationController(private val gameConfig: GameConfig) {
     fun get(): RestMethod<ConfigResponse> {
         return SimpleRestMethod(HttpMethod.GET, "/v1/configuration", ConfigResponse::class.java) { _, _ ->

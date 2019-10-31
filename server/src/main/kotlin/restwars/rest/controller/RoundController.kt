@@ -13,6 +13,7 @@ import restwars.rest.base.RestMethod
 import restwars.rest.base.SimpleRestMethod
 
 class RoundController(
+
         val roundService: RoundService, private val gameConfig: GameConfig
 ) : ControllerHelper {
     fun get(): RestMethod<RoundWithRoundTimeResponse> {

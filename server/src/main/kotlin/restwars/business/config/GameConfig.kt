@@ -16,7 +16,7 @@ data class StarterPlanet(val resources: Resources)
 
 data class NewPlanet(val resources: Resources)
 
-data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int, val calculatePointsEvery: Int, val admin: Admin, val database: Database) {
+data class GameConfig(val universeSize: UniverseSize, val starterPlanet: StarterPlanet, val newPlanet: NewPlanet, val roundTime: Int, val calculatePointsEvery: Int, val admin: Admin, val database: Database) {
     data class UniverseSizeDto(val maxGalaxies: Int, val maxSystems: Int, val maxPlanets: Int) {
         fun toUniverseSize(): UniverseSize {
             return UniverseSize(maxGalaxies, maxSystems, maxPlanets)
@@ -53,7 +53,7 @@ data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlan
         }
     }
 
-    data class ConfigDto(
+    data class GameConfigDto(
             val universeSize: UniverseSizeDto,
             val starterPlanet: StarterPlanetDto,
             val newPlanet: NewPlanetDto,
@@ -62,8 +62,8 @@ data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlan
             val admin: AdminDto,
             val database: DatabaseDto
     ) {
-        fun toConfig(): Config {
-            return Config(
+        fun toGameConfig(): GameConfig {
+            return GameConfig(
                     universeSize.toUniverseSize(), starterPlanet.toStarterPlanet(), newPlanet.toNewPlanet(),
                     roundTime, calculatePointsEvery, admin.toAdmin(), database.toDatabase()
             )
@@ -71,13 +71,13 @@ data class Config(val universeSize: UniverseSize, val starterPlanet: StarterPlan
     }
 
     companion object {
-        fun loadFromFile(path: Path): Config {
+        fun loadFromFile(path: Path): GameConfig {
             val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
             mapper.registerModule(KotlinModule()) // Enable Kotlin support
 
             return Files.newBufferedReader(path).use {
-                mapper.readValue(it, ConfigDto::class.java)
-            }.toConfig()
+                mapper.readValue(it, GameConfigDto::class.java)
+            }.toGameConfig()
         }
     }
 }
