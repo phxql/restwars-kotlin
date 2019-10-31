@@ -18,11 +18,11 @@ class EventController(
         val eventService: EventService
 ) : ControllerHelper {
     fun byPlayer(): RestMethod<EventsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/event", EventsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/event", EventsResponse::class.java, playerService) { req, _, context ->
             val since = req.queryParams("since")?.toLong()
 
             val events = eventService.findWithPlayer(context.player, since)
             EventsResponse.fromEvents(events)
-        })
+        }
     }
 }

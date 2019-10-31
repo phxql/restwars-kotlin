@@ -14,10 +14,10 @@ class PlanetController(
         private val planetService: PlanetService
 ) : ControllerHelper {
     fun list(): RestMethod<PlanetsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet", PlanetsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet", PlanetsResponse::class.java, playerService) { _, _, context ->
             val planets = planetService.findByOwner(context.player)
 
             PlanetsResponse.fromPlanets(planets)
-        })
+        }
     }
 }

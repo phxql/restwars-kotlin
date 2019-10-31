@@ -17,7 +17,7 @@ class PlayerController(
         private val buildingService: BuildingService
 ) : ControllerHelper {
     fun create(): RestMethod<SuccessResponse> {
-        return PayloadRestMethod(HttpMethod.POST, "/v1/player", SuccessResponse::class.java, CreatePlayerRequest::class.java, validation, { req, res, payload ->
+        return PayloadRestMethod(HttpMethod.POST, "/v1/player", SuccessResponse::class.java, CreatePlayerRequest::class.java, validation) { _, res, payload ->
             val player = try {
                 playerService.create(payload.username, payload.password)
             } catch(ex: UsernameNotUniqueException) {
@@ -32,12 +32,12 @@ class PlayerController(
 
             res.status(StatusCode.CREATED)
             SuccessResponse("Player created")
-        })
+        }
     }
 
     fun get(): RestMethod<PlayerResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/player", PlayerResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/player", PlayerResponse::class.java, playerService) { _, _, context ->
             PlayerResponse(context.player.username)
-        })
+        }
     }
 }

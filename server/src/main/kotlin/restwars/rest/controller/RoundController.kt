@@ -4,7 +4,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket
 import org.slf4j.LoggerFactory
 import restwars.business.clock.RoundListener
 import restwars.business.clock.RoundService
-import restwars.business.config.Config
+import restwars.business.config.GameConfig
 import restwars.rest.api.RoundResponse
 import restwars.rest.api.RoundWithRoundTimeResponse
 import restwars.rest.base.ControllerHelper
@@ -13,20 +13,20 @@ import restwars.rest.base.RestMethod
 import restwars.rest.base.SimpleRestMethod
 
 class RoundController(
-        val roundService: RoundService, val config: Config
+        val roundService: RoundService, private val gameConfig: GameConfig
 ) : ControllerHelper {
     fun get(): RestMethod<RoundWithRoundTimeResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/round", RoundWithRoundTimeResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/round", RoundWithRoundTimeResponse::class.java) { _, _ ->
             val currentRound = roundService.currentRound()
-            RoundWithRoundTimeResponse(currentRound, config.roundTime)
-        })
+            RoundWithRoundTimeResponse(currentRound, gameConfig.roundTime)
+        }
     }
 
     fun wait(): RestMethod<RoundResponse> {
-        return SimpleRestMethod(HttpMethod.GET, "/v1/round/wait", RoundResponse::class.java, { req, res ->
+        return SimpleRestMethod(HttpMethod.GET, "/v1/round/wait", RoundResponse::class.java) { req, res ->
             val round = roundService.blockUntilNextRound()
             RoundResponse(round)
-        })
+        }
     }
 }
 

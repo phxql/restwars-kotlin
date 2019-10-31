@@ -17,7 +17,7 @@ class FightController(
         val fightService: FightService
 ) : ControllerHelper {
     fun byPlayer(): RestMethod<FightsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/player/fight", FightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/player/fight", FightsResponse::class.java, playerService) { req, _, context ->
             val since = req.queryParams("since")?.toLong()
 
             val fights = fightService.findWithPlayer(context.player, since)
@@ -31,11 +31,11 @@ class FightController(
                         ResourcesResponse.fromResources(fight.loot)
                 )
             })
-        })
+        }
     }
 
     fun byPlanet(): RestMethod<FightsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/fight", FightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/fight", FightsResponse::class.java, playerService) { req, _, context ->
             val location = parseLocation(req)
             val since = req.queryParams("since")?.toLong()
 
@@ -51,6 +51,6 @@ class FightController(
                         ResourcesResponse.fromResources(fight.loot)
                 )
             })
-        })
+        }
     }
 }

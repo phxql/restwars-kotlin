@@ -18,18 +18,18 @@ class ShipController(
         val shipService: ShipService
 ) : ControllerHelper {
     fun listOnPlanet(): RestMethod<ShipsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/hangar", ShipsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/hangar", ShipsResponse::class.java, playerService) { req, _, context ->
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
             val ships = shipService.findShipsByPlanet(planet)
 
             ShipsResponse.fromShips(ships)
-        })
+        }
     }
 
     fun build(): RestMethod<ShipInConstructionResponse> {
-        return AuthenticatedPayloadRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/hangar", ShipInConstructionResponse::class.java, BuildShipRequest::class.java, playerService, validation, { req, res, context, payload ->
+        return AuthenticatedPayloadRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/hangar", ShipInConstructionResponse::class.java, BuildShipRequest::class.java, playerService, validation) { req, res, context, payload ->
             val type = ShipType.parse(payload.type)
             val location = parseLocation(req)
 
@@ -44,7 +44,7 @@ class ShipController(
 
             res.status(StatusCode.CREATED)
             ShipInConstructionResponse.fromShipInConstruction(buildResult.shipInConstruction)
-        })
+        }
     }
 
 }

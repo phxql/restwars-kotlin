@@ -28,7 +28,7 @@ class FlightController(
     }
 
     fun create(): RestMethod<FlightResponse> {
-        return AuthenticatedPayloadRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/flight", FlightResponse::class.java, CreateFlightRequest::class.java, playerService, validation, { req, res, context, payload ->
+        return AuthenticatedPayloadRestWriteMethod(HttpMethod.POST, "/v1/planet/:location/flight", FlightResponse::class.java, CreateFlightRequest::class.java, playerService, validation) { req, _, context, payload ->
             val location = parseLocation(req)
             val planet = getOwnPlanet(planetService, context.player, location)
             val destination = parseLocation(payload.destination)
@@ -46,32 +46,32 @@ class FlightController(
             }
 
             FlightResponse.fromFlight(sendResult.flight)
-        })
+        }
     }
 
     fun listFrom(): RestMethod<FlightsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight/from/:location", FlightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight/from/:location", FlightsResponse::class.java, playerService) { req, res, context ->
             val location = parseLocation(req)
 
             val flights = flightService.findWithPlayerAndStart(context.player, location)
             FlightsResponse.from(flights)
-        })
+        }
     }
 
     fun listTo(): RestMethod<FlightsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight/to/:location", FlightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight/to/:location", FlightsResponse::class.java, playerService) { req, res, context ->
             val location = parseLocation(req)
 
             val flights = flightService.findWithPlayerAndDestination(context.player, location)
             FlightsResponse.from(flights)
-        })
+        }
     }
 
     fun list(): RestMethod<FlightsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight", FlightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight", FlightsResponse::class.java, playerService) { req, res, context ->
             val flights = flightService.findWithPlayer(context.player)
             FlightsResponse.from(flights)
-        })
+        }
     }
 }
 

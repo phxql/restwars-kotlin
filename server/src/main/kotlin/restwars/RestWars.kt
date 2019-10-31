@@ -46,7 +46,7 @@ import javax.sql.DataSource
 import javax.validation.Validation
 
 
-val port = 7777
+const val port = 7777
 
 val logger = LoggerFactory.getLogger("restwars.rest.RestWars")
 
@@ -297,7 +297,7 @@ fun registerRestMethod(metricRegistry: MetricRegistry, method: RestMethod<*>, lo
     val requestTimer = metricRegistry.timer(metricName)
     val allRequestsMetric = metricRegistry.timer("All requests")
 
-    val route: Route = Route { request, response ->
+    val route = Route { request, response ->
         val timer = Pair(requestTimer.time(), allRequestsMetric.time())
         lockService?.beforeRequest()
         try {
@@ -321,50 +321,50 @@ fun registerRestMethod(metricRegistry: MetricRegistry, method: RestMethod<*>, lo
 }
 
 private fun addExceptionHandler() {
-    Spark.exception(ValidationException::class.java) { e, req, res ->
+    Spark.exception(ValidationException::class.java) { _, _, res ->
         res.status(StatusCode.BAD_REQUEST)
         res.body(Json.toJson(res, ErrorResponse(ErrorReason.REQUEST_VALIDATION_FAILED.name, "Request validation failed")))
     }
 
-    Spark.exception(AuthenticationException::class.java) { e, req, res ->
+    Spark.exception(AuthenticationException::class.java) { _, _, res ->
         res.status(StatusCode.UNAUTHORIZED)
         res.body(Json.toJson(res, ErrorResponse(ErrorReason.INVALID_CREDENTIALS.name, "Invalid credentials")))
     }
 
-    Spark.exception(PlanetNotFoundOrOwnedException::class.java) { e, req, res ->
+    Spark.exception(PlanetNotFoundOrOwnedException::class.java) { e, _, res ->
         res.status(StatusCode.NOT_FOUND)
         res.body(Json.toJson(res, ErrorResponse(ErrorReason.PLANET_NOT_FOUND.name, e.message ?: "")))
     }
 
-    Spark.exception(BadRequestException::class.java) { e, req, res ->
+    Spark.exception(BadRequestException::class.java) { e, _, res ->
         e as BadRequestException
 
         res.status(StatusCode.BAD_REQUEST)
         res.body(Json.toJson(res, e.response))
     }
 
-    Spark.exception(JsonParseException::class.java) { e, req, res ->
+    Spark.exception(JsonParseException::class.java) { e, _, res ->
         res.status(StatusCode.UNPROCESSABLE_ENTITY)
         res.body(Json.toJson(res, ErrorResponse(ErrorReason.UNPROCESSABLE_ENTITY.name, e.message ?: "")))
     }
 
-    Spark.exception(TournamentNotStartedException::class.java) { e, req, res ->
+    Spark.exception(TournamentNotStartedException::class.java) { e, _, res ->
         res.status(StatusCode.SERVICE_UNAVAILABLE)
         res.body(Json.toJson(res, ErrorResponse(ErrorReason.TOURNAMENT_NOT_STARTED.name, e.message ?: "")))
     }
 
-    Spark.exception(StatusCodeException::class.java, { e, req, res ->
+    Spark.exception(StatusCodeException::class.java) { e, _, res ->
         e as StatusCodeException
 
         res.status(e.statusCode)
         res.body(Json.toJson(res, e.response))
-    })
+    }
 
-    Spark.exception(Exception::class.java, { e, req, res ->
+    Spark.exception(Exception::class.java) { e, _, res ->
         val errorUUID = UUID.randomUUID()
 
         logger.error("Unhandled exception $errorUUID occurred", e)
         res.status(StatusCode.INTERNAL_SERVER_ERROR)
         res.body(Json.toJson(res, ErrorResponse(ErrorReason.INTERNAL_SERVER_ERROR.name, "Error ID: $errorUUID")))
-    })
+    }
 }

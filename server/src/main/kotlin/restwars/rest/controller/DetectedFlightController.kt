@@ -14,10 +14,10 @@ class DetectedFlightController(
         private val playerService: PlayerService
 ) : ControllerHelper {
     fun byPlayer(): RestMethod<DetectedFlightsResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight/detected", DetectedFlightsResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/flight/detected", DetectedFlightsResponse::class.java, playerService) { req, _, context ->
             val since = req.queryParams("since")?.toLong()
             val flights = flightService.findDetectedFlightsWithPlayer(context.player, since)
             DetectedFlightsResponse.fromFlights(flights)
-        })
+        }
     }
 }

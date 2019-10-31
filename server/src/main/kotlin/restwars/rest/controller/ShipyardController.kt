@@ -18,13 +18,13 @@ class ShipyardController(
         val shipService: ShipService
 ) : ControllerHelper {
     fun listOnPlanet(): RestMethod<ShipsInConstructionResponse> {
-        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/shipyard", ShipsInConstructionResponse::class.java, playerService, { req, res, context ->
+        return AuthenticatedRestReadMethod(HttpMethod.GET, "/v1/planet/:location/shipyard", ShipsInConstructionResponse::class.java, playerService) { req, _, context ->
             val location = parseLocation(req)
 
             val planet = getOwnPlanet(planetService, context.player, location)
             val shipsInConstruction = shipService.findShipsInConstructionByPlanet(planet)
 
             ShipsInConstructionResponse.fromShipsInConstruction(shipsInConstruction)
-        })
+        }
     }
 }
