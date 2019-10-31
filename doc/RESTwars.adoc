@@ -65,3 +65,11 @@ To ensure a fair fight, the calculation is being done in two steps:
 2. The same process is now carried out in reverse. All defending ships initially present on the attacked planet are now attacking the assailants ships.
 
 Finally, all attacking and defending ships which were marked for destruction or being destroyed. If there are remaining attacker ships, they will now loot the planet. They will therefore take at most an amount equal to half their available cargo size of crystal and gas each. They can not take more than what is available on the planet at the beginning of the fight.
+
+
+Balancing
+~~~~~~~~~
+
+Although sensible default values have been selected for all balancing parameters, all relevant values such as hitpoints, resource requirements, etc. can be configured manually. For example, you can easily equip a colony ship with a light weapon by setting the configuration value shipsProperties.colonyProperties.attackPoints to a small value like 2 in the balancing configuration file.
+
+This way you can let the same bots compete against each other under different premises and find out which bot adapts best to different conditions.

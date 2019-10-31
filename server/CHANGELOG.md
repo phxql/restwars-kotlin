@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added docker images.
 - Added level parameter to building metadata endpoint.
 - Added CORS.
+- Added balancing configuration.
 
 ### Changed
 - Implemented a storage backend based on a H2 database.
